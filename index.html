@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GymApp - Gestión Integral de Gimnasio</title>
+
+    <!-- Frameworks y Librerías (CSS) -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.min.css">
+
+    <!-- Estilos CSS personalizados -->
+    <style>
+        :root {
+            --primary-color: #007bff; --secondary-color: #6c757d; --success-color: #28a745;
+            --info-color: #17a2b8; --danger-color: #dc3545; --warning-color: #ffc107;
+            --light-color: #f8f9fa; --dark-bg: #212529; --sidebar-width: 280px;
+        }
+        @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap');
+        body { background-color: #f4f7f6; font-family: 'Roboto', 'Segoe UI', system-ui, sans-serif; }
+        .main-container { display: flex; }
+        .sidebar { width: var(--sidebar-width); height: 100vh; position: fixed; top: 0; left: 0; background-color: var(--dark-bg); color: white; transition: left 0.3s; z-index: 1000; box-shadow: 2px 0 15px rgba(0,0,0,0.1); }
+        .sidebar-header { padding: 1.25rem 1rem; text-align: center; border-bottom: 1px solid #495057; }
+        .sidebar .nav-link { color: #adb5bd; font-size: 1.05rem; padding: 12px 20px; border-radius: 0.3rem; margin: 4px 10px; transition: all 0.2s ease-in-out; display: flex; align-items: center; }
+        .sidebar .nav-link .fa-fw { width: 1.5em; }
+        .sidebar .nav-link.active, .sidebar .nav-link:hover { color: #ffffff; background-color: #495057; }
+        .content { margin-left: var(--sidebar-width); padding: 40px; width: calc(100% - var(--sidebar-width)); transition: margin-left 0.3s; }
+        .page-section { display: none; animation: fadeIn 0.5s; }
+        .page-section.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        #login-section { display: flex; justify-content: center; align-items: center; height: 100vh; width: 100%; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
+        .login-container { background: white; padding: 50px; border-radius: 12px; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1); width: 100%; max-width: 480px; }
+        .login-container .btn { padding: 12px; font-size: 1.1rem; font-weight: 500; }
+        .card { border: none; border-radius: .75rem; box-shadow: 0 4px 20px rgba(0,0,0,0.05); margin-bottom: 1.5rem; }
+        .stat-card { transition: transform 0.2s, box-shadow 0.2s; }
+        .stat-card:hover { transform: translateY(-5px); box-shadow: 0 8px 25px rgba(0,0,0,0.08); }
+        .stat-card .card-body { display: flex; align-items: center; justify-content: space-between; }
+        .stat-card i { font-size: 3rem; color: var(--primary-color); opacity: 0.2; }
+        .chart-container { height: 350px; width: 100%; }
+        .modal-header { background-color: var(--primary-color); color: white; }
+        .fc-event { cursor: pointer; }
+        .fc-event.reserved-by-me { background-color: var(--info-color) !important; border-color: var(--info-color) !important; }
+        .fc-event.full { background-color: var(--secondary-color) !important; border-color: var(--secondary-color) !important; }
+        .fc-event.professor-class { background-color: var(--warning-color) !important; border-color: var(--warning-color) !important; }
+        .toast-container { z-index: 1100; }
+    </style>
+</head>
+<body>
+    <div class="toast-container position-fixed bottom-0 end-0 p-3">
+      <div id="appToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+        <div class="toast-header"><i class="fas fa-check-circle rounded me-2"></i><strong class="me-auto" id="toast-title"></strong><button type="button" class="btn-close" data-bs-dismiss="toast"></button></div>
+        <div class="toast-body" id="toast-body"></div>
+      </div>
+    </div>
+
+    <div id="app-container" style="display: none;">
+        <div class="main-container">
+            <nav class="sidebar d-flex flex-column">
+                <div class="sidebar-header"><h4 class="mb-0"><i class="fas fa-dumbbell me-2"></i> GymApp</h4></div>
+                <div id="user-profile-summary" class="text-center p-3 mt-3"><i class="fas fa-user-circle fa-4x mb-2 text-white-50"></i><h5 id="profile-name" class="mb-0"></h5><p id="profile-role" class="text-muted small mb-0"></p></div>
+                <ul class="nav nav-pills flex-column mb-auto mt-3" id="main-nav"></ul>
+                <div class="p-3 border-top border-secondary"><div class="d-grid"><button class="btn btn-danger" onclick="logout()"><i class="fas fa-sign-out-alt me-2"></i> Cerrar Sesión</button></div></div>
+            </nav>
+            <main class="content">
+                <section id="dashboard-section" class="page-section"></section><section id="profile-section" class="page-section"></section>
+                <section id="billing-section" class="page-section"></section><section id="schedule-section" class="page-section"></section>
+                <section id="my-routine-section" class="page-section"></section><section id="my-progress-section" class="page-section"></section>
+                <section id="nutrition-section" class="page-section"></section><section id="my-classes-section" class="page-section"></section>
+                <section id="routine-builder-section" class="page-section"></section><section id="evaluations-section" class="page-section"></section>
+                <section id="crm-section" class="page-section"></section><section id="inventory-section" class="page-section"></section>
+                <section id="attendance-log-section" class="page-section"></section>
+            </main>
+        </div>
+    </div>
+
+    <div id="login-section" class="page-section active">
+        <div class="login-container text-center">
+            <h1 class="mb-2 display-4"><i class="fas fa-dumbbell"></i> GymApp</h1>
+            <p class="text-muted mb-4 fs-5">Selecciona un rol para simular el inicio de sesión</p>
+            <div class="d-grid gap-3">
+                <button class="btn btn-primary" onclick="login('admin')"><i class="fas fa-user-shield me-2"></i> Administrador</button>
+                <button class="btn btn-info text-white" onclick="login('professor')"><i class="fas fa-chalkboard-teacher me-2"></i> Profesor</button>
+                <button class="btn btn-success" onclick="login('student')"><i class="fas fa-user-graduate me-2"></i> Alumno</button>
+            </div>
+        </div>
+    </div>
+    
+    <div class="modal fade" id="mainModal" tabindex="-1"><div class="modal-dialog modal-lg"><div class="modal-content"><div class="modal-header"><h5 class="modal-title" id="mainModalTitle"></h5><button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button></div><div class="modal-body" id="mainModalBody"></div><div class="modal-footer" id="mainModalFooter"></div></div></div></div>
+    <div class="modal fade" id="cancellationModal" tabindex="-1"><div class="modal-dialog"><div class="modal-content"><div class="modal-header"><h5 class="modal-title">Confirmar Cancelación</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div><div class="modal-body"><p>Por favor, indica el motivo de tu cancelación.</p><textarea id="cancellationReason" class="form-control" rows="3" required></textarea><div class="invalid-feedback">El motivo es obligatorio.</div></div><div class="modal-footer"><button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button><button type="button" class="btn btn-danger" onclick="confirmCancellation()">Confirmar Cancelación</button></div></div></div></div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.min.js"></script>
+    <script src='https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/locales/es.js'></script>
+
+    <script>
+        // === SIMULACIÓN DE BASE DE DATOS Y ESTADO DE LA APP ===
+        const appState = {
+            currentUser: null,
+            users: {
+                admin: { role: 'admin', name: 'Admin General', profile: { email: 'admin@gymapp.com' } },
+                professor: { role: 'professor', name: 'Profesor Carlos', profile: { email: 'carlos.profe@gymapp.com' } },
+                student: { 
+                    role: 'student', name: 'Juan Pérez', id: 1, profile: { email: 'juan.perez@email.com' },
+                    membership: { name: 'Plan Mensual Fit', status: 'Activo', nextPayment: '01 de Noviembre, 2025', benefits: ['Acceso a todas las áreas', 'Clases grupales ilimitadas', '1 evaluación mensual'] },
+                    attendance: 18, 
+                    routine: { Lunes: { text: 'Día 1: Pecho y Tríceps\n- Press de banca: 4x10 @ 60kg\n- Fondos: 3x12', completed: true }, Martes: { text: 'Día 2: Espalda y Bíceps\n- Remo con barra: 4x10 @ 50kg\n- Curl de bíceps: 3x12', completed: false }, Miércoles: { text: 'Descanso Activo\n- Caminata 30 min', completed: false }, Jueves: { text: 'Día 3: Pierna\n- Sentadillas: 4x10 @ 80kg\n- Peso muerto rumano: 3x12', completed: false }, Viernes: { text: 'Día 4: Hombro y Abdominales\n- Press militar: 4x10 @ 40kg\n- Elevaciones laterales: 3x15', completed: false }, Sábado: { text: 'Cardio HIIT\n- 20 min en cinta', completed: false }, Domingo: { text: 'Descanso', completed: false }},
+                    progress: { 
+                        labels: ['Julio', 'Agosto', 'Septiembre', 'Octubre'], 
+                        weights: [85, 84, 82, 80], 
+                        bodyFat: [22, 21, 20, 18.5], 
+                        measurements: { chest: [102, 103, 103, 104], waist: [90, 88, 86, 85], hips: [100, 99, 99, 98] }
+                    },
+                    evaluations: [
+                        { date: '2025-09-15', weight: 82, bodyFat: 20, notes: 'Buena adherencia. Mejorar hidratación.', measurements: { chest: 103, waist: 86, hips: 99 } },
+                        { date: '2025-10-15', weight: 80, bodyFat: 18.5, notes: 'Excelente progreso. Aumentar cargas.', measurements: { chest: 104, waist: 85, hips: 98 } }
+                    ]
+                }
+            },
+            navigation: {
+                admin: [{ id: 'dashboard-section', icon: 'fa-tachometer-alt', text: 'Dashboard' }, { id: 'crm-section', icon: 'fa-users', text: 'CRM Socios' }, { id: 'attendance-log-section', icon: 'fa-clipboard-check', text: 'Registros de Asistencia' }, { id: 'billing-section', icon: 'fa-file-invoice-dollar', text: 'Pagos y POS' }, { id: 'schedule-section', icon: 'fa-calendar-alt', text: 'Agenda General' }, { id: 'inventory-section', icon: 'fa-boxes', text: 'Inventario' }, { id: 'profile-section', icon: 'fa-user-cog', text: 'Mi Perfil' }],
+                professor: [{ id: 'dashboard-section', icon: 'fa-tachometer-alt', text: 'Mi Dashboard' }, { id: 'schedule-section', icon: 'fa-calendar-check', text: 'Mi Agenda' }, { id: 'routine-builder-section', icon: 'fa-dumbbell', text: 'Constructor Rutinas' }, { id: 'evaluations-section', icon: 'fa-clipboard-list', text: 'Evaluaciones' }, { id: 'profile-section', icon: 'fa-user-edit', text: 'Mi Perfil' }],
+                student: [ { id: 'dashboard-section', icon: 'fa-tachometer-alt', text: 'Mi Dashboard' }, { id: 'billing-section', icon: 'fa-wallet', text: 'Mi Plan y Pagos' }, { id: 'my-routine-section', icon: 'fa-dumbbell', text: 'Mi Rutina' }, { id: 'my-progress-section', icon: 'fa-chart-line', text: 'Seguimiento Físico' }, { id: 'nutrition-section', icon: 'fa-apple-alt', text: 'Nutrición' }, { id: 'schedule-section', icon: 'fa-calendar-plus', text: 'Reservar Clase' }, { id: 'my-classes-section', icon: 'fa-history', text: 'Mis Clases y Feedback'}, { id: 'profile-section', icon: 'fa-user', text: 'Mi Perfil' } ]
+            },
+            gymData: {
+                members: [ { id: 1, name: 'Juan Pérez', email: 'juan.p@email.com', plan: 'Mensual Fit', status: 'Activo' }, { id: 2, name: 'Maria Rojas', email: 'maria.r@email.com', plan: 'Anual Pro', status: 'Activo' }, { id: 3, name: 'Carlos Vera', email: 'carlos.v@email.com', plan: 'Mensual Fit', status: 'Sin pagar' }, { id: 4, name: 'Ana Torres', email: 'ana.t@email.com', plan: 'Anual Pro', status: 'Activo' } ],
+                classes: [ { id: 1, title: 'Yoga', start: '2025-10-22T10:30:00', spots: 15, teacher: 'Ana', reservedBy: [2] }, { id: 2, title: 'Funcional', start: '2025-10-22T19:00:00', spots: 20, teacher: 'Profesor Carlos', reservedBy: [1, 4] }, { id: 3, title: 'Spinning', start: '2025-10-23T18:00:00', spots: 25, teacher: 'Luis', reservedBy: [] }, { id: 4, title: 'Boxeo', start: '2025-10-24T20:00:00', spots: 2, teacher: 'Marcos', reservedBy: [2,3] } ],
+                inventory: [ { id: 101, sku: 'AG-500', name: 'Agua Mineral 500ml', stock: 150, price: 1.00 }, { id: 102, sku: 'PRO-BAR-CH', name: 'Barra Proteína Chocolate', stock: 75, price: 2.50 }, { id: 103, sku: 'ENER-RED', name: 'Bebida Energética', stock: 40, price: 3.00 } ],
+                cart: [],
+                attendanceLog: [
+                    { memberId: 1, timestamp: '2025-10-21T08:05:12' }, { memberId: 2, timestamp: '2025-10-21T08:15:30' },
+                    { memberId: 3, timestamp: '2025-10-21T09:02:00' }, { memberId: 4, timestamp: '2025-10-20T18:30:15' },
+                    { memberId: 1, timestamp: '2025-10-20T08:00:05' }, { memberId: 2, timestamp: '2025-10-19T19:00:21' }
+                ]
+            }
+        };
+        let calendar, mainModal, cancellationModal, appToast, charts = {};
+        let classToCancel = null;
+
+        // === FUNCIONES DE NAVEGACIÓN Y UI ===
+        function navigateTo(sectionId) {
+            document.querySelectorAll('.page-section').forEach(s => s.classList.remove('active'));
+            document.getElementById(sectionId)?.classList.add('active');
+            document.querySelectorAll('#main-nav .nav-link').forEach(l => l.classList.remove('active'));
+            document.querySelector(`#main-nav .nav-link[onclick="navigateTo('${sectionId}')"]`)?.classList.add('active');
+            if (sectionId === 'schedule-section' && calendar) setTimeout(() => calendar.render(), 1);
+            if (sectionId.includes('progress') && appState.currentUser.role === 'student') updateStudentCharts();
+        }
+        function login(role) { appState.currentUser = appState.users[role]; document.getElementById('login-section').style.display = 'none'; document.getElementById('app-container').style.display = 'block'; setupUIForRole(role); updateDynamicContent(role); navigateTo('dashboard-section'); }
+        function logout() { appState.currentUser = null; document.getElementById('app-container').style.display = 'none'; document.getElementById('login-section').style.display = 'flex'; }
+        function setupUIForRole(role) {
+            updateProfileSidebar();
+            const user = appState.currentUser;
+            document.getElementById('profile-role').innerText = user.role.charAt(0).toUpperCase() + user.role.slice(1);
+            const navContainer = document.getElementById('main-nav');
+            navContainer.innerHTML = appState.navigation[role].map(link => `<li class="nav-item"><a href="#" class="nav-link" onclick="navigateTo('${link.id}')"><i class="fas ${link.icon} fa-fw me-2"></i>${link.text}</a></li>`).join('');
+            initializeCalendar(role);
+        }
+        
+        // === RENDERIZADO INICIAL DE SECCIONES ===
+        function renderAllSections() {
+            const sections = { 'crm-section': renderAdminCRM(), 'billing-section': renderBillingSection(), 'inventory-section': renderAdminInventory(), 'attendance-log-section': renderAdminAttendanceLog(), 'routine-builder-section': renderProfessorRoutineBuilder(), 'evaluations-section': renderProfessorEvaluations(), 'my-routine-section': renderStudentRoutine(), 'my-progress-section': renderStudentProgress(), 'nutrition-section': renderStudentNutrition(), 'my-classes-section': renderStudentClassesHistory(), 'schedule-section': `<div class="d-flex justify-content-between align-items-center mb-4"><h3 id="schedule-title" class="mb-0"></h3><button id="add-class-btn" class="btn btn-primary"><i class="fas fa-plus me-2"></i>Agendar Clase</button></div><div class="card"><div class="card-body p-4"><div id="calendar"></div></div></div>`, 'profile-section': renderProfileSection() };
+            for(const [id, content] of Object.entries(sections)) { document.getElementById(id).innerHTML = content; }
+        }
+
+        // === ACTUALIZACIÓN DE CONTENIDO DINÁMICO ===
+        function updateDynamicContent(role) {
+            document.getElementById('schedule-title').innerText = role === 'student' ? 'Reservar Clase' : 'Agenda de Clases';
+            const addClassBtn = document.getElementById('add-class-btn');
+            addClassBtn.style.display = (role === 'admin' || role === 'professor') ? 'block' : 'none';
+            addClassBtn.onclick = (role === 'admin' || role === 'professor') ? showAddClassModal : null;
+            document.getElementById('admin-billing-view').style.display = role === 'admin' ? 'block' : 'none';
+            document.getElementById('student-billing-view').style.display = role === 'student' ? 'block' : 'none';
+
+            const dashboardContainer = document.getElementById('dashboard-section');
+            if (role === 'admin') dashboardContainer.innerHTML = renderAdminDashboard();
+            else if (role === 'professor') dashboardContainer.innerHTML = renderProfessorDashboard();
+            else dashboardContainer.innerHTML = renderStudentDashboard();
+
+            if (role === 'student') { updateStudentPlanUI(); updateStudentRoutineUI(); updateStudentProgressUI(); updateStudentClassesHistory(); } 
+            else if (role === 'professor') { updateProfessorUI(); } 
+            else if (role === 'admin') { updateAdminUI(); }
+            updateProfileSection();
+        }
+
+        // === RENDERIZADO DE PLANTILLAS HTML ===
+        function renderAdminDashboard() { return `<h3>Dashboard Administrativo</h3><div class="row"><div class="col-xl-3 col-md-6 mb-4"><div class="stat-card h-100 card"><div class="card-body"><div><div class="text-xs fw-bold text-primary text-uppercase mb-1">Socios Activos</div><div class="h5 mb-0 fw-bold">${appState.gymData.members.filter(m => m.status === 'Activo').length}</div></div><i class="fas fa-users" style="color:var(--primary-color);"></i></div></div></div><div class="col-xl-3 col-md-6 mb-4"><div class="stat-card h-100 card"><div class="card-body"><div><div class="text-xs fw-bold text-success text-uppercase mb-1">Ingresos (Mes)</div><div class="h5 mb-0 fw-bold">$12,450</div></div><i class="fas fa-dollar-sign" style="color:var(--success-color);"></i></div></div></div><div class="col-xl-3 col-md-6 mb-4"><div class="stat-card h-100 card"><div class="card-body"><div><div class="text-xs fw-bold text-info text-uppercase mb-1">Clases Programadas</div><div class="h5 mb-0 fw-bold">${appState.gymData.classes.length}</div></div><i class="fas fa-calendar-check" style="color:var(--info-color);"></i></div></div></div><div class="col-xl-3 col-md-6 mb-4"><div class="stat-card h-100 card"><div class="card-body"><div><div class="text-xs fw-bold text-warning text-uppercase mb-1">Pagos Pendientes</div><div class="h5 mb-0 fw-bold">${appState.gymData.members.filter(m => m.status === 'Sin pagar').length}</div></div><i class="fas fa-exclamation-triangle" style="color:var(--warning-color);"></i></div></div></div></div>`; }
+        function renderAdminCRM() { return `<h3><i class="fas fa-users me-2"></i>CRM de Socios</h3><div class="card"><div class="card-body"><div class="d-flex justify-content-between mb-3"><input type="text" class="form-control w-50" placeholder="Buscar socio..." onkeyup="filterCRMTable(this.value)"><button class="btn btn-primary" onclick="showToast('Info', 'Función no implementada.')"><i class="fas fa-user-plus me-2"></i>Nuevo Socio</button></div><div class="table-responsive"><table class="table table-hover align-middle"><thead><tr><th>ID</th><th>Nombre</th><th>Email</th><th>Plan</th><th>Estado</th><th class="text-end">Acciones</th></tr></thead><tbody id="crm-table-body"></tbody></table></div></div></div>`; }
+        function renderBillingSection() { return `<div id="admin-billing-view"><h3><i class="fas fa-cash-register me-2"></i>Punto de Venta (POS)</h3><div class="row"><div class="col-lg-7"><div class="card"><div class="card-header"><h5>Productos</h5></div><div class="card-body"><div id="pos-items" class="list-group"></div></div></div></div><div class="col-lg-5"><div class="card"><div class="card-header"><h5>Carrito</h5></div><div class="card-body"><ul id="pos-cart" class="list-group mb-3"></ul><hr><div class="d-flex justify-content-between align-items-center"><h4>Total:</h4><h4 class="fw-bold">$<span id="pos-total">0.00</span></h4></div><button class="btn btn-success w-100 mt-3" onclick="processPayment()"><i class="fas fa-check me-2"></i>Procesar Pago</button></div></div></div></div></div><div id="student-billing-view"><h3>Mi Plan y Pagos</h3><div class="card mb-4"><div class="card-body"><h5 class="card-title">Mi Plan Actual: <span class="text-primary" id="student-plan-name"></span></h5><p class="mb-1">Estado: <span class="badge" id="student-plan-status"></span></p><p>Próximo cobro: <strong id="student-plan-next-payment"></strong></p><hr><h6>Beneficios del plan:</h6><ul id="student-plan-benefits" class="list-unstyled"></ul></div></div><h4>Historial de Pagos</h4><div class="card"><div class="card-body table-responsive"><table class="table table-hover"><thead><tr><th>Fecha</th><th>Descripción</th><th>Monto</th><th>Estado</th><th class="text-end">Comprobante</th></tr></thead><tbody><tr><td>2025-10-01</td><td>Membresía Mensual</td><td>$49.99</td><td><span class="badge bg-success">Pagado</span></td><td class="text-end"><a href="#" class="btn btn-sm btn-outline-primary"><i class="fas fa-download me-1"></i>Descargar</a></td></tr></tbody></table></div></div></div>`; }
+        function renderAdminInventory() { return `<h3><i class="fas fa-boxes me-2"></i>Gestión de Inventario</h3><div class="card"><div class="card-body"><div class="d-flex justify-content-end mb-3"><button class="btn btn-primary" onclick="showAddProductModal()"><i class="fas fa-plus me-2"></i>Añadir Nuevo Producto</button></div><div class="table-responsive"><table class="table table-hover align-middle"><thead><tr><th>SKU</th><th>Producto</th><th>Stock</th><th>Precio</th><th class="text-end">Acciones</th></tr></thead><tbody id="inventory-table-body"></tbody></table></div></div></div>`; }
+        function renderAdminAttendanceLog() { return `<h3><i class="fas fa-clipboard-check me-2"></i>Registros de Asistencia</h3><div class="card"><div class="card-body"><div class="d-flex justify-content-between mb-3"><input type="text" class="form-control w-50" placeholder="Buscar por nombre..." onkeyup="filterAttendanceLogTable(this.value)"></div><div class="table-responsive"><table class="table table-hover align-middle"><thead><tr><th>Nombre del Socio</th><th>Fecha</th><th>Hora de Entrada</th><th>Estado de Membresía</th></tr></thead><tbody id="attendance-log-body"></tbody></table></div></div></div>`; }
+        function renderProfessorDashboard() { return `<h3>Dashboard del Profesor</h3><p>Resumen de tus actividades para hoy, ${appState.currentUser.name}.</p><div class="row"><div class="col-md-6"><div class="card"><div class="card-header"><h5>Mis Clases de Hoy</h5></div><ul class="list-group list-group-flush">${appState.gymData.classes.filter(c=>c.teacher===appState.currentUser.name&&new Date(c.start).toDateString()===new Date().toDateString()).map(c=>`<li class="list-group-item d-flex justify-content-between align-items-center">${c.title}<span class="badge bg-primary rounded-pill">${new Date(c.start).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'})}</span></li>`).join('')||'<li class="list-group-item">No tienes clases hoy.</li>'}</ul></div></div><div class="col-md-6"><div class="card"><div class="card-header"><h5>Alumnos Asignados</h5></div><ul class="list-group list-group-flush">${appState.gymData.members.slice(0,4).map(m=>`<li class="list-group-item">${m.name}</li>`).join('')}</ul></div></div></div>`; }
+        function renderProfessorRoutineBuilder() { return `<h3><i class="fas fa-dumbbell me-2"></i>Constructor de Rutinas</h3><div class="row"><div class="col-md-4"><div class="card"><div class="card-header"><h5>Seleccionar Alumno</h5></div><div id="professor-student-list" class="list-group list-group-flush"></div></div></div><div class="col-md-8"><div class="card"><div class="card-header" id="routine-builder-header"><h5>Selecciona un alumno</h5></div><div class="card-body" id="routine-builder-body"><p class="text-muted">Elige un alumno de la lista para ver o editar su rutina.</p></div></div></div></div>`; }
+        function renderProfessorEvaluations() { return `<h3><i class="fas fa-clipboard-list me-2"></i>Evaluaciones Físicas</h3><div class="card"><div class="card-body"><label class="form-label">Seleccionar Alumno</label><select class="form-select mb-3" onchange="showStudentEvaluation(this.value)"><option selected value="">Elige un alumno...</option>${appState.gymData.members.map(m=>`<option value="${m.id}">${m.name}</option>`).join('')}</select><div id="evaluation-content"></div></div></div>`; }
+        function renderStudentDashboard() { const student = appState.users.student; return `<h3>Mi Dashboard</h3><p>¡Bienvenido de vuelta, ${student.name}!</p><div class="row"><div class="col-lg-7 mb-4"><div id="gamification-dashboard-section"></div></div><div class="col-lg-5 mb-4"><div class="card h-100"><div class="card-body text-center"><h5 class="card-title"><i class="fas fa-id-card me-2"></i>Estado de Membresía</h5><p class="fs-4"><strong>${student.membership.name}</strong></p><p>Estado: <span class="badge fs-6 ${student.membership.status==='Activo'?'bg-success':'bg-danger'}">${student.membership.status}</span></p></div></div></div></div>`; }
+        function renderStudentRoutine() { return `<h3><i class="fas fa-dumbbell me-2"></i>Mi Rutina Semanal</h3><p class="text-muted">Aquí puedes ver tu rutina, actualizar las cargas y marcar los días completados.</p><div class="accordion" id="routineAccordion"></div>`; }
+        function renderStudentProgress() { return `<h3><i class="fas fa-chart-line me-2"></i>Seguimiento Físico</h3><p class="text-muted">Registra tu progreso y visualiza tu evolución.</p><div class="row"><div class="col-12 mb-4"><div class="card"><div class="card-header"><h5>Registrar Nuevo Progreso</h5></div><div class="card-body"><form id="progress-form"><div class="row g-3 align-items-end"><div class="col-md-2"><label class="form-label">Peso (kg)</label><input type="number" step="0.1" class="form-control" id="progress-weight" required></div><div class="col-md-2"><label class="form-label">% Grasa</label><input type="number" step="0.1" class="form-control" id="progress-bodyfat"></div><div class="col-md-2"><label class="form-label">Pecho (cm)</label><input type="number" step="0.1" class="form-control" id="progress-chest"></div><div class="col-md-2"><label class="form-label">Cintura (cm)</label><input type="number" step="0.1" class="form-control" id="progress-waist"></div><div class="col-md-2"><label class="form-label">Cadera (cm)</label><input type="number" step="0.1" class="form-control" id="progress-hips"></div><div class="col-md-2 d-grid"><button type="submit" class="btn btn-primary"><i class="fas fa-plus"></i> Añadir</button></div></div></form></div></div></div><div class="col-lg-6 mb-4"><div class="card h-100"><div class="card-body"><h5 class="card-title">Evolución de Peso y % Grasa</h5><div class="chart-container"><canvas id="weightChart"></canvas></div></div></div></div><div class="col-lg-6 mb-4"><div class="card h-100"><div class="card-body"><h5 class="card-title">Evolución de Medidas</h5><div class="chart-container"><canvas id="measurementsChart"></canvas></div></div></div></div></div>`; }
+        function renderStudentNutrition() { return `<h3><i class="fas fa-apple-alt me-2"></i>Nutrición</h3><div class="card"><div class="card-body"><h5 class="card-title">Plan Nutricional Básico</h5><p>Esta sección es un prototipo. Aquí el alumno podría ver un plan de comidas sugerido, registrar su ingesta de agua y recibir recordatorios.</p></div></div>`; }
+        function renderStudentClassesHistory() { return `<h3><i class="fas fa-history me-2"></i>Mis Clases y Feedback</h3><div class="card"><div class="card-header"><h5>Clases Inscritas</h5></div><div id="my-classes-list" class="list-group list-group-flush"></div></div>`; }
+        function renderProfileSection() { return `<div id="profile-content"></div>`; }
+
+        // === LÓGICA DE ACTUALIZACIÓN DE UI ===
+        function updateAdminUI() {
+            document.getElementById('crm-table-body').innerHTML = appState.gymData.members.map(m => `<tr data-name="${m.name.toLowerCase()}" data-email="${m.email.toLowerCase()}"><td>${m.id}</td><td>${m.name}</td><td>${m.email}</td><td>${m.plan}</td><td><span class="badge ${m.status === 'Activo' ? 'bg-success' : 'bg-danger'}">${m.status}</span></td><td class="text-end"><button class="btn btn-sm btn-secondary"><i class="fas fa-eye"></i> Ver</button></td></tr>`).join('');
+            document.getElementById('inventory-table-body').innerHTML = appState.gymData.inventory.map(item => `<tr><td>${item.sku}</td><td>${item.name}</td><td>${item.stock}</td><td>$${item.price.toFixed(2)}</td><td class="text-end"><button class="btn btn-sm btn-info text-white"><i class="fas fa-edit me-1"></i> Editar</button></td></tr>`).join('');
+            document.getElementById('pos-items').innerHTML = appState.gymData.inventory.map(item => `<a href="#" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center" onclick="addToCart(${item.id})"><span>${item.name}</span><span class="fw-bold text-primary">$${item.price.toFixed(2)}</span></a>`).join('');
+            
+            const attendanceBody = document.getElementById('attendance-log-body');
+            const filteredLogs = appState.gymData.attendanceLog.filter(log => {
+                const member = appState.gymData.members.find(m => m.id === log.memberId);
+                return member && member.status !== 'Sin pagar';
+            });
+
+            attendanceBody.innerHTML = filteredLogs.map(log => {
+                const member = appState.gymData.members.find(m => m.id === log.memberId);
+                const logDate = new Date(log.timestamp);
+                const statusBadge = `<span class="badge ${member.status === 'Activo' ? 'bg-success' : 'bg-danger'}">${member.status}</span>`;
+                return `<tr data-name="${member.name.toLowerCase()}">
+                    <td>${member.name}</td>
+                    <td>${logDate.toLocaleDateString()}</td>
+                    <td>${logDate.toLocaleTimeString()}</td>
+                    <td>${statusBadge}</td>
+                </tr>`;
+            }).join('');
+            
+            appState.gymData.cart = []; updateCart();
+        }
+        function updateProfessorUI() {
+             document.getElementById('professor-student-list').innerHTML = appState.gymData.members.map(m => `<a href="#" class="list-group-item list-group-item-action" onclick="loadRoutineForStudent(${m.id}, this)">${m.name}</a>`).join('');
+             document.getElementById('routine-builder-header').innerHTML = '<h5>Selecciona un alumno</h5>'; document.getElementById('routine-builder-body').innerHTML = '<p class="text-muted">Elige un alumno para ver o editar su rutina.</p>';
+        }
+        function updateStudentPlanUI() {
+            const plan = appState.currentUser.membership;
+            document.getElementById('student-plan-name').innerText = plan.name;
+            const statusBadge = document.getElementById('student-plan-status'); statusBadge.innerText = plan.status; statusBadge.className = `badge fs-6 ${plan.status === 'Activo' ? 'bg-success' : 'bg-danger'}`;
+            document.getElementById('student-plan-next-payment').innerText = plan.nextPayment;
+            document.getElementById('student-plan-benefits').innerHTML = plan.benefits.map(b => `<li><i class="fas fa-check-circle text-success me-2"></i>${b}</li>`).join('');
+        }
+        function updateStudentRoutineUI() {
+            const accordion = document.getElementById('routineAccordion'); if(!accordion) return;
+            accordion.innerHTML = Object.entries(appState.currentUser.routine).map(([day, data]) => `<div class="accordion-item"><h2 class="accordion-header"><button class="accordion-button ${data.completed?'':'collapsed'}" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-${day}">${day} ${data.completed?'<span class="ms-2 badge bg-success">Completado</span>':''}</button></h2><div id="collapse-${day}" class="accordion-collapse collapse ${data.completed?'show':''}" data-bs-parent="#routineAccordion"><div class="accordion-body"><div class="form-check form-switch mb-3"><input class="form-check-input" type="checkbox" role="switch" id="check-${day}" ${data.completed?'checked':''} onchange="toggleRoutineComplete('${day}')"><label class="form-check-label" for="check-${day}">Marcar como completado</label></div><textarea class="form-control" rows="5" onchange="updateRoutineText('${day}', this.value)" style="white-space:pre-wrap;">${data.text}</textarea></div></div></div>`).join('');
+        }
+        function updateStudentProgressUI() {
+            const form = document.getElementById('progress-form');
+            if(form && !form.dataset.listenerAttached) { form.addEventListener('submit', handleAddProgress); form.dataset.listenerAttached = 'true'; }
+            renderGamificationOnDashboard(); updateStudentCharts();
+        }
+        function updateStudentClassesHistory() {
+            const listEl = document.getElementById('my-classes-list'); if(!listEl) return;
+            const myClasses = appState.gymData.classes.filter(c => c.reservedBy.includes(appState.currentUser.id));
+            if(myClasses.length === 0) { listEl.innerHTML = '<li class="list-group-item">No estás inscrito en ninguna clase.</li>'; return; }
+            listEl.innerHTML = myClasses.map(c => `<li class="list-group-item d-flex justify-content-between align-items-center"><div><strong>${c.title}</strong><br><small class="text-muted">${new Date(c.start).toLocaleString('es-ES', {weekday:'long', month:'long', day:'numeric', hour:'2-digit', minute:'2-digit'})}</small></div><button class="btn btn-sm btn-outline-danger" onclick="showCancellationModal(${c.id})"><i class="fas fa-times me-1"></i>Cancelar</button></li>`).join('');
+        }
+        function updateProfileSection() {
+            const user = appState.currentUser; if (!user) return;
+            document.getElementById('profile-content').innerHTML = `<h3>Mi Perfil</h3><div class="card"><div class="card-body"><h5 class="card-title">Datos Personales</h5>
+            <form id="profile-form" onsubmit="handleProfileUpdate(event)"><div class="mb-3"><label class="form-label">Nombre</label><input type="text" id="profile-input-name" class="form-control" value="${user.name}" required></div>
+            <div class="mb-3"><label class="form-label">Email de Contacto</label><input type="email" id="profile-input-email" class="form-control" value="${user.profile.email}" required></div>
+            <button type="submit" class="btn btn-primary"><i class="fas fa-save me-2"></i>Guardar Cambios</button></form></div></div>`;
+        }
+        function updateProfileSidebar() { const user = appState.currentUser; document.getElementById('profile-name').innerText = user.name; }
+
+        // === MANEJO DE EVENTOS Y LÓGICA ===
+        function handleAddProgress(e) {
+            e.preventDefault();
+            const p = appState.currentUser.progress;
+            p.labels.push(new Date().toLocaleString('es-ES',{month:'long'}));
+            p.weights.push(parseFloat(document.getElementById('progress-weight').value) || p.weights.slice(-1)[0]);
+            p.bodyFat.push(parseFloat(document.getElementById('progress-bodyfat').value) || p.bodyFat.slice(-1)[0]);
+            p.measurements.chest.push(parseFloat(document.getElementById('progress-chest').value) || p.measurements.chest.slice(-1)[0]);
+            p.measurements.waist.push(parseFloat(document.getElementById('progress-waist').value) || p.measurements.waist.slice(-1)[0]);
+            p.measurements.hips.push(parseFloat(document.getElementById('progress-hips').value) || p.measurements.hips.slice(-1)[0]);
+            updateStudentCharts();
+            showToast('Progreso Guardado','Tu nuevo registro ha sido añadido.');
+            e.target.reset();
+        }
+        function handleClassReservation(id) { const c=appState.gymData.classes.find(c=>c.id===id); const sId=appState.currentUser.id; const idx=c.reservedBy.indexOf(sId); if(idx>-1){c.reservedBy.splice(idx,1);showToast('Reserva Cancelada',`Cancelaste tu reserva para ${c.title}.`);}else if(c.reservedBy.length<c.spots){c.reservedBy.push(sId);showToast('¡Inscrito!',`Te inscribiste a ${c.title}.`);}else{showToast('Error','Clase llena.','danger');} mainModal.hide(); calendar.refetchEvents(); updateStudentClassesHistory(); }
+        function filterCRMTable(q) { q=q.toLowerCase(); document.querySelectorAll('#crm-table-body tr').forEach(r=>r.style.display=(r.dataset.name.includes(q)||r.dataset.email.includes(q))?'':'none'); }
+        function filterAttendanceLogTable(q) { q=q.toLowerCase(); document.querySelectorAll('#attendance-log-body tr').forEach(r=>r.style.display=(r.dataset.name.includes(q))?'':'none'); }
+        function toggleRoutineComplete(day) { const r=appState.currentUser.routine;r[day].completed=!r[day].completed;showToast('Rutina Actualizada',`Día ${day} marcado como ${r[day].completed?'completado':'pendiente'}.`);updateStudentRoutineUI(); }
+        function updateRoutineText(day, text) { appState.currentUser.routine[day].text = text; showToast('Rutina Guardada', `Cambios para ${day} guardados.`); }
+        function addToCart(itemId) { const item=appState.gymData.inventory.find(i=>i.id===itemId); if(item){ const cartItem=appState.gymData.cart.find(i=>i.id===itemId);if(cartItem){cartItem.quantity++;}else{appState.gymData.cart.push({...item,quantity:1});}updateCart();} }
+        function updateCart() { const cartList=document.getElementById('pos-cart'),totalEl=document.getElementById('pos-total');let total=0;if(appState.gymData.cart.length===0){cartList.innerHTML='<li class="list-group-item">El carrito está vacío.</li>';}else{cartList.innerHTML=appState.gymData.cart.map(item=>{total+=item.price*item.quantity;return`<li class="list-group-item d-flex justify-content-between"><span>${item.name}(x${item.quantity})</span><span>$${(item.price*item.quantity).toFixed(2)}</span></li>`;}).join('');}totalEl.innerText=total.toFixed(2); }
+        function processPayment() { if(appState.gymData.cart.length>0){showToast('Pago Procesado',`Venta por $${document.getElementById('pos-total').innerText} completada.`);appState.gymData.cart=[];updateCart();}else{showToast('Carrito Vacío','Agrega productos al carrito.','warning');} }
+        function handleProfileUpdate(e) { e.preventDefault(); const newName = document.getElementById('profile-input-name').value; const newEmail = document.getElementById('profile-input-email').value; appState.currentUser.name = newName; appState.currentUser.profile.email = newEmail; updateProfileSidebar(); showToast('Perfil Actualizado', 'Tus datos han sido guardados.'); }
+        function handleCreateClass(e) { e.preventDefault(); const title = document.getElementById('class-title').value; const date = document.getElementById('class-date').value; const time = document.getElementById('class-time').value; const spots = document.getElementById('class-spots').value; const start = `${date}T${time}:00`; appState.gymData.classes.push({ id: Date.now(), title, start, spots: parseInt(spots), teacher: appState.currentUser.name, reservedBy: [] }); mainModal.hide(); calendar.refetchEvents(); showToast('Clase Creada', `La clase "${title}" ha sido agendada.`); }
+        function handleAddEvaluation(e, studentId) {
+            e.preventDefault();
+            const student = appState.users.student;
+            const newEval = {
+                date: new Date().toISOString().split('T')[0],
+                weight: e.target.elements['eval-weight'].value,
+                bodyFat: e.target.elements['eval-bodyfat'].value,
+                notes: e.target.elements['eval-notes'].value,
+                measurements: { chest: e.target.elements['eval-chest'].value, waist: e.target.elements['eval-waist'].value, hips: e.target.elements['eval-hips'].value }
+            };
+            student.evaluations.push(newEval);
+            showToast('Evaluación Añadida', `Nuevo registro guardado para ${student.name}.`);
+            showStudentEvaluation(studentId);
+        }
+        function handleCreateProduct(e) {
+            e.preventDefault();
+            const newProduct = {
+                id: Date.now(),
+                sku: document.getElementById('product-sku').value,
+                name: document.getElementById('product-name').value,
+                stock: parseInt(document.getElementById('product-stock').value),
+                price: parseFloat(document.getElementById('product-price').value)
+            };
+            appState.gymData.inventory.push(newProduct);
+            mainModal.hide();
+            updateAdminUI();
+            showToast('Producto Añadido', `El producto "${newProduct.name}" ha sido registrado.`);
+        }
+
+        // === MODALES ===
+        function showClassModal(info) { const c=info.event.extendedProps.classData,u=appState.currentUser;let b=`<p><i class="fas fa-chalkboard-teacher me-2 text-primary"></i><strong>Profesor:</strong> ${c.teacher}</p><p><i class="far fa-clock me-2 text-primary"></i><strong>Hora:</strong> ${new Date(c.start).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'})}</p><p><i class="fas fa-users me-2 text-primary"></i><strong>Cupos:</strong> ${c.reservedBy.length}/${c.spots}</p>`,f='';if(u.role==='student'){const isR=c.reservedBy.includes(u.id),isF=c.reservedBy.length>=c.spots;if(isR)f=`<button class="btn btn-danger" onclick="handleClassReservation(${c.id})"><i class="fas fa-times me-2"></i>Cancelar Reserva</button>`;else if(isF)f=`<button class="btn btn-secondary" disabled>Clase Llena</button>`;else f=`<button class="btn btn-success" onclick="handleClassReservation(${c.id})"><i class="fas fa-check me-2"></i>Inscribirme</button>`;}else if(u.role==='professor'||u.role==='admin'){const sL=c.reservedBy.map(id=>`<li>${appState.gymData.members.find(m=>m.id===id).name}</li>`).join('');b+=`<hr><h5>Alumnos Inscritos:</h5><ul class="list-group">${sL||'<li class="list-group-item">No hay alumnos.</li>'}</ul>`;}document.getElementById('mainModalTitle').innerText=c.title;document.getElementById('mainModalBody').innerHTML=b;document.getElementById('mainModalFooter').innerHTML=f;mainModal.show();}
+        function showAddClassModal() {
+            document.getElementById('mainModalTitle').innerText = 'Agendar Nueva Clase';
+            document.getElementById('mainModalBody').innerHTML = `<form id="add-class-form"><div class="mb-3"><label class="form-label">Título</label><input type="text" id="class-title" class="form-control" required></div><div class="row"><div class="col-md-6 mb-3"><label class="form-label">Fecha</label><input type="date" id="class-date" class="form-control" required></div><div class="col-md-6 mb-3"><label class="form-label">Hora</label><input type="time" id="class-time" class="form-control" required></div></div><div class="mb-3"><label class="form-label">Cupos</label><input type="number" id="class-spots" class="form-control" required></div></form>`;
+            document.getElementById('mainModalFooter').innerHTML = `<button class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button><button type="submit" form="add-class-form" class="btn btn-primary" onclick="handleCreateClass(event)">Guardar Clase</button>`;
+            mainModal.show();
+        }
+        function showAddProductModal() {
+            document.getElementById('mainModalTitle').innerText = 'Registrar Nuevo Producto';
+            document.getElementById('mainModalBody').innerHTML = `<form id="add-product-form"><div class="row g-3"><div class="col-md-6"><label class="form-label">SKU</label><input type="text" id="product-sku" class="form-control" required></div><div class="col-md-6"><label class="form-label">Nombre del Producto</label><input type="text" id="product-name" class="form-control" required></div><div class="col-md-6"><label class="form-label">Stock Inicial</label><input type="number" id="product-stock" class="form-control" required></div><div class="col-md-6"><label class="form-label">Precio</label><input type="number" step="0.01" id="product-price" class="form-control" required></div></div></form>`;
+            document.getElementById('mainModalFooter').innerHTML = `<button class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button><button type="submit" form="add-product-form" class="btn btn-primary" onclick="handleCreateProduct(event)">Guardar Producto</button>`;
+            mainModal.show();
+        }
+        function showCancellationModal(id) { classToCancel = id; cancellationModal.show(); document.getElementById('cancellationReason').value = ''; document.getElementById('cancellationReason').classList.remove('is-invalid'); }
+        function confirmCancellation() {
+            const reasonEl = document.getElementById('cancellationReason');
+            if (!reasonEl.value) { reasonEl.classList.add('is-invalid'); return; }
+            const classData = appState.gymData.classes.find(c => c.id === classToCancel);
+            const studentId = appState.currentUser.id;
+            const idx = classData.reservedBy.indexOf(studentId);
+            if (idx > -1) { classData.reservedBy.splice(idx, 1); }
+            showToast('Reserva Cancelada', `Tu reserva para ${classData.title} ha sido cancelada.`);
+            cancellationModal.hide();
+            calendar.refetchEvents();
+            updateStudentClassesHistory();
+            classToCancel = null;
+        }
+
+        // === COMPONENTES (CALENDARIO, GRÁFICOS, TOASTS) ===
+        function initializeCalendar(role) { if(calendar)calendar.destroy();const cE=document.getElementById('calendar');calendar=new FullCalendar.Calendar(cE,{initialView:'dayGridMonth',locale:'es',headerToolbar:{left:'prev,next today',center:'title',right:'dayGridMonth,timeGridWeek'},events: (fI,sC)=>{const u=appState.currentUser;sC(appState.gymData.classes.map(c=>{const isR=role==='student'&&c.reservedBy.includes(u.id),isF=c.reservedBy.length>=c.spots&&!isR,isM=role==='professor'&&c.teacher===u.name;let cN='';if(isR)cN='reserved-by-me';else if(isM)cN='professor-class';else if(isF)cN='full';return{id:c.id,title:c.title,start:c.start,classNames:[cN],extendedProps:{classData:c}};}));},eventClick:showClassModal}); }
+        function updateStudentCharts() {
+            Object.values(charts).forEach(c=>c.destroy());
+            const p = appState.currentUser.progress;
+            const wC = document.getElementById('weightChart');
+            const mC = document.getElementById('measurementsChart');
+            if(!wC || !mC) return;
+            charts.weight = new Chart(wC.getContext('2d'),{type:'line',data:{labels:p.labels,datasets:[{label:'Peso (kg)',data:p.weights,borderColor:'var(--primary-color)',yAxisID:'y'},{label:'% Grasa',data:p.bodyFat,borderColor:'var(--danger-color)',yAxisID:'y1'}]},options:{scales:{y:{type:'linear',display:true,position:'left'},y1:{type:'linear',display:true,position:'right',grid:{drawOnChartArea:false}}}}});
+            charts.measurements = new Chart(mC.getContext('2d'), {type:'line', data:{labels:p.labels, datasets:[{label:'Pecho (cm)',data:p.measurements.chest,borderColor:'var(--success-color)'},{label:'Cintura (cm)',data:p.measurements.waist,borderColor:'var(--warning-color)'},{label:'Cadera (cm)',data:p.measurements.hips,borderColor:'var(--info-color)'}]}});
+        }
+        function showToast(title,body,type='success'){const tE=document.getElementById('appToast'),tI=tE.querySelector('.toast-header i');tE.classList.remove('bg-success','bg-danger','bg-warning','bg-info','text-white');tI.className='rounded me-2';const tM={success:{bg:'bg-success',icon:'fa-check-circle'},danger:{bg:'bg-danger',icon:'fa-times-circle'},warning:{bg:'bg-warning',icon:'fa-exclamation-triangle'},info:{bg:'bg-info',icon:'fa-info-circle'}};if(tM[type]){tE.classList.add(tM[type].bg,'text-white');tI.classList.add('fas',tM[type].icon);}document.getElementById('toast-title').innerText=title;document.getElementById('toast-body').innerText=body;appToast.show();}
+
+        // === FUNCIONES DE PROFESOR (Rutinas, Evaluaciones) ===
+        function loadRoutineForStudent(id, el) { document.querySelectorAll('#professor-student-list .list-group-item').forEach(e=>e.classList.remove('active')); el.classList.add('active'); const s=appState.gymData.members.find(m=>m.id===id); document.getElementById('routine-builder-header').innerHTML=`<h5>Editando rutina de: <strong>${s.name}</strong></h5>`; const r=appState.users.student.routine; let rHTML=Object.keys(r).map(d=>`<div class="mb-3"><label class="form-label fw-bold">${d}</label><textarea class="form-control" rows="3">${r[d].text}</textarea></div>`).join(''); document.getElementById('routine-builder-body').innerHTML=`${rHTML}<button class="btn btn-primary w-100" onclick="saveStudentRoutine(${id})"><i class="fas fa-save me-2"></i>Guardar Cambios</button>`; }
+        function saveStudentRoutine(id) { showToast('Rutina Guardada',`La rutina para ${appState.gymData.members.find(m=>m.id===id).name} ha sido actualizada.`); }
+        function showStudentEvaluation(id) {
+            const contentEl = document.getElementById('evaluation-content'); if(!id) { contentEl.innerHTML = ''; return; }
+            const student = appState.users.student; // Simulación: siempre usamos a Juan Pérez
+            let historyHTML = student.evaluations.map(ev => `<tr><td>${new Date(ev.date).toLocaleDateString()}</td><td>${ev.weight} kg</td><td>${ev.bodyFat}%</td><td>${ev.measurements.chest} cm</td><td>${ev.measurements.waist} cm</td><td>${ev.measurements.hips} cm</td><td>${ev.notes}</td></tr>`).reverse().join('') || '<tr><td colspan="7" class="text-center">No hay registros.</td></tr>';
+            contentEl.innerHTML = `<hr><h4>Añadir Nueva Evaluación para ${student.name}</h4>
+            <div class="card p-3 mb-4"><form id="eval-form" onsubmit="handleAddEvaluation(event, ${id})"><div class="row g-3">
+                <div class="col-md-4"><label class="form-label">Peso (kg)</label><input name="eval-weight" type="number" step="0.1" class="form-control" required></div>
+                <div class="col-md-4"><label class="form-label">% Grasa</label><input name="eval-bodyfat" type="number" step="0.1" class="form-control" required></div>
+                <div class="col-md-4"><label class="form-label">Pecho (cm)</label><input name="eval-chest" type="number" step="0.1" class="form-control" required></div>
+                <div class="col-md-4"><label class="form-label">Cintura (cm)</label><input name="eval-waist" type="number" step="0.1" class="form-control" required></div>
+                <div class="col-md-4"><label class="form-label">Cadera (cm)</label><input name="eval-hips" type="number" step="0.1" class="form-control" required></div>
+                <div class="col-12"><label class="form-label">Notas</label><textarea name="eval-notes" class="form-control" rows="2"></textarea></div>
+                <div class="col-12 d-grid"><button type="submit" class="btn btn-primary">Añadir Registro</button></div>
+            </div></form></div><hr><h4>Historial de Evaluaciones</h4>
+            <div class="table-responsive"><table class="table table-striped table-sm"><thead><tr><th>Fecha</th><th>Peso</th><th>% Grasa</th><th>Pecho</th><th>Cintura</th><th>Cadera</th><th>Notas</th></tr></thead><tbody>${historyHTML}</tbody></table></div>`;
+        }
+
+        // === GAMIFICATION ===
+        function renderGamificationOnDashboard(){
+            const section = document.getElementById('gamification-dashboard-section'); if(!section) return;
+            const { attendance } = appState.currentUser, goal = 20, progress = Math.min((attendance/goal)*100, 100), isClaimable = attendance >= goal;
+            section.innerHTML = `<div class="card h-100 ${isClaimable ? 'border-success' : ''}"><div class="card-body"><h5 class="card-title"><i class="fas fa-trophy me-2 ${isClaimable ? 'text-warning' : ''}"></i>Metas y Recompensas</h5><p class="mb-1"><strong>Asistencia este mes:</strong> ${attendance} / ${goal} días.</p><div class="progress mb-3" style="height:1.25rem;"><div class="progress-bar bg-success" style="width:${progress}%;">${Math.round(progress)}%</div></div><div class="d-grid"><button class="btn ${isClaimable?'btn-success':'btn-secondary'}" ${!isClaimable?'disabled':''}>${isClaimable?'¡Reclamar Recompensa!':`Faltan ${goal-attendance} días`}</button></div></div></div>`;
+        }
+
+        // --- INICIO DE LA APP ---
+        document.addEventListener('DOMContentLoaded', () => {
+            mainModal = new bootstrap.Modal(document.getElementById('mainModal'));
+            cancellationModal = new bootstrap.Modal(document.getElementById('cancellationModal'));
+            appToast = new bootstrap.Toast(document.getElementById('appToast'));
+            renderAllSections();
+        });
+    </script>
+</body>
+</html>
