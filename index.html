@@ -3,700 +3,711 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GymApp - Gestión Integral de Gimnasio</title>
-
-    <!-- Frameworks y Librerías (CSS) -->
+    <title>GymApp Pro - Gestión Integral de Gimnasio</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.min.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-
-
-    <!-- Estilos CSS personalizados -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
         :root {
-            --primary-color: #007bff; --secondary-color: #6c757d; --success-color: #198754;
-            --info-color: #0dcaf0; --danger-color: #dc3545; --warning-color: #ffc107;
-            --light-color: #f8f9fa; --dark-bg: #212529; --sidebar-width: 280px;
-            --font-family-sans-serif: 'Inter', sans-serif;
-            --mobile-header-height: 60px;
+            --primary-color: #5E5CE6; --primary-hover: #4D4ACF; --secondary-color: #6c757d;
+            --success-color: #34C759; --info-color: #5AC8FA; --danger-color: #FF3B30;
+            --warning-color: #FF9500; --sidebar-width: 280px; --font-family-sans-serif: 'Poppins', sans-serif;
+            --mobile-header-height: 60px; --border-radius: 0.75rem; --transition-speed: 0.3s;
+            --light-bg: #F7F7F9; --light-content-bg: #FFFFFF; --light-text-color: #212529;
+            --light-text-muted: #6c757d; --light-border-color: #EAEAEA; --light-shadow: 0 8px 25px rgba(0,0,0,0.05);
+            --dark-bg: #121212; --dark-content-bg: #1E1E1E; --dark-text-color: #E0E0E0;
+            --dark-text-muted: #8E8E93; --dark-border-color: #383838; --dark-shadow: 0 8px 25px rgba(0,0,0,0.15);
         }
-
-        body {
-            background-color: #f0f2f5;
-            font-family: var(--font-family-sans-serif);
-            -webkit-font-smoothing: antialiased;
-            -moz-osx-font-smoothing: grayscale;
-        }
-
+        html { scroll-behavior: smooth; }
+        body { background-color: var(--light-bg); color: var(--light-text-color); font-family: var(--font-family-sans-serif); transition: background-color var(--transition-speed), color var(--transition-speed); }
+        .card, .modal-content, .list-group-item { background-color: var(--light-content-bg); border: 1px solid var(--light-border-color); border-radius: var(--border-radius); box-shadow: var(--light-shadow); transition: background-color var(--transition-speed), border-color var(--transition-speed), box-shadow var(--transition-speed); }
+        .text-muted { color: var(--light-text-muted) !important; }
+        body.dark-mode { background-color: var(--dark-bg); color: var(--dark-text-color); --bs-body-color: var(--dark-text-color); --bs-body-bg: var(--dark-bg); --bs-tertiary-bg: var(--dark-content-bg); }
+        .dark-mode .card, .dark-mode .modal-content, .dark-mode .list-group-item { background-color: var(--dark-content-bg); border-color: var(--dark-border-color); box-shadow: var(--dark-shadow); }
+        .dark-mode .text-muted { color: var(--dark-text-muted) !important; }
+        .dark-mode .form-control, .dark-mode .form-select { background-color: #2a2a2a; color: var(--dark-text-color); border-color: var(--dark-border-color); }
+        .dark-mode .form-control:focus, .dark-mode .form-select:focus { background-color: var(--dark-content-bg); border-color: var(--primary-color); box-shadow: 0 0 0 0.25rem rgba(94, 92, 230, 0.25); }
+        .dark-mode .btn-close { filter: invert(1); }
+        .dark-mode .table { --bs-table-color: var(--dark-text-color); --bs-table-border-color: var(--dark-border-color); --bs-table-striped-bg: #2a2a2a; }
+        .dark-mode .table-hover>tbody>tr:hover>* { --bs-table-accent-bg: #343434; }
+        .dark-mode .list-group-item { background-color: var(--dark-content-bg); }
+        .dark-mode .modal-header, .dark-mode .card-header { border-bottom-color: var(--dark-border-color); }
+        .dark-mode .modal-footer, .dark-mode .card-footer { border-top-color: var(--dark-border-color); }
+        .dark-mode .dropdown-menu { --bs-dropdown-bg: var(--dark-content-bg); --bs-dropdown-border-color: var(--dark-border-color); --bs-dropdown-link-color: var(--dark-text-color); --bs-dropdown-link-hover-bg: #343434; }
         .main-container { display: flex; }
-
-        .sidebar {
-            width: var(--sidebar-width); height: 100vh; position: fixed; top: 0; left: 0;
-            background-color: var(--dark-bg); color: white;
-            transition: transform 0.3s ease-in-out; z-index: 1000;
-            box-shadow: 2px 0 15px rgba(0,0,0,0.1);
-            display: flex; flex-direction: column;
-        }
-
-        .sidebar-header {
-            padding: 1.5rem; text-align: center; border-bottom: 1px solid #343a40;
-            min-height: var(--mobile-header-height);
-            display: flex; align-items: center; justify-content: center;
-        }
-        .sidebar-header h4 { font-weight: 700; margin-bottom: 0; }
+        .sidebar { width: var(--sidebar-width); height: 100vh; position: fixed; top: 0; left: 0; background-color: #1F1F23; color: white; transition: transform var(--transition-speed) ease-in-out; z-index: 1002; box-shadow: 2px 0 15px rgba(0,0,0,0.1); display: flex; flex-direction: column; }
+        .sidebar-header { padding: 1.5rem; text-align: center; border-bottom: 1px solid #3a3a3c; min-height: var(--mobile-header-height); display: flex; align-items: center; justify-content: center; }
+        .sidebar-header h4 { font-weight: 700; margin-bottom: 0; color: #fff; }
         .sidebar-header .fa-dumbbell { color: var(--primary-color); }
-
         .user-profile-summary { padding: 1.5rem; text-align: center; }
-        .profile-avatar {
-            width: 90px; height: 90px; margin: 0 auto 1rem;
-            border-radius: 50%; background: var(--primary-color);
-            color: white; font-size: 2.25rem; font-weight: 500;
-            display: flex; align-items: center; justify-content: center;
-            border: 3px solid #495057;
-        }
-        
-        #profile-name { font-weight: 600; margin-bottom: 0.25rem; }
+        .profile-avatar { width: 90px; height: 90px; margin: 0 auto 1rem; border-radius: 50%; background: var(--primary-color); color: white; font-size: 2.25rem; font-weight: 500; display: flex; align-items: center; justify-content: center; border: 3px solid #495057; }
+        #profile-name { font-weight: 600; margin-bottom: 0.25rem; color: #fff; }
         #profile-role { color: #adb5bd; font-size: 0.9rem; }
-        
-        .sidebar .nav-link {
-            color: #adb5bd; font-size: 1rem; padding: 14px 25px;
-            border-radius: 0.375rem; margin: 4px 15px;
-            transition: all 0.2s ease-in-out;
-            display: flex; align-items: center;
-        }
+        .sidebar .nav-link { color: #adb5bd; font-size: 1rem; padding: 14px 25px; border-radius: 0.375rem; margin: 4px 15px; transition: all 0.2s ease-in-out; display: flex; align-items: center; }
         .sidebar .nav-link .fa-fw { width: 1.5em; }
-        .sidebar .nav-link.active, .sidebar .nav-link:hover {
-            color: #ffffff; background-color: rgba(255, 255, 255, 0.1);
-        }
-
-        .sidebar-footer { padding: 1.5rem; margin-top: auto; }
-
-        .content {
-            margin-left: var(--sidebar-width); padding: 2rem;
-            width: calc(100% - var(--sidebar-width));
-            transition: margin-left 0.3s ease-in-out;
-        }
-
-        .page-section { display: none; animation: fadeIn 0.5s; }
-        .page-section.active { display: block; }
-
+        .sidebar .nav-link.active, .sidebar .nav-link:hover { color: #ffffff; background-color: var(--primary-color); }
+        .sidebar-footer { padding: 1.5rem; margin-top: auto; border-top: 1px solid #3a3a3c;}
+        .theme-switch-wrapper { display: flex; align-items: center; justify-content: center; margin-bottom: 1rem; }
+        .theme-switch-wrapper .form-check-label { color: #adb5bd; }
+        .content { margin-left: var(--sidebar-width); padding: 2rem; width: calc(100% - var(--sidebar-width)); transition: margin-left var(--transition-speed) ease-in-out; animation: fadeIn 0.5s; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-
-        #login-section { display: flex; justify-content: center; align-items: center; height: 100vh; width: 100%; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
+        #login-section { display: flex; justify-content: center; align-items: center; min-height: 100vh; width: 100%; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); transition: opacity 0.5s; }
         .login-container { background: white; padding: 50px; border-radius: 12px; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1); width: 100%; max-width: 480px; }
-        .login-container .btn { padding: 12px; font-size: 1.1rem; font-weight: 500; }
-
-        .card { border: none; border-radius: .75rem; box-shadow: 0 4px 20px rgba(0,0,0,0.05); margin-bottom: 1.5rem; overflow: hidden; }
-        .card-header { background-color: #fff; padding: 1.25rem; border-bottom: 1px solid #eee; }
-        
+        .login-container h1 { color: #333; }
+        .login-container p { color: #666; }
         .stat-card { transition: transform 0.2s, box-shadow 0.2s; }
-        .stat-card:hover { transform: translateY(-5px); box-shadow: 0 8px 25px rgba(0,0,0,0.08); }
-        .stat-card .card-body { display: flex; align-items: center; justify-content: space-between; }
-        .stat-card i { font-size: 3rem; color: var(--primary-color); opacity: 0.15; }
+        .stat-card:hover { transform: translateY(-5px); }
+        .stat-card .card-body { position: relative; overflow: hidden;}
+        .stat-card i { font-size: 3rem; opacity: 0.1; position: absolute; right: 1rem; bottom: 0.5rem;}
+        .mobile-header { display: none; align-items: center; justify-content: space-between; background-color: #1F1F23; color: white; height: var(--mobile-header-height); padding: 0 1rem; position: fixed; top: 0; left: 0; right: 0; z-index: 1001; }
+        .routine-day-card { border-left-width: 5px; transition: box-shadow 0.2s ease, border-color 0.3s ease; }
+        .routine-day-card.is-today { box-shadow: 0 0 0 2px var(--primary-color), var(--light-shadow); }
+        .dark-mode .routine-day-card.is-today { box-shadow: 0 0 0 2px var(--primary-color), var(--dark-shadow); }
+        .routine-day-card.is-today-completed { border-left-color: var(--success-color); }
+        .routine-day-card.is-rest-day { border-left-color: var(--secondary-color); }
+        .plan-card:hover { transform: translateY(-5px); box-shadow: 0 8px 25px rgba(94, 92, 230, 0.15); }
+        .plan-card .card-header { background: linear-gradient(135deg, var(--primary-color), var(--info-color)); color: white; border-bottom: 0; text-align: center; }
+        .search-input-group { position: relative; }
+        .search-input-group .fa-search { position: absolute; left: 15px; top: 50%; transform: translateY(-50%); color: var(--light-text-muted); }
+        .dark-mode .search-input-group .fa-search { color: var(--dark-text-muted); }
+        .search-input-group .form-control { padding-left: 40px; }
+        .fc { font-size: 1rem; }
+        .fc .fc-toolbar.fc-header-toolbar { margin-bottom: 1.5rem; }
+        .fc .fc-daygrid-day.fc-day-today { background-color: rgba(94, 92, 230, 0.08); }
+        .fc .fc-button-primary { background-color: var(--primary-color); border-color: var(--primary-color); }
+        .fc .fc-button-primary:hover { background-color: var(--primary-hover); border-color: var(--primary-hover); }
+        .dark-mode .fc-toolbar-title { color: var(--dark-text-color); }
+        .dark-mode .fc-daygrid-day.fc-day-today { background-color: rgba(94, 92, 230, 0.15); }
+        .dark-mode .fc-day-header, .dark-mode .fc-col-header-cell-cushion { color: var(--dark-text-muted); }
+        .dark-mode .fc-daygrid-day-number { color: var(--dark-text-muted); }
+        .dark-mode .fc-border, .dark-mode .fc th, .dark-mode .fc td { border-color: var(--dark-border-color); }
+        .dark-mode .fc .fc-button { background-color: #383838; border-color: #444; color: var(--dark-text-color); }
+        .dark-mode .fc .fc-button-primary:not(:disabled).fc-button-active, .dark-mode .fc .fc-button-primary:not(:disabled):active { background-color: var(--primary-color); border-color: var(--primary-color); }
+        .dark-mode .fc .fc-list-event:hover td { background-color: rgba(94, 92, 230, 0.1); }
         
-        .chart-container { height: 350px; width: 100%; }
-        .modal-header { background-color: var(--primary-color); color: white; }
-
-        /* === ESTILOS MEJORADOS PARA CALENDARIO === */
-        .fc-event {
-            cursor: pointer;
-            border-left: 5px solid;
-            padding: 3px 8px !important;
-            margin-bottom: 4px;
-            transition: all 0.2s ease;
-            overflow: hidden;
-            font-size: 0.9em;
+        /* --- CALENDAR EVENT FIX & STYLING --- */
+        .fc .fc-daygrid-dot-event {
+            display: flex;
+            align-items: center;
+            padding: 2px 4px;
+            font-size: 0.8rem;
+            white-space: nowrap;
         }
-        .fc-event, .fc-event-main {
-            background-color: rgba(var(--fc-event-theme-color-rgb), 0.1) !important;
-            color: #333 !important;
-            border-color: rgba(var(--fc-event-theme-color-rgb), 1) !important;
+        .fc .fc-daygrid-dot-event:hover {
+             background-color: rgba(94, 92, 230, 0.1);
         }
-        .fc-event:hover {
-            transform: scale(1.03);
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-        }
-        .fc-event-title-strong {
+        .fc-event-time {
             font-weight: 600;
-            color: #212529;
         }
-        .fc-event-details {
-            font-size: 0.9em;
-            color: #6c757d;
+        .dark-mode .fc-popover {
+            background-color: var(--dark-content-bg);
+            border-color: var(--dark-border-color);
         }
-        .fc-daygrid-event {
-            white-space: normal !important;
+        .dark-mode .fc-popover-header {
+            background-color: #383838;
         }
-        .reserved-icon {
-            color: var(--success-color);
-            margin-left: 5px;
-            font-size: 0.8em;
-        }
-        
-        .toast-container { z-index: 1150; }
-        
-        .mobile-header { display: flex; align-items: center; justify-content: space-between; background-color: var(--dark-bg); color: white; height: var(--mobile-header-height); padding: 0 1rem; position: fixed; top: 0; left: 0; right: 0; z-index: 1001; }
-        .mobile-header-title { font-weight: 600; font-size: 1.2rem; }
-        .mobile-header .hamburger-btn { color: white; font-size: 1.5rem; background: none; border: none;}
-        
-        .profile-page-avatar { width: 150px; height: 150px; margin: 0 auto; background-color: var(--primary-color); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 4rem; font-weight: 500; border: 4px solid #dee2e6; }
+        /* --- END CALENDAR FIX --- */
 
-        .routine-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; flex-wrap: wrap; gap: 1rem;}
-        .routine-day-card { border: 1px solid #e9ecef; border-left-width: 5px; transition: box-shadow 0.2s ease, border-color 0.3s ease; }
-        .routine-day-card.is-today-completed { border-left-color: var(--success-color); background-color: #f8f9fa; }
-        .exercise-list { list-style: none; padding-left: 0; margin-bottom: 0;}
-        .exercise-item { display: flex; align-items: center; justify-content: space-between; padding: 1rem; border-bottom: 1px solid #f1f1f1; transition: background-color 0.2s; }
-        .exercise-item:last-child { border-bottom: none; }
-        .exercise-item:hover { background-color: #f8f9fa; }
-        .exercise-item .exercise-name { font-weight: 500; }
-        .exercise-meta { display: flex; gap: 1rem; color: #6c757d; font-size: 0.9rem; margin-top: 0.25rem; flex-wrap: wrap;}
-        .exercise-meta .meta-item { display: inline-flex; align-items: center; gap: 0.3rem;}
-        .exercise-meta .meta-item .fa-fw { width: 1.2em; text-align: center; color: #adb5bd; }
-        .exercise-actions { display: flex; gap: 0.5rem; }
-        .exercise-actions .action-btn { background: none; border: 1px solid transparent; border-radius: 0.375rem; color: #6c757d; transition: all 0.2s; padding: 0.25rem 0.5rem; }
-        .exercise-actions .action-btn:hover { color: #212529; background-color: #e9ecef; border-color: #dee2e6;}
-        .add-exercise-form { padding: 1.25rem; background-color: #f8f9fa; border-top: 1px solid #e9ecef;}
-        .routine-day-card .card-footer { background-color: #fff; }
-        .empty-routine-placeholder { padding: 2rem; text-align: center; color: #6c757d; background-color: #f8f9fa; border-top: 1px solid #e9ecef;}
-        .empty-routine-placeholder .icon { font-size: 2rem; margin-bottom: 0.5rem; }
-        #routine-history-calendar .fc-daygrid-day.completed-day { background-color: rgba(25, 135, 84, 0.2); }
-        .fc-daygrid-day-number { text-decoration: none !important; }
-        .plan-card { border: 1px solid #dee2e6; border-radius: .75rem; transition: all .2s ease-in-out; height: 100%; }
-        .plan-card:hover { transform: translateY(-5px); box-shadow: 0 8px 25px rgba(0,0,0,0.08); }
-        .plan-card .card-header { background: linear-gradient(135deg, #0d6efd, #0dcaf0); color: white; border-bottom: 0; text-align: center; }
-        .plan-card .price { font-size: 2.5rem; font-weight: 700; }
-        .plan-card .price .duration { font-size: 1rem; font-weight: 400; opacity: 0.8; }
-        .plan-card .list-group-item { border-left: 0; border-right: 0; }
+        body.dark-mode .swal2-popup { background: var(--dark-content-bg); color: var(--dark-text-color); }
+        body.dark-mode .swal2-title { color: var(--dark-text-color); }
+        body.dark-mode .swal2-html-container { color: var(--dark-text-muted); }
+        body.dark-mode .swal2-confirm { background-color: var(--primary-color) !important; }
+        body.dark-mode .swal2-cancel { background-color: var(--secondary-color) !important; }
+        body.dark-mode .swal2-input, .dark-mode .swal2-textarea, .dark-mode .swal2-select { background-color: #2a2a2a !important; color: var(--dark-text-color) !important; border-color: var(--dark-border-color) !important; }
+        .hamburger-btn { background: transparent; border: none; color: white; font-size: 1.5rem; padding: 0 0.75rem; line-height: 1; cursor: pointer; }
+        .sidebar-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.5); z-index: 1001; opacity: 0; visibility: hidden; transition: opacity var(--transition-speed) ease, visibility 0s var(--transition-speed); }
+        .sidebar-overlay.active { opacity: 1; visibility: visible; transition: opacity var(--transition-speed) ease, visibility 0s; }
+        body.sidebar-is-open { overflow: hidden; }
+        
+        @media (max-width: 992px) {
+            .sidebar { transform: translateX(calc(-1 * var(--sidebar-width))); z-index: 1002; }
+            .sidebar.open { transform: translateX(0); }
+            .content { margin-left: 0; width: 100%; padding-top: calc(var(--mobile-header-height) + 2rem); }
+            .mobile-header { display: flex; }
+        }
 
-        @media (max-width: 992px) { .sidebar { transform: translateX(calc(-1 * var(--sidebar-width))); z-index: 1002; } .sidebar.open { transform: translateX(0); } .content { margin-left: 0; width: 100%; padding-top: calc(var(--mobile-header-height) + 2rem); } }
+        @media (max-width: 767px) {
+            .content { padding: 1rem; padding-top: calc(var(--mobile-header-height) + 1rem); }
+            .fc .fc-toolbar.fc-header-toolbar { flex-direction: column; align-items: center; gap: 0.75rem; }
+            .fc .fc-toolbar-chunk:nth-child(2) { order: -1; }
+            .fc .fc-toolbar-title { font-size: 1.25rem; }
+        }
         @media (min-width: 993px) { .mobile-header { display: none; } }
-
     </style>
 </head>
 <body>
-    <div class="toast-container position-fixed bottom-0 end-0 p-3">
-      <div id="appToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
-        <div class="toast-header"><i class="fas fa-check-circle rounded me-2"></i><strong class="me-auto" id="toast-title"></strong><button type="button" class="btn-close" data-bs-dismiss="toast"></button></div>
-        <div class="toast-body" id="toast-body"></div>
-      </div>
-    </div>
-    
     <header class="mobile-header">
-        <button class="hamburger-btn" onclick="toggleSidebar()"><i class="fas fa-bars"></i></button>
-        <div class="mobile-header-title">GymApp</div>
+        <button class="hamburger-btn" onclick="GymApp.toggleSidebar()"><i class="fas fa-bars"></i></button>
+        <div class="mobile-header-title">GymApp Pro</div>
         <div></div>
     </header>
     
     <div id="app-container" style="display: none;">
+        <div class="sidebar-overlay" onclick="GymApp.closeSidebar()"></div>
         <div class="main-container">
             <nav class="sidebar">
-                <div class="sidebar-header"><h4 class="mb-0"><i class="fas fa-dumbbell me-2"></i> GymApp</h4></div>
+                <div class="sidebar-header"><h4 class="mb-0"><i class="fas fa-dumbbell me-2"></i> GymApp Pro</h4></div>
                 <div class="user-profile-summary">
                     <div id="profile-avatar" class="profile-avatar"></div>
                     <h5 id="profile-name" class="mb-0"></h5>
-                    <p id="profile-role" class="text-muted small mb-0"></p>
+                    <p id="profile-role" class="small mb-0"></p>
                 </div>
                 <ul class="nav nav-pills flex-column mt-3" id="main-nav"></ul>
-                <div class="sidebar-footer"><div class="d-grid"><button class="btn btn-danger" onclick="logout()"><i class="fas fa-sign-out-alt me-2"></i> Cerrar Sesión</button></div></div>
+                <div class="sidebar-footer">
+                    <div class="theme-switch-wrapper">
+                        <div class="form-check form-switch">
+                            <input class="form-check-input" type="checkbox" role="switch" id="themeSwitch">
+                            <label class="form-check-label" for="themeSwitch">Modo Oscuro</label>
+                        </div>
+                    </div>
+                    <div class="d-grid"><button class="btn btn-danger" onclick="GymApp.logout()"><i class="fas fa-sign-out-alt me-2"></i> Cerrar Sesión</button></div>
+                </div>
             </nav>
-            <main class="content">
-                <section id="dashboard-section" class="page-section"></section><section id="profile-section" class="page-section"></section>
-                <section id="billing-section" class="page-section"></section><section id="schedule-section" class="page-section"></section>
-                <section id="my-routine-section" class="page-section"></section><section id="my-progress-section" class="page-section"></section>
-                <section id="nutrition-section" class="page-section"></section><section id="my-classes-section" class="page-section"></section>
-                <section id="routine-builder-section" class="page-section"></section><section id="evaluations-section" class="page-section"></section>
-                <section id="crm-section" class="page-section"></section><section id="inventory-section" class="page-section"></section>
-                <section id="attendance-log-section" class="page-section"></section>
-                <section id="plans-section" class="page-section"></section>
-            </main>
+            <main class="content"></main>
         </div>
     </div>
 
-    <div id="login-section" class="page-section active">
+    <section id="login-section" class="page-section active">
         <div class="login-container text-center">
-            <h1 class="mb-2 display-4"><i class="fas fa-dumbbell"></i> GymApp</h1>
-            <p class="text-muted mb-4 fs-5">Selecciona un rol para simular el inicio de sesión</p>
+            <h1 class="mb-2 display-4"><i class="fas fa-dumbbell"></i> GymApp Pro</h1>
+            <p class="mb-4 fs-5">Selecciona un rol para simular el inicio de sesión</p>
             <div class="d-grid gap-3">
-                <button class="btn btn-primary" onclick="login('admin')"><i class="fas fa-user-shield me-2"></i> Administrador</button>
-                <button class="btn btn-info text-white" onclick="login('professor')"><i class="fas fa-chalkboard-teacher me-2"></i> Profesor</button>
-                <button class="btn btn-success" onclick="login('student')"><i class="fas fa-user-graduate me-2"></i> Alumno</button>
+                <button class="btn btn-primary" onclick="GymApp.login('admin')"><i class="fas fa-user-shield me-2"></i> Administrador</button>
+                <button class="btn btn-info text-white" onclick="GymApp.login('professor')"><i class="fas fa-chalkboard-teacher me-2"></i> Profesor</button>
+                <button class="btn btn-success" onclick="GymApp.login('student')"><i class="fas fa-user-graduate me-2"></i> Alumno</button>
             </div>
         </div>
-    </div>
+    </section>
     
-    <div class="modal fade" id="mainModal" tabindex="-1"><div class="modal-dialog modal-lg"><div class="modal-content"><div class="modal-header"><h5 class="modal-title" id="mainModalTitle"></h5><button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button></div><div class="modal-body" id="mainModalBody"></div><div class="modal-footer" id="mainModalFooter"></div></div></div></div>
-    <div class="modal fade" id="cancellationModal" tabindex="-1"><div class="modal-dialog"><div class="modal-content"><div class="modal-header"><h5 class="modal-title">Confirmar Cancelación</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div><div class="modal-body"><p>Por favor, indica el motivo de tu cancelación.</p><textarea id="cancellationReason" class="form-control" rows="3" required></textarea><div class="invalid-feedback">El motivo es obligatorio.</div></div><div class="modal-footer"><button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button><button type="button" class="btn btn-danger" onclick="confirmCancellation()">Confirmar Cancelación</button></div></div></div></div>
+    <div class="modal fade" id="mainModal" tabindex="-1"><div class="modal-dialog modal-lg"><div class="modal-content"><div class="modal-header"><h5 class="modal-title" id="mainModalTitle"></h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div><div class="modal-body" id="mainModalBody"></div><div class="modal-footer" id="mainModalFooter"></div></div></div></div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.min.js"></script>
     <script src='https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/locales/es.js'></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
     <script>
-        // === SIMULACIÓN DE BASE DE DATOS Y ESTADO DE LA APP ===
-        const appState = {
-            currentUser: null,
-            users: {
-                admin: { role: 'admin', name: 'Admin General', profile: { email: 'admin@gymapp.com' } },
-                professor: { role: 'professor', name: 'Carlos Rivas', profile: { email: 'carlos.profe@gymapp.com' } },
-                laura: { role: 'professor', name: 'Laura Gómez', profile: { email: 'laura.profe@gymapp.com' } },
-                student: { 
-                    role: 'student', name: 'Juan Pérez', id: 1, profile: { email: 'juan.perez@email.com' },
-                    membership: { 
-                        planId: 1,
-                        planName: 'Plan Mensual Fit', 
-                        status: 'Activo', 
-                        startDate: '2025-10-01',
-                        endDate: '2025-10-31',
-                        benefits: ['Acceso a todas las áreas', 'Clases grupales ilimitadas', '1 evaluación mensual'] 
+        const GymApp = {
+            state: {
+                currentUser: null,
+                currentTheme: 'light',
+                defaultData: {
+                    users: {
+                        'user-100': { id: 100, role: 'admin', name: 'Admin General', profile: { email: 'admin@gymapp.com' } },
+                        'user-101': { id: 101, role: 'professor', name: 'Carlos Rivas', profile: { email: 'carlos.profe@gymapp.com' } },
+                        'user-102': { id: 102, role: 'professor', name: 'Laura Gómez', profile: { email: 'laura.profe@gymapp.com' } },
+                        'user-1': { 
+                            id: 1, role: 'student', name: 'Juan Pérez', profile: { email: 'juan.perez@email.com' }, password: '1234',
+                            planId: 1, membershipStartDate: '2025-10-01', attendance: 18, professorId: 101,
+                            routine: { Lunes: { exercises: [ { id: 1, name: 'Press de banca', weight: '60kg', series: 4, reps: 10 } ], completionHistory: [] }, Martes: { exercises: [ { id: 4, name: 'Remo con barra', weight: '50kg', series: 4, reps: 10 } ], completionHistory: [] }, Miércoles: { exercises: [], isRestDay: false }, Jueves: { exercises: [ { id: 8, name: 'Sentadillas', weight: '80kg', series: 4, reps: 10 } ], completionHistory: [] }, Viernes: { exercises: [] }, Sábado: { exercises: [] }, Domingo: { exercises: [], isRestDay: true } },
+                            progress: { labels: ['Julio', 'Agosto', 'Septiembre', 'Octubre'], weights: [85, 84, 82, 80], bodyFat: [22, 21, 20, 18.5], measurements: { chest: [102, 103, 103, 104], waist: [90, 88, 86, 85], hips: [100, 99, 99, 98] } },
+                            evaluations: [ { date: '2025-09-15', weight: 82, bodyFat: 20, notes: 'Buena adherencia.', measurements: { chest: 103, waist: 86, hips: 99 } } ],
+                        },
+                        'user-2': { id: 2, role: 'student', name: 'Maria Rojas', profile: { email: 'maria.r@email.com' }, password: '1234', planId: 2, membershipStartDate: '2025-01-15', professorId: null, routine: { Lunes: {isRestDay: true }, Martes: {}, Miércoles: {}, Jueves: {}, Viernes: {}, Sábado: {}, Domingo: {isRestDay: true } }, evaluations: [] },
+                        'user-3': { id: 3, role: 'student', name: 'Carlos Vera', profile: { email: 'carlos.v@email.com' }, password: '1234', planId: 1, membershipStartDate: '2024-09-10', professorId: 102, routine: { Lunes: {}, Martes: {}, Miércoles: {isRestDay: true}, Jueves: {}, Viernes: {}, Sábado: {}, Domingo: {isRestDay: true } }, evaluations: [] },
                     },
-                    attendance: 18, 
-                    routine: {
-                        Lunes: { exercises: [ { id: 1, name: 'Press de banca', weight: '60kg', series: 4, reps: 10 }, { id: 2, name: 'Fondos en paralelas', weight: 'Corporal', series: 3, reps: 12 }, { id: 3, name: 'Aperturas con mancuernas', weight: '12kg', series: 3, reps: 15 } ], completionHistory: ['2025-10-13', '2025-10-20'] },
-                        Martes: { exercises: [ { id: 4, name: 'Remo con barra', weight: '50kg', series: 4, reps: 10 }, { id: 5, name: 'Dominadas', weight: 'Corporal', series: 3, reps: 'Al fallo' }, { id: 6, name: 'Curl de bíceps con barra Z', weight: '20kg', series: 3, reps: 12 } ], completionHistory: ['2025-10-14'] },
-                        Miércoles: { exercises: [{ id: 7, name: 'Caminata en cinta', weight: 'N/A', series: 1, reps: '30 min' }], completionHistory: [] },
-                        Jueves: { exercises: [ { id: 8, name: 'Sentadillas libres', weight: '80kg', series: 4, reps: 10 }, { id: 9, name: 'Peso muerto rumano', weight: '60kg', series: 3, reps: 12 }, { id: 10, name: 'Extensiones de cuádriceps', weight: '45kg', series: 3, reps: 15 } ], completionHistory: ['2025-10-16'] },
-                        Viernes: { exercises: [], completionHistory: [] },
-                        Sábado: { exercises: [], completionHistory: [] },
-                        Domingo: { exercises: [{ id: 15, name: 'Descanso', weight: '', series: '', reps: '' }], completionHistory: [] }
+                    navigation: {
+                        admin: [{ id: 'dashboard', icon: 'fa-tachometer-alt', text: 'Dashboard' }, { id: 'crm', icon: 'fa-users', text: 'CRM Socios' }, { id: 'plans', icon: 'fa-id-card', text: 'Planes' }, { id: 'billing', icon: 'fa-file-invoice-dollar', text: 'Pagos y POS' }, { id: 'schedule', icon: 'fa-calendar-alt', text: 'Agenda' }, { id: 'attendance-log', icon: 'fa-clipboard-list', text: 'Asistencia' }, { id: 'inventory', icon: 'fa-boxes', text: 'Inventario' }, { id: 'profile', icon: 'fa-user-cog', text: 'Mi Perfil' }],
+                        professor: [{ id: 'dashboard', icon: 'fa-tachometer-alt', text: 'Dashboard' }, { id: 'manage-students', icon: 'fa-users-cog', text: 'Gestionar Alumnos' }, { id: 'routine-builder', icon: 'fa-dumbbell', text: 'Rutinas' }, { id: 'schedule', icon: 'fa-calendar-check', text: 'Mi Agenda' }, { id: 'evaluations', icon: 'fa-clipboard-list', text: 'Evaluaciones' }, { id: 'profile', icon: 'fa-user-edit', text: 'Mi Perfil' }],
+                        student: [ { id: 'dashboard', icon: 'fa-tachometer-alt', text: 'Dashboard' }, { id: 'billing', icon: 'fa-wallet', text: 'Mi Plan' }, { id: 'my-routine', icon: 'fa-dumbbell', text: 'Mi Rutina' }, { id: 'my-progress', icon: 'fa-chart-line', text: 'Mi Progreso' }, { id: 'schedule', icon: 'fa-calendar-plus', text: 'Clases' }, { id: 'my-classes', icon: 'fa-history', text: 'Mis Clases'}, { id: 'profile', icon: 'fa-user', text: 'Mi Perfil' } ]
                     },
-                    progress: { labels: ['Julio', 'Agosto', 'Septiembre', 'Octubre'], weights: [85, 84, 82, 80], bodyFat: [22, 21, 20, 18.5], measurements: { chest: [102, 103, 103, 104], waist: [90, 88, 86, 85], hips: [100, 99, 99, 98] } },
-                    evaluations: [ { date: '2025-09-15', weight: 82, bodyFat: 20, notes: 'Buena adherencia. Mejorar hidratación.', measurements: { chest: 103, waist: 86, hips: 99 } }, { date: '2025-10-15', weight: 80, bodyFat: 18.5, notes: 'Excelente progreso. Aumentar cargas.', measurements: { chest: 104, waist: 85, hips: 98 } } ]
+                    gymData: {
+                        stats: { monthlyNewMembers: 12, monthlyCancellations: 3 },
+                        membershipPlans: [ 
+                            { id: 1, name: 'Mensual Fit', price: 49.99, durationDays: 30, description: 'Acceso completo por 30 días.', benefits: ['Acceso a todas las áreas', 'Clases grupales ilimitadas'], rules: { allowFreeze: false } }, 
+                            { id: 2, name: 'Anual Pro', price: 499.99, durationDays: 365, description: 'Acceso por un año con descuento.', benefits: ['Todo lo de Mensual Fit', '2 evaluaciones gratis', 'Toalla de servicio'], rules: { allowFreeze: true } }
+                        ],
+                        classes: [ 
+                            { id: 1, title: 'Yoga', start: '2025-10-22T10:30:00', spots: 15, teacher: 'Laura Gómez', reservedBy: [1,2] }, 
+                            { id: 2, title: 'Funcional', start: '2025-10-22T19:00:00', spots: 20, teacher: 'Carlos Rivas', reservedBy: [1] },
+                            { id: 3, title: 'Spinning', start: '2025-10-21T20:30:00', spots: 20, teacher: 'Carlos Rivas', reservedBy: [] },
+                            { id: 4, title: 'Boxeo', start: '2025-10-21T21:30:00', spots: 20, teacher: 'Carlos Rivas', reservedBy: [] },
+                        ],
+                        inventory: [ { id: 101, sku: 'AG-500', name: 'Agua Mineral 500ml', stock: 150, price: 1.00 }, { id: 102, sku: 'PRO-BAR-CH', name: 'Barra Proteína Chocolate', stock: 75, price: 2.50 } ],
+                        attendanceLog: [ { memberId: 1, timestamp: '2025-10-21T08:05:12' }, { memberId: 2, timestamp: '2025-10-21T09:15:30' }, { memberId: 3, timestamp: '2025-10-21T17:02:00' }, { memberId: 1, timestamp: '2025-10-21T18:30:15' }, { memberId: 2, timestamp: '2025-10-20T19:00:05' }, { memberId: 1, timestamp: '2025-10-19T08:00:21' } ],
+                        transactions: [ {id: 1, date: '2025-10-21', description: 'Venta POS', amount: 3.50, method: 'Efectivo'}, {id: 2, date: '2025-10-21', description: 'Membresía', amount: 49.99, method: 'Tarjeta'}, {id: 3, date: '2025-10-21', description: 'Venta POS', amount: 2.50, method: 'Tarjeta'} ],
+                        cart: [],
+                    }
+                },
+                data: {}
+            },
+            
+            elements: {},
+            calendar: null,
+            charts: {},
+            mainModal: null,
+
+            init() {
+                this.elements.mainContent = document.querySelector('.content');
+                this.elements.themeSwitch = document.getElementById('themeSwitch');
+                this.elements.sidebarOverlay = document.querySelector('.sidebar-overlay');
+                this.mainModal = new bootstrap.Modal(document.getElementById('mainModal'));
+                this.loadState();
+                this.elements.themeSwitch.addEventListener('change', (e) => this.setTheme(e.target.checked ? 'dark' : 'light'));
+                
+                if (!this.state.currentUser) {
+                    const initialTheme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+                    this.setTheme(initialTheme);
                 }
             },
-            navigation: {
-                admin: [{ id: 'dashboard-section', icon: 'fa-tachometer-alt', text: 'Dashboard' }, { id: 'crm-section', icon: 'fa-users', text: 'CRM Socios' }, { id: 'plans-section', icon: 'fa-id-card', text: 'Planes y Membresías'}, { id: 'attendance-log-section', icon: 'fa-clipboard-check', text: 'Registros de Asistencia' }, { id: 'billing-section', icon: 'fa-file-invoice-dollar', text: 'Pagos y POS' }, { id: 'schedule-section', icon: 'fa-calendar-alt', text: 'Agenda General' }, { id: 'inventory-section', icon: 'fa-boxes', text: 'Inventario' }, { id: 'profile-section', icon: 'fa-user-cog', text: 'Mi Perfil' }],
-                professor: [{ id: 'dashboard-section', icon: 'fa-tachometer-alt', text: 'Mi Dashboard' }, { id: 'schedule-section', icon: 'fa-calendar-check', text: 'Mi Agenda' }, { id: 'routine-builder-section', icon: 'fa-dumbbell', text: 'Constructor Rutinas' }, { id: 'evaluations-section', icon: 'fa-clipboard-list', text: 'Evaluaciones' }, { id: 'profile-section', icon: 'fa-user-edit', text: 'Mi Perfil' }],
-                student: [ { id: 'dashboard-section', icon: 'fa-tachometer-alt', text: 'Mi Dashboard' }, { id: 'billing-section', icon: 'fa-wallet', text: 'Mi Plan y Pagos' }, { id: 'my-routine-section', icon: 'fa-dumbbell', text: 'Mi Rutina' }, { id: 'my-progress-section', icon: 'fa-chart-line', text: 'Seguimiento Físico' }, { id: 'nutrition-section', icon: 'fa-apple-alt', text: 'Nutrición' }, { id: 'schedule-section', icon: 'fa-calendar-plus', text: 'Reservar Clase' }, { id: 'my-classes-section', icon: 'fa-history', text: 'Mis Clases y Feedback'}, { id: 'profile-section', icon: 'fa-user', text: 'Mi Perfil' } ]
+
+            saveState() {
+                const stateToSave = { currentUser: this.state.currentUser, currentTheme: this.state.currentTheme, data: this.state.data };
+                localStorage.setItem('gymAppState', JSON.stringify(stateToSave));
             },
-            gymData: {
-                membershipPlans: [
-                    { id: 1, name: 'Mensual Fit', price: 49.99, durationDays: 30, description: 'Acceso completo por 30 días.', rules: { allowFreeze: false, prorate: true, upgrade: true } },
-                    { id: 2, name: 'Anual Pro', price: 499.99, durationDays: 365, description: 'Acceso completo por un año con descuento.', rules: { allowFreeze: true, maxFreezeDays: 30, prorate: true, upgrade: false } },
-                    { id: 3, name: 'Plan Corporativo', price: 39.99, durationDays: 30, description: 'Plan mensual para empresas asociadas.', rules: { allowFreeze: false, prorate: false, upgrade: true } }
-                ],
-                members: [ 
-                    { id: 1, name: 'Juan Pérez', email: 'juan.p@email.com', membership: { planId: 1, planName: 'Mensual Fit', startDate: '2025-10-01', endDate: '2025-10-31', status: 'Activo' } }, 
-                    { id: 2, name: 'Maria Rojas', email: 'maria.r@email.com', membership: { planId: 2, planName: 'Anual Pro', startDate: '2025-01-15', endDate: '2026-01-14', status: 'Activo' } }, 
-                    { id: 3, name: 'Carlos Vera', email: 'carlos.v@email.com', membership: { planId: 1, planName: 'Mensual Fit', startDate: '2025-09-10', endDate: '2025-10-09', status: 'Sin pagar' } }, 
-                    { id: 4, name: 'Ana Torres', email: 'ana.t@email.com', membership: { planId: 2, planName: 'Anual Pro', startDate: '2025-06-01', endDate: '2026-05-31', status: 'Activo' } } 
-                ],
-                classes: [ { id: 1, title: 'Yoga', start: '2025-10-22T10:30:00', spots: 15, teacher: 'Laura Gómez', reservedBy: [2] }, { id: 2, title: 'Funcional', start: '2025-10-22T19:00:00', spots: 20, teacher: 'Carlos Rivas', reservedBy: [1, 4] }, { id: 3, title: 'Spinning', start: '2025-10-23T18:00:00', spots: 25, teacher: 'Carlos Rivas', reservedBy: [] }, { id: 4, title: 'Boxeo', start: '2025-10-24T20:00:00', spots: 12, teacher: 'Laura Gómez', reservedBy: [2,3] } ],
-                inventory: [ { id: 101, sku: 'AG-500', name: 'Agua Mineral 500ml', stock: 150, price: 1.00 }, { id: 102, sku: 'PRO-BAR-CH', name: 'Barra Proteína Chocolate', stock: 75, price: 2.50 }, { id: 103, sku: 'ENER-RED', name: 'Bebida Energética', stock: 40, price: 3.00 } ],
-                cart: [],
-                attendanceLog: [ { memberId: 1, timestamp: '2025-10-21T08:05:12' }, { memberId: 2, timestamp: '2025-10-21T08:15:30' }, { memberId: 3, timestamp: '2025-10-21T09:02:00' }, { memberId: 4, timestamp: '2025-10-20T18:30:15' }, { memberId: 1, timestamp: '2025-10-20T08:00:05' }, { memberId: 2, timestamp: '2025-10-19T19:00:21' } ]
-            }
+
+            loadState() {
+                const savedStateJSON = localStorage.getItem('gymAppState');
+                this.state.data = JSON.parse(JSON.stringify(this.state.defaultData));
+
+                if (!savedStateJSON) return;
+                
+                try {
+                    const savedState = JSON.parse(savedStateJSON);
+                    if (savedState.data) this.state.data = savedState.data;
+                    const savedUser = savedState.currentUser;
+                    if (savedUser && savedUser.id) {
+                        const user = Object.values(this.state.data.users).find(u => u.id === savedUser.id);
+                        if (user) {
+                            this.state.currentUser = user;
+                            this.state.currentTheme = savedState.currentTheme || 'light';
+                            document.getElementById('login-section').style.display = 'none';
+                            document.getElementById('app-container').style.display = 'block';
+                            this.setTheme(this.state.currentTheme);
+                            this.setupUIForRole();
+                            this.navigateTo('dashboard');
+                        }
+                    }
+                } catch (e) {
+                    console.error("Failed to parse saved state:", e);
+                    localStorage.removeItem('gymAppState');
+                }
+            },
+            
+            setTheme(theme) {
+                this.state.currentTheme = theme;
+                document.body.className = theme === 'dark' ? 'dark-mode' : '';
+                this.elements.themeSwitch.checked = theme === 'dark';
+                this.saveState();
+                if (Object.keys(this.charts).length > 0) {
+                    if (this.state.currentUser.role === 'student') this.updateStudentCharts();
+                    if (this.state.currentUser.role === 'admin') this.renderAdminCharts();
+                }
+                if (this.calendar) setTimeout(() => this.calendar.render(), 1);
+            },
+
+            login(role) {
+                const user = Object.values(this.state.data.users).find(u => u.role === role);
+                if (!user) return;
+                this.state.currentUser = user;
+                document.getElementById('login-section').style.opacity = '0';
+                setTimeout(() => {
+                    document.getElementById('login-section').style.display = 'none';
+                    document.getElementById('app-container').style.display = 'block';
+                    this.setupUIForRole();
+                    this.navigateTo('dashboard');
+                    this.saveState();
+                }, 300);
+            },
+            
+            logout() {
+                this.state.currentUser = null;
+                localStorage.removeItem('gymAppState');
+                location.reload();
+            },
+            
+            navigateTo(sectionId) {
+                this.renderSection(sectionId);
+                document.querySelectorAll('#main-nav .nav-link').forEach(l => l.classList.remove('active'));
+                const activeLink = document.querySelector(`#main-nav .nav-link[data-section="${sectionId}"]`);
+                if (activeLink) activeLink.classList.add('active');
+                if (window.innerWidth <= 992) {
+                    this.closeSidebar();
+                }
+            },
+
+            closeSidebar() {
+                document.querySelector('.sidebar').classList.remove('open');
+                this.elements.sidebarOverlay.classList.remove('active');
+                document.body.classList.remove('sidebar-is-open');
+            },
+
+            toggleSidebar() {
+                const sidebar = document.querySelector('.sidebar');
+                const isOpen = sidebar.classList.toggle('open');
+                this.elements.sidebarOverlay.classList.toggle('active', isOpen);
+                document.body.classList.toggle('sidebar-is-open', isOpen);
+            },
+            
+            renderSection(sectionId) {
+                const role = this.state.currentUser.role;
+                let content = `<div class="card"><div class="card-body"><h3>Error</h3><p>Sección no encontrada para el rol '${role}'.</p></div></div>`;
+                if (this.templates[sectionId]) {
+                    if (typeof this.templates[sectionId] === 'function') {
+                        content = this.templates[sectionId]();
+                    } else if (this.templates[sectionId][role]) {
+                        content = this.templates[sectionId][role]();
+                    }
+                }
+                this.elements.mainContent.innerHTML = content;
+                this.runPostRenderScripts(sectionId);
+            },
+
+            runPostRenderScripts(sectionId) {
+                const role = this.state.currentUser.role;
+                if (sectionId === 'schedule') {
+                    document.getElementById('schedule-title').innerText = role === 'student' ? 'Reservar Clase' : 'Agenda de Clases';
+                    const btn = document.getElementById('add-class-btn');
+                    btn.style.display = (role === 'admin' || role === 'professor') ? 'block' : 'none';
+                    btn.onclick = () => this.showClassFormModal();
+                    this.initializeCalendar(role);
+                }
+                if (role === 'admin') {
+                    if (sectionId === 'dashboard') this.renderAdminCharts();
+                    if (sectionId === 'crm') this.updateAdminCRMTable();
+                    if (sectionId === 'inventory') this.updateAdminInventoryTable();
+                    if (sectionId === 'plans') this.updateAdminPlansUI();
+                    if (sectionId === 'billing') { this.updateAdminPosItems(); this.updateCart(); }
+                    if (sectionId === 'attendance-log') this.updateAdminAttendanceTable();
+                }
+                if (role === 'professor') {
+                    if (sectionId === 'routine-builder') this.updateProfessorRoutineBuilderUI();
+                    if (sectionId === 'manage-students') this.updateManageStudentsUI();
+                }
+                if (role === 'student') {
+                    if (sectionId === 'billing') this.updateStudentPlanUI();
+                    if (sectionId === 'my-routine') this.updateStudentRoutineUI();
+                    if (sectionId === 'my-progress') this.updateStudentCharts();
+                    if (sectionId === 'my-classes') this.updateStudentClassesHistory();
+                }
+            },
+            
+            setupUIForRole() {
+                const { role, name } = this.state.currentUser;
+                document.getElementById('profile-name').innerText = name;
+                document.getElementById('profile-role').innerText = role.charAt(0).toUpperCase() + role.slice(1);
+                const initials = name.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase();
+                document.getElementById('profile-avatar').innerText = initials;
+                document.getElementById('main-nav').innerHTML = this.state.defaultData.navigation[role].map(l => `<li class="nav-item"><a href="#" class="nav-link" data-section="${l.id}" onclick="GymApp.navigateTo('${l.id}')"><i class="fas ${l.icon} fa-fw me-2"></i>${l.text}</a></li>`).join('');
+            },
+
+            updateStudentRoutineUI(studentId = null) {
+                const user = studentId ? Object.values(this.state.data.users).find(u => u.id === studentId) : this.state.currentUser;
+                if (!user) return;
+
+                const isOwnerView = !studentId || user.id === this.state.currentUser.id;
+                const canEdit = this.state.currentUser.role === 'professor' || (this.state.currentUser.role === 'student' && isOwnerView);
+                const containerId = isOwnerView && this.state.currentUser.role === 'student' ? 'routine-cards-container' : 'routine-builder-body';
+                const container = document.getElementById(containerId);
+                
+                if (!container) return;
+                if (!user.routine) user.routine = {};
+
+                const daysOfWeek = ["Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado", "Domingo"];
+                const todayName = daysOfWeek[new Date().getDay() - 1] ?? "Domingo";
+                const todayISO = new Date().toISOString().split('T')[0];
+
+                container.innerHTML = daysOfWeek.map(day => {
+                    const dayInfo = user.routine[day] || {};
+                    const dayData = { exercises: dayInfo.exercises || [], completionHistory: dayInfo.completionHistory || [], isRestDay: dayInfo.isRestDay || false };
+                    const isToday = day === todayName && isOwnerView;
+                    const isTodayCompleted = isOwnerView && dayData.completionHistory.includes(todayISO);
+                    const isRestDay = dayData.isRestDay;
+
+                    const completionSwitchHTML = isOwnerView && !isRestDay
+                        ? `<div class="form-check form-switch"><input class="form-check-input" type="checkbox" role="switch" id="check-${day}" ${isTodayCompleted ? 'checked' : ''} onchange="GymApp.toggleCompletionForToday('${day}')"><label class="form-check-label" for="check-${day}">${isTodayCompleted ? 'Completado' : 'Marcar'}</label></div>`
+                        : '';
+                    
+                    let cardBodyHTML;
+                    if (isRestDay) {
+                        cardBodyHTML = `<div class="text-center p-4 text-muted"><i class="fas fa-bed fa-3x mb-3"></i><h4>Día de Descanso</h4></div>`;
+                    } else if (dayData.exercises.length > 0) {
+                        cardBodyHTML = `<ul class="list-group list-group-flush">${dayData.exercises.map(ex => `<li class="list-group-item d-flex justify-content-between align-items-center"><div><div class="fw-bold">${ex.name}</div><small class="text-muted">${ex.series}s &times; ${ex.reps}r @ ${ex.weight}</small></div>${ canEdit ? `<div class="dropdown"><button class="btn btn-sm btn-light" type="button" data-bs-toggle="dropdown"><i class="fas fa-ellipsis-v"></i></button><ul class="dropdown-menu"><li><a class="dropdown-item" href="#" onclick="GymApp.showEditExerciseModal('${day}',${ex.id},${user.id})">Editar</a></li><li><a class="dropdown-item text-danger" href="#" onclick="GymApp.deleteExercise('${day}',${ex.id},${user.id})">Eliminar</a></li></ul></div>` : '' }</li>`).join('')}</ul>`;
+                    } else {
+                        cardBodyHTML = `<div class="text-center p-3 text-muted"><i class="fas fa-coffee fa-2x mb-2"></i><p>Día libre o sin planificar.</p></div>`;
+                    }
+
+                    let footerHTML = '';
+                    if (canEdit) {
+                        if (isRestDay) {
+                            footerHTML = `<div class="card-footer"><button class="btn btn-sm btn-outline-secondary w-100" onclick="GymApp.toggleRestDay('${day}', ${user.id})"><i class="fas fa-briefcase me-2"></i>Quitar Descanso</button></div>`;
+                        } else {
+                            footerHTML = `<div class="card-footer d-grid gap-2"><button class="btn btn-sm btn-outline-primary" onclick="GymApp.showEditExerciseModal('${day}', null, ${user.id})"><i class="fas fa-plus me-2"></i>Añadir Ejercicio</button><button class="btn btn-sm btn-outline-secondary" onclick="GymApp.toggleRestDay('${day}', ${user.id})"><i class="fas fa-bed me-2"></i>Marcar como Descanso</button></div>`;
+                        }
+                    }
+
+                    return `<div class="card routine-day-card mb-3 ${isToday ? 'is-today' : ''} ${isTodayCompleted ? 'is-today-completed' : ''} ${isRestDay ? 'is-rest-day' : ''}" id="card-${day}-${user.id}">
+                        <div class="card-header d-flex justify-content-between align-items-center"><h5 class="mb-0">${day}</h5>${completionSwitchHTML}</div>
+                        ${cardBodyHTML}
+                        ${footerHTML}
+                    </div>`;
+                }).join('');
+
+                if (isToday) {
+                    const todayCard = document.getElementById(`card-${todayName}-${user.id}`);
+                    if (todayCard) {
+                        todayCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    }
+                }
+            },
+            
+            updateProfessorRoutineBuilderUI() {
+                const studentListEl = document.getElementById('professor-student-list');
+                const myStudents = Object.values(this.state.data.users).filter(u => u.role === 'student' && u.professorId === this.state.currentUser.id);
+                if(myStudents.length > 0) {
+                    studentListEl.innerHTML = myStudents.map(m => `<a href="#" class="list-group-item list-group-item-action" data-student-id="${m.id}" onclick="GymApp.loadRoutineForStudent(${m.id}, this)">${m.name}</a>`).join('');
+                } else {
+                    studentListEl.innerHTML = `<li class="list-group-item text-muted text-center">No tienes alumnos asignados. Ve a "Gestionar Alumnos".</li>`;
+                }
+            },
+            
+            loadRoutineForStudent(studentId, el) {
+                document.querySelectorAll('#professor-student-list .list-group-item, #my-students-list .list-group-item').forEach(e => e.classList.remove('active'));
+                if (el) el.classList.add('active');
+                
+                const student = Object.values(this.state.data.users).find(u => u.id === studentId);
+                if (student) {
+                    document.getElementById('routine-builder-header').innerHTML = `<h5>Editando rutina de: <strong>${student.name}</strong></h5>`;
+                    this.updateStudentRoutineUI(student.id);
+                }
+            },
+            
+            showToast(title, text, icon = 'success') {
+                Swal.fire({ title, text, icon, timer: 2000, showConfirmButton: false, toast: true, position: 'top-end' });
+            },
+
+            filterTable(query, tableBodyId) {
+                query = query.toLowerCase();
+                document.querySelectorAll(`#${tableBodyId} tr`).forEach(row => {
+                    const name = row.dataset.name || '';
+                    row.style.display = name.includes(query) ? '' : 'none';
+                });
+            },
         };
-        let calendar, mainModal, cancellationModal, appToast, historyCalendar, charts = {};
-        let classToCancel = null;
 
-        // === FUNCIONES DE NAVEGACIÓN Y UI ===
-        function navigateTo(sectionId) { document.querySelectorAll('.page-section').forEach(s => s.classList.remove('active')); document.getElementById(sectionId)?.classList.add('active'); document.querySelectorAll('#main-nav .nav-link').forEach(l => l.classList.remove('active')); document.querySelector(`#main-nav .nav-link[onclick="navigateTo('${sectionId}')"]`)?.classList.add('active'); if (window.innerWidth <= 992) { document.querySelector('.sidebar').classList.remove('open'); } if (sectionId === 'schedule-section' && calendar) setTimeout(() => calendar.render(), 1); if (sectionId.includes('progress') && appState.currentUser.role === 'student') updateStudentCharts(); }
-        function login(role) { appState.currentUser = appState.users[role]; document.getElementById('login-section').style.display = 'none'; document.getElementById('app-container').style.display = 'block'; setupUIForRole(role); updateDynamicContent(role); navigateTo('dashboard-section'); }
-        function logout() { appState.currentUser = null; document.getElementById('app-container').style.display = 'none'; document.getElementById('login-section').style.display = 'flex'; }
-        function setupUIForRole(role) { updateProfileSidebar(); const user = appState.currentUser; document.getElementById('profile-role').innerText = user.role.charAt(0).toUpperCase() + user.role.slice(1); const navContainer = document.getElementById('main-nav'); navContainer.innerHTML = appState.navigation[role].map(link => `<li class="nav-item"><a href="#" class="nav-link" onclick="navigateTo('${link.id}')"><i class="fas ${link.icon} fa-fw me-2"></i>${link.text}</a></li>`).join(''); initializeCalendar(role); }
-        
-        // === RENDERIZADO INICIAL DE SECCIONES ===
-        function renderAllSections() { const sections = { 'crm-section': renderAdminCRM(), 'billing-section': renderBillingSection(), 'inventory-section': renderAdminInventory(), 'attendance-log-section': renderAdminAttendanceLog(), 'routine-builder-section': renderProfessorRoutineBuilder(), 'evaluations-section': renderProfessorEvaluations(), 'my-routine-section': renderStudentRoutine(), 'my-progress-section': renderStudentProgress(), 'nutrition-section': renderStudentNutrition(), 'my-classes-section': renderStudentClassesHistory(), 'schedule-section': `<div class="d-flex justify-content-between align-items-center mb-4"><h3 id="schedule-title" class="mb-0"></h3><button id="add-class-btn" class="btn btn-primary"><i class="fas fa-plus me-2"></i>Agendar Clase</button></div><div class="card"><div class="card-body p-4"><div id="calendar"></div></div></div>`, 'profile-section': '', 'plans-section': renderAdminPlans() }; for(const [id, content] of Object.entries(sections)) { document.getElementById(id).innerHTML = content; } }
+        GymApp.templates = {
+            dashboard: {
+                admin: () => {
+                    const students = Object.values(GymApp.state.data.users).filter(u => u.role === 'student');
+                    const totalMembers = students.length;
+                    const retention = 100 - (GymApp.state.data.gymData.stats.monthlyCancellations / totalMembers) * 100;
+                    const delinquent = students.filter(u => GymApp.getUserPlanDetails(u).status === 'Vencido').length;
+                    
+                    const today = new Date().toISOString().split('T')[0];
+                    const dailyTransactions = GymApp.state.data.gymData.transactions.filter(t => t.date === today);
+                    const cashTotal = dailyTransactions.filter(t => t.method === 'Efectivo').reduce((sum, t) => sum + t.amount, 0);
+                    const cardTotal = dailyTransactions.filter(t => t.method === 'Tarjeta').reduce((sum, t) => sum + t.amount, 0);
 
-        // === ACTUALIZACIÓN DE CONTENIDO DINÁMICO ===
-        function updateDynamicContent(role) { document.getElementById('schedule-title').innerText = role === 'student' ? 'Reservar Clase' : 'Agenda de Clases'; const addClassBtn = document.getElementById('add-class-btn'); addClassBtn.style.display = (role === 'admin' || role === 'professor') ? 'block' : 'none'; addClassBtn.onclick = () => showClassFormModal(); document.getElementById('admin-billing-view').style.display = role === 'admin' ? 'block' : 'none'; document.getElementById('student-billing-view').style.display = role === 'student' ? 'block' : 'none'; const dashboardContainer = document.getElementById('dashboard-section'); if (role === 'admin') dashboardContainer.innerHTML = renderAdminDashboard(); else if (role === 'professor') dashboardContainer.innerHTML = renderProfessorDashboard(); else dashboardContainer.innerHTML = renderStudentDashboard(); if (role === 'student') { updateStudentPlanUI(); updateStudentRoutineUI(); updateStudentProgressUI(); updateStudentClassesHistory(); }  else if (role === 'professor') { updateProfessorUI(); }  else if (role === 'admin') { updateAdminUI(); } updateProfileSection(); }
-
-        // === RENDERIZADO DE PLANTILLAS HTML ===
-        function renderAdminDashboard() { return `<h3>Dashboard Administrativo</h3><div class="row"><div class="col-xl-3 col-md-6 mb-4"><div class="stat-card h-100 card"><div class="card-body"><div><div class="text-xs fw-bold text-primary text-uppercase mb-1">Socios Activos</div><div class="h5 mb-0 fw-bold">${appState.gymData.members.filter(m => m.membership.status === 'Activo').length}</div></div><i class="fas fa-users" style="color:var(--primary-color);"></i></div></div></div><div class="col-xl-3 col-md-6 mb-4"><div class="stat-card h-100 card"><div class="card-body"><div><div class="text-xs fw-bold text-success text-uppercase mb-1">Ingresos (Mes)</div><div class="h5 mb-0 fw-bold">$12,450</div></div><i class="fas fa-dollar-sign" style="color:var(--success-color);"></i></div></div></div><div class="col-xl-3 col-md-6 mb-4"><div class="stat-card h-100 card"><div class="card-body"><div><div class="text-xs fw-bold text-info text-uppercase mb-1">Clases Programadas</div><div class="h5 mb-0 fw-bold">${appState.gymData.classes.length}</div></div><i class="fas fa-calendar-check" style="color:var(--info-color);"></i></div></div></div><div class="col-xl-3 col-md-6 mb-4"><div class="stat-card h-100 card"><div class="card-body"><div><div class="text-xs fw-bold text-warning text-uppercase mb-1">Pagos Pendientes</div><div class="h5 mb-0 fw-bold">${appState.gymData.members.filter(m => m.membership.status === 'Sin pagar').length}</div></div><i class="fas fa-exclamation-triangle" style="color:var(--warning-color);"></i></div></div></div></div>`; }
-        function renderAdminCRM() { return `<h3><i class="fas fa-users me-2"></i>CRM de Socios</h3><div class="card"><div class="card-body"><div class="d-flex justify-content-between mb-3"><input type="text" class="form-control w-50" placeholder="Buscar socio..." onkeyup="filterCRMTable(this.value)"><button class="btn btn-primary" onclick="showToast('Info', 'Función no implementada.')"><i class="fas fa-user-plus me-2"></i>Nuevo Socio</button></div><div class="table-responsive"><table class="table table-hover align-middle"><thead><tr><th>ID</th><th>Nombre</th><th>Plan Actual</th><th>Vencimiento</th><th>Estado de Pago</th><th class="text-end">Acciones</th></tr></thead><tbody id="crm-table-body"></tbody></table></div></div></div>`; }
-        function renderBillingSection() { return `<div id="admin-billing-view"><h3><i class="fas fa-cash-register me-2"></i>Punto de Venta (POS)</h3><div class="row"><div class="col-lg-7"><div class="card"><div class="card-header"><h5>Productos</h5></div><div class="card-body"><div id="pos-items" class="list-group"></div></div></div></div><div class="col-lg-5"><div class="card"><div class="card-header"><h5>Carrito</h5></div><div class="card-body"><ul id="pos-cart" class="list-group mb-3"></ul><hr><div class="d-flex justify-content-between align-items-center"><h4>Total:</h4><h4 class="fw-bold">$<span id="pos-total">0.00</span></h4></div><button class="btn btn-success w-100 mt-3" onclick="processPayment()"><i class="fas fa-check me-2"></i>Procesar Pago</button></div></div></div></div></div><div id="student-billing-view"><h3>Mi Plan y Pagos</h3><div class="card mb-4"><div class="card-body"><h5 class="card-title">Mi Plan Actual: <span class="text-primary" id="student-plan-name"></span></h5><p class="mb-1">Estado: <span class="badge" id="student-plan-status"></span></p><p>Periodo de vigencia: <strong id="student-plan-period"></strong></p><hr><h6>Beneficios del plan:</h6><ul id="student-plan-benefits" class="list-unstyled"></ul></div></div><h4>Historial de Pagos</h4><div class="card"><div class="card-body table-responsive"><table class="table table-hover"><thead><tr><th>Fecha</th><th>Descripción</th><th>Monto</th><th>Estado</th><th class="text-end">Comprobante</th></tr></thead><tbody><tr><td>2025-10-01</td><td>Membresía Mensual</td><td>$49.99</td><td><span class="badge bg-success">Pagado</span></td><td class="text-end"><a href="#" class="btn btn-sm btn-outline-primary"><i class="fas fa-download me-1"></i>Descargar</a></td></tr></tbody></table></div></div></div>`; }
-        function renderAdminInventory() { return `<h3><i class="fas fa-boxes me-2"></i>Gestión de Inventario</h3><div class="card"><div class="card-body"><div class="d-flex justify-content-end mb-3"><button class="btn btn-primary" onclick="showAddProductModal()"><i class="fas fa-plus me-2"></i>Añadir Nuevo Producto</button></div><div class="table-responsive"><table class="table table-hover align-middle"><thead><tr><th>SKU</th><th>Producto</th><th>Stock</th><th>Precio</th><th class="text-end">Acciones</th></tr></thead><tbody id="inventory-table-body"></tbody></table></div></div></div>`; }
-        function renderAdminAttendanceLog() { return `<h3><i class="fas fa-clipboard-check me-2"></i>Registros de Asistencia</h3><div class="card"><div class="card-body"><div class="d-flex justify-content-between mb-3"><input type="text" class="form-control w-50" placeholder="Buscar por nombre..." onkeyup="filterAttendanceLogTable(this.value)"></div><div class="table-responsive"><table class="table table-hover align-middle"><thead><tr><th>Nombre del Socio</th><th>Fecha</th><th>Hora de Entrada</th><th>Estado de Membresía</th></tr></thead><tbody id="attendance-log-body"></tbody></table></div></div></div>`; }
-        function renderAdminPlans() { return `<div class="d-flex justify-content-between align-items-center mb-4"><h3><i class="fas fa-id-card me-2"></i>Catálogo de Planes y Membresías</h3><button class="btn btn-primary" onclick="showAddPlanModal()"><i class="fas fa-plus me-2"></i>Crear Nuevo Plan</button></div><div id="plans-container" class="row"></div>`;}
-        function renderProfessorDashboard() { return `<h3>Dashboard del Profesor</h3><p>Resumen de tus actividades para hoy, ${appState.currentUser.name}.</p><div class="row"><div class="col-md-6"><div class="card"><div class="card-header"><h5>Mis Clases de Hoy</h5></div><ul class="list-group list-group-flush">${appState.gymData.classes.filter(c=>c.teacher===appState.currentUser.name&&new Date(c.start).toDateString()===new Date().toDateString()).map(c=>`<li class="list-group-item d-flex justify-content-between align-items-center">${c.title}<span class="badge bg-primary rounded-pill">${new Date(c.start).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'})}</span></li>`).join('')||'<li class="list-group-item">No tienes clases hoy.</li>'}</ul></div></div><div class="col-md-6"><div class="card"><div class="card-header"><h5>Alumnos Asignados</h5></div><ul class="list-group list-group-flush">${appState.gymData.members.slice(0,4).map(m=>`<li class="list-group-item">${m.name}</li>`).join('')}</ul></div></div></div>`; }
-        function renderProfessorRoutineBuilder() { return `<h3><i class="fas fa-dumbbell me-2"></i>Constructor de Rutinas</h3><div class="row"><div class="col-md-4"><div class="card"><div class="card-header"><h5>Seleccionar Alumno</h5></div><div id="professor-student-list" class="list-group list-group-flush"></div></div></div><div class="col-md-8"><div class="card"><div class="card-header" id="routine-builder-header"><h5>Selecciona un alumno</h5></div><div class="card-body" id="routine-builder-body"><p class="text-muted">Elige un alumno de la lista para ver o editar su rutina.</p></div></div></div></div>`; }
-        function renderProfessorEvaluations() { return `<h3><i class="fas fa-clipboard-list me-2"></i>Evaluaciones Físicas</h3><div class="card"><div class="card-body"><label class="form-label">Seleccionar Alumno</label><select class="form-select mb-3" onchange="showStudentEvaluation(this.value)"><option selected value="">Elige un alumno...</option>${appState.gymData.members.map(m=>`<option value="${m.id}">${m.name}</option>`).join('')}</select><div id="evaluation-content"></div></div></div>`; }
-        function renderStudentDashboard() { const student = appState.users.student; return `<h3>Mi Dashboard</h3><p>¡Bienvenido de vuelta, ${student.name}!</p><div class="row"><div class="col-lg-7 mb-4"><div id="gamification-dashboard-section"></div></div><div class="col-lg-5 mb-4"><div class="card h-100"><div class="card-body text-center"><h5 class="card-title"><i class="fas fa-id-card me-2"></i>Estado de Membresía</h5><p class="fs-4"><strong>${student.membership.planName}</strong></p><p>Estado: <span class="badge fs-6 ${student.membership.status==='Activo'?'bg-success':'bg-danger'}">${student.membership.status}</span></p></div></div></div></div>`; }
-        function renderStudentRoutine() { return `<div class="routine-header"><div><h3><i class="fas fa-dumbbell me-2"></i>Mi Rutina Semanal</h3><p class="text-muted mb-0">Gestiona tus ejercicios y registra tu progreso diario.</p></div><button class="btn btn-outline-primary" onclick="showRoutineHistoryCalendar()"><i class="fas fa-calendar-alt me-2"></i>Ver Historial de Cumplimiento</button></div><div id="routine-cards-container"></div>`; }
-        function renderStudentProgress() { return `<h3><i class="fas fa-chart-line me-2"></i>Seguimiento Físico</h3><p class="text-muted">Registra tu progreso y visualiza tu evolución.</p><div class="row"><div class="col-12 mb-4"><div class="card"><div class="card-header"><h5>Registrar Nuevo Progreso</h5></div><div class="card-body"><form id="progress-form"><div class="row g-3 align-items-end"><div class="col-md-2"><label class="form-label">Peso (kg)</label><input type="number" step="0.1" class="form-control" id="progress-weight" required></div><div class="col-md-2"><label class="form-label">% Grasa</label><input type="number" step="0.1" class="form-control" id="progress-bodyfat"></div><div class="col-md-2"><label class="form-label">Pecho (cm)</label><input type="number" step="0.1" class="form-control" id="progress-chest"></div><div class="col-md-2"><label class="form-label">Cintura (cm)</label><input type="number" step="0.1" class="form-control" id="progress-waist"></div><div class="col-md-2"><label class="form-label">Cadera (cm)</label><input type="number" step="0.1" class="form-control" id="progress-hips"></div><div class="col-md-2 d-grid"><button type="submit" class="btn btn-primary"><i class="fas fa-plus"></i> Añadir</button></div></div></form></div></div></div><div class="col-lg-6 mb-4"><div class="card h-100"><div class="card-body"><h5 class="card-title">Evolución de Peso y % Grasa</h5><div class="chart-container"><canvas id="weightChart"></canvas></div></div></div></div><div class="col-lg-6 mb-4"><div class="card h-100"><div class="card-body"><h5 class="card-title">Evolución de Medidas</h5><div class="chart-container"><canvas id="measurementsChart"></canvas></div></div></div></div></div>`; }
-        function renderStudentNutrition() { return `<h3><i class="fas fa-apple-alt me-2"></i>Nutrición</h3><div class="card"><div class="card-body"><h5 class="card-title">Plan Nutricional Básico</h5><p>Esta sección es un prototipo. Aquí el alumno podría ver un plan de comidas sugerido, registrar su ingesta de agua y recibir recordatorios.</p></div></div>`; }
-        function renderStudentClassesHistory() { return `<h3><i class="fas fa-history me-2"></i>Mis Clases y Feedback</h3><div class="card"><div class="card-header"><h5>Clases Inscritas</h5></div><div id="my-classes-list" class="list-group list-group-flush"></div></div>`; }
-
-        // === LÓGICA DE ACTUALIZACIÓN DE UI ===
-        function updateAdminUI() { 
-            document.getElementById('crm-table-body').innerHTML = appState.gymData.members.map(m => {
-                const status = m.membership.status;
-                return `<tr data-name="${m.name.toLowerCase()}">
-                    <td>${m.id}</td>
-                    <td>${m.name}</td>
-                    <td>${m.membership.planName}</td>
-                    <td>${new Date(m.membership.endDate).toLocaleDateString()}</td>
-                    <td><span class="badge ${status === 'Activo' ? 'bg-success' : 'bg-danger'}">${status}</span></td>
-                    <td class="text-end"><button class="btn btn-sm btn-secondary"><i class="fas fa-eye"></i> Ver</button></td>
-                </tr>`
-            }).join(''); 
-            
-            document.getElementById('inventory-table-body').innerHTML = appState.gymData.inventory.map(item => `<tr><td>${item.sku}</td><td>${item.name}</td><td>${item.stock}</td><td>$${item.price.toFixed(2)}</td><td class="text-end"><button class="btn btn-sm btn-info text-white"><i class="fas fa-edit me-1"></i> Editar</button></td></tr>`).join('');
-            document.getElementById('pos-items').innerHTML = appState.gymData.inventory.map(item => `<a href="#" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center" onclick="addToCart(${item.id})"><span>${item.name}</span><span class="fw-bold text-primary">$${item.price.toFixed(2)}</span></a>`).join('');
-            
-            const attendanceBody = document.getElementById('attendance-log-body'); 
-            const filteredLogs = appState.gymData.attendanceLog.filter(log => { const member = appState.gymData.members.find(m => m.id === log.memberId); return member; }); 
-            attendanceBody.innerHTML = filteredLogs.map(log => { const member = appState.gymData.members.find(m => m.id === log.memberId); const logDate = new Date(log.timestamp); const statusBadge = `<span class="badge ${member.membership.status === 'Activo' ? 'bg-success' : 'bg-danger'}">${member.membership.status}</span>`; return `<tr data-name="${member.name.toLowerCase()}"><td>${member.name}</td><td>${logDate.toLocaleDateString()}</td><td>${logDate.toLocaleTimeString()}</td><td>${statusBadge}</td></tr>`; }).join('');
-
-            updateAdminPlansUI();
-            appState.gymData.cart = []; updateCart(); 
-        }
-
-        function updateAdminPlansUI() {
-            const container = document.getElementById('plans-container');
-            if (!container) return;
-            container.innerHTML = appState.gymData.membershipPlans.map(plan => `
-                <div class="col-lg-4 col-md-6 mb-4">
-                    <div class="card plan-card">
-                        <div class="card-header py-3">
-                            <h4 class="my-0 fw-normal">${plan.name}</h4>
-                        </div>
-                        <div class="card-body text-center">
-                            <h1 class="card-title price">$${plan.price}<span class="duration">/${plan.durationDays > 31 ? 'año' : 'mes'}</span></h1>
-                            <p>${plan.description}</p>
-                            <ul class="list-group list-group-flush mb-3">
-                                <li class="list-group-item"><i class="fas fa-check text-success me-2"></i>Permite congelar: ${plan.rules.allowFreeze ? 'Sí' : 'No'}</li>
-                                <li class="list-group-item"><i class="fas fa-check text-success me-2"></i>Permite Upgrade: ${plan.rules.upgrade ? 'Sí' : 'No'}</li>
-                            </ul>
-                            <button class="btn btn-outline-primary"><i class="fas fa-edit me-2"></i>Editar Plan</button>
-                        </div>
+                    return `<h3>Dashboard Administrativo</h3>
+                    <div class="row">
+                        <div class="col-xl-3 col-md-6 mb-4"><div class="stat-card h-100 card"><div class="card-body"><div><div class="text-xs fw-bold text-uppercase mb-1" style="color:var(--primary-color)">Socios Activos</div><div class="h5 mb-0 fw-bold">${totalMembers}</div></div><i class="fas fa-users"></i></div></div></div>
+                        <div class="col-xl-3 col-md-6 mb-4"><div class="stat-card h-100 card"><div class="card-body"><div><div class="text-xs fw-bold text-uppercase mb-1" style="color:var(--info-color)">Altas del Mes</div><div class="h5 mb-0 fw-bold">+${GymApp.state.data.gymData.stats.monthlyNewMembers}</div></div><i class="fas fa-user-plus"></i></div></div></div>
+                        <div class="col-xl-3 col-md-6 mb-4"><div class="stat-card h-100 card"><div class="card-body"><div><div class="text-xs fw-bold text-uppercase mb-1" style="color:var(--success-color)">Retención Mensual</div><div class="h5 mb-0 fw-bold">${retention.toFixed(1)}%</div></div><i class="fas fa-chart-pie"></i></div></div></div>
+                        <div class="col-xl-3 col-md-6 mb-4"><div class="stat-card h-100 card"><div class="card-body"><div><div class="text-xs fw-bold text-uppercase mb-1" style="color:var(--danger-color)">Socios con Morosidad</div><div class="h5 mb-0 fw-bold">${delinquent}</div></div><i class="fas fa-file-invoice-dollar"></i></div></div></div>
                     </div>
-                </div>
-            `).join('');
-        }
-
-        function updateProfessorUI() { document.getElementById('professor-student-list').innerHTML = appState.gymData.members.map(m => `<a href="#" class="list-group-item list-group-item-action" onclick="loadRoutineForStudent(${m.id}, this)">${m.name}</a>`).join(''); document.getElementById('routine-builder-header').innerHTML = '<h5>Selecciona un alumno</h5>'; document.getElementById('routine-builder-body').innerHTML = '<p class="text-muted">Elige un alumno para ver o editar su rutina.</p>'; }
-        function updateStudentPlanUI() { const plan = appState.currentUser.membership; document.getElementById('student-plan-name').innerText = plan.planName; const statusBadge = document.getElementById('student-plan-status'); statusBadge.innerText = plan.status; statusBadge.className = `badge fs-6 ${plan.status === 'Activo' ? 'bg-success' : 'bg-danger'}`; document.getElementById('student-plan-period').innerText = `${new Date(plan.startDate).toLocaleDateString()} - ${new Date(plan.endDate).toLocaleDateString()}`; document.getElementById('student-plan-benefits').innerHTML = plan.benefits.map(b => `<li><i class="fas fa-check-circle text-success me-2"></i>${b}</li>`).join(''); }
-        
-        function updateStudentRoutineUI() {
-            const container = document.getElementById('routine-cards-container'); 
-            if(!container) return;
-            const todayISO = new Date().toISOString().split('T')[0];
-
-            container.innerHTML = Object.entries(appState.currentUser.routine).map(([day, data]) => {
-                const isTodayCompleted = data.completionHistory.includes(todayISO);
-                const exerciseListHTML = data.exercises.length > 0
-                    ? `<ul class="exercise-list m-0">${data.exercises.map(ex => `
-                        <li class="exercise-item">
-                            <div>
-                                <div class="exercise-name">${ex.name}</div>
-                                <div class="exercise-meta">
-                                    <span class="meta-item"><i class="fas fa-layer-group fa-fw"></i> ${ex.series} series</span>
-                                    <span class="meta-item"><i class="fas fa-redo fa-fw"></i> ${ex.reps} reps</span>
-                                    <span class="meta-item"><i class="fas fa-weight-hanging fa-fw"></i> ${ex.weight}</span>
+                    <div class="row">
+                        <div class="col-lg-8 mb-4">
+                            <div class="card h-100">
+                                <div class="card-header"><h5><i class="fas fa-clock me-2"></i>Asistencia por Hora (Horas Pico)</h5></div>
+                                <div class="card-body"><div style="height:300px;"><canvas id="peakHoursChart"></canvas></div></div>
+                            </div>
+                        </div>
+                        <div class="col-lg-4 mb-4">
+                             <div class="card h-100">
+                                <div class="card-header"><h5><i class="fas fa-cash-register me-2"></i>Cuadre de Caja Diario</h5></div>
+                                <div class="card-body">
+                                    <ul class="list-group list-group-flush">
+                                        <li class="list-group-item d-flex justify-content-between align-items-center">Efectivo:<span class="fw-bold">$${cashTotal.toFixed(2)}</span></li>
+                                        <li class="list-group-item d-flex justify-content-between align-items-center">Tarjeta:<span class="fw-bold">$${cardTotal.toFixed(2)}</span></li>
+                                        <li class="list-group-item d-flex justify-content-between align-items-center fs-5"><strong>Total:</strong><strong class="text-success">$${(cashTotal + cardTotal).toFixed(2)}</strong></li>
+                                    </ul>
                                 </div>
                             </div>
-                            <div class="exercise-actions">
-                                <button class="action-btn" title="Editar" onclick="showEditExerciseModal('${day}', ${ex.id})"><i class="fas fa-pencil-alt"></i></button>
-                                <button class="action-btn" title="Eliminar" onclick="deleteExercise('${day}', ${ex.id})"><i class="fas fa-trash-alt"></i></button>
-                            </div>
-                        </li>`).join('')}</ul>`
-                    : `<div class="empty-routine-placeholder"><div class="icon"><i class="fas fa-plus-circle"></i></div><p>Día libre o sin planificar.</p><p class="small">Añade un ejercicio para empezar.</p></div>`;
-
-                return `
-                <div class="card routine-day-card mb-3 ${isTodayCompleted ? 'is-today-completed' : ''}" id="card-${day}">
-                    <div class="card-header"><h5 class="mb-0">${day}</h5></div>
-                    <div class="card-body p-0">${exerciseListHTML}</div>
-                    <div class="add-exercise-form">
-                        <h6>Añadir nuevo ejercicio</h6>
-                        <form onsubmit="addExercise(event, '${day}')">
-                            <div class="row g-2 align-items-end">
-                                <div class="col-12 col-md-4"><label class="form-label small">Nombre</label><input type="text" name="exerciseName" class="form-control" placeholder="Ej: Press de banca" required></div>
-                                <div class="col-6 col-md-2"><label class="form-label small">Peso</label><input type="text" name="exerciseWeight" class="form-control" placeholder="60kg"></div>
-                                <div class="col-6 col-md-2"><label class="form-label small">Series</label><input type="number" name="exerciseSeries" class="form-control" placeholder="4"></div>
-                                <div class="col-6 col-md-2"><label class="form-label small">Reps</label><input type="text" name="exerciseReps" class="form-control" placeholder="10"></div>
-                                <div class="col-6 col-md-2 d-grid"><button class="btn btn-primary" type="submit">Añadir</button></div>
-                            </div>
-                        </form>
+                        </div>
                     </div>
-                    <div class="card-footer d-flex justify-content-end align-items-center">
-                        <div class="form-check form-switch"><input class="form-check-input" type="checkbox" role="switch" id="check-${day}" ${isTodayCompleted ? 'checked' : ''} onchange="toggleCompletionForToday('${day}')"><label class="form-check-label" for="check-${day}">${isTodayCompleted ? 'Completado Hoy' : 'Marcar como completado hoy'}</label></div>
+                     <div class="row">
+                        <div class="col-lg-6 mb-4">
+                            <div class="card h-100">
+                                <div class="card-header"><h5><i class="fas fa-chart-line me-2"></i>Evolución de Ingresos (Simulado)</h5></div>
+                                <div class="card-body"><div style="height:300px;"><canvas id="revenueChart"></canvas></div></div>
+                            </div>
+                        </div>
+                        <div class="col-lg-6 mb-4">
+                            <div class="card h-100">
+                                <div class="card-header"><h5><i class="fas fa-user-minus me-2"></i>Tasa de Abandono (Churn Rate Simulado)</h5></div>
+                                <div class="card-body"><div style="height:300px;"><canvas id="churnChart"></canvas></div></div>
+                            </div>
+                        </div>
                     </div>
-                </div>`;
-            }).join('');
-        }
-
-        function updateStudentProgressUI() { const form = document.getElementById('progress-form'); if(form && !form.dataset.listenerAttached) { form.addEventListener('submit', handleAddProgress); form.dataset.listenerAttached = 'true'; } renderGamificationOnDashboard(); updateStudentCharts(); }
-        function updateStudentClassesHistory() { const listEl = document.getElementById('my-classes-list'); if(!listEl) return; const myClasses = appState.gymData.classes.filter(c => c.reservedBy.includes(appState.currentUser.id)); if(myClasses.length === 0) { listEl.innerHTML = '<li class="list-group-item">No estás inscrito en ninguna clase.</li>'; return; } listEl.innerHTML = myClasses.map(c => `<li class="list-group-item d-flex justify-content-between align-items-center"><div><strong>${c.title}</strong><br><small class="text-muted">${new Date(c.start).toLocaleString('es-ES', {weekday:'long', month:'long', day:'numeric', hour:'2-digit', minute:'2-digit'})}</small></div><button class="btn btn-sm btn-outline-danger" onclick="showCancellationModal(${c.id})"><i class="fas fa-times me-1"></i>Cancelar</button></li>`).join(''); }
-        function updateProfileSection() { const user = appState.currentUser; if (!user) return; const initials = user.name.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase(); document.getElementById('profile-section').innerHTML = `<h3>Mi Perfil</h3><div class="card"><div class="card-body p-4"><div class="row align-items-center"><div class="col-lg-4 text-center mb-4 mb-lg-0"><div class="profile-page-avatar">${initials}</div><button class="btn btn-secondary mt-3" onclick="showToast('Info', 'Función para cambiar foto no implementada.')"><i class="fas fa-camera me-2"></i>Cambiar Foto</button></div><div class="col-lg-8"><h5 class="card-title mb-3">Datos Personales</h5><form id="profile-form" onsubmit="handleProfileUpdate(event)"><div class="mb-3"><label class="form-label">Nombre Completo</label><input type="text" id="profile-input-name" class="form-control" value="${user.name}" required></div><div class="mb-3"><label class="form-label">Email de Contacto</label><input type="email" id="profile-input-email" class="form-control" value="${user.profile.email}" required></div><button type="submit" class="btn btn-primary"><i class="fas fa-save me-2"></i>Guardar Cambios</button></form></div></div></div></div>`; }
-        function updateProfileSidebar() { const user = appState.currentUser; document.getElementById('profile-name').innerText = user.name; const initials = user.name.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase(); document.getElementById('profile-avatar').innerText = initials; }
-
-        // === MANEJO DE EVENTOS Y LÓGICA ===
-        function addExercise(event, day) { event.preventDefault(); const form = event.target; const newExercise = { id: Date.now(), name: form.elements.exerciseName.value, weight: form.elements.exerciseWeight.value || 'N/A', series: form.elements.exerciseSeries.value || 'N/A', reps: form.elements.exerciseReps.value || 'N/A' }; appState.currentUser.routine[day].exercises.push(newExercise); updateStudentRoutineUI(); }
-        function deleteExercise(day, exerciseId) { const routineDay = appState.currentUser.routine[day]; routineDay.exercises = routineDay.exercises.filter(ex => ex.id !== exerciseId); updateStudentRoutineUI(); }
-        function toggleCompletionForToday(day) { const routineDay = appState.currentUser.routine[day]; const todayISO = new Date().toISOString().split('T')[0]; const index = routineDay.completionHistory.indexOf(todayISO); if (index > -1) { routineDay.completionHistory.splice(index, 1); showToast('Progreso desmarcado', `El día de hoy ya no está marcado como completado.`); } else { routineDay.completionHistory.push(todayISO); showToast('¡Felicidades!', `Has completado la rutina de hoy.`, 'success'); } updateStudentRoutineUI(); }
-        function handleAddProgress(e) { e.preventDefault(); const p = appState.currentUser.progress; p.labels.push(new Date().toLocaleString('es-ES',{month:'long'})); p.weights.push(parseFloat(document.getElementById('progress-weight').value) || p.weights.slice(-1)[0]); p.bodyFat.push(parseFloat(document.getElementById('progress-bodyfat').value) || p.bodyFat.slice(-1)[0]); p.measurements.chest.push(parseFloat(document.getElementById('progress-chest').value) || p.measurements.chest.slice(-1)[0]); p.measurements.waist.push(parseFloat(document.getElementById('progress-waist').value) || p.measurements.waist.slice(-1)[0]); p.measurements.hips.push(parseFloat(document.getElementById('progress-hips').value) || p.measurements.hips.slice(-1)[0]); updateStudentCharts(); showToast('Progreso Guardado','Tu nuevo registro ha sido añadido.'); e.target.reset(); }
-        function handleClassReservation(id) { const c=appState.gymData.classes.find(c=>c.id===id); const sId=appState.currentUser.id; const idx=c.reservedBy.indexOf(sId); if(idx>-1){c.reservedBy.splice(idx,1);showToast('Reserva Cancelada',`Cancelaste tu reserva para ${c.title}.`);}else if(c.reservedBy.length<c.spots){c.reservedBy.push(sId);showToast('¡Inscrito!',`Te inscribiste a ${c.title}.`);}else{showToast('Error','Clase llena.','danger');} mainModal.hide(); calendar.refetchEvents(); updateStudentClassesHistory(); }
-        function filterCRMTable(q) { q=q.toLowerCase(); document.querySelectorAll('#crm-table-body tr').forEach(r=>r.style.display=(r.dataset.name.includes(q))?'':'none'); }
-        function filterAttendanceLogTable(q) { q=q.toLowerCase(); document.querySelectorAll('#attendance-log-body tr').forEach(r=>r.style.display=(r.dataset.name.includes(q))?'':'none'); }
-        function addToCart(itemId) { const item=appState.gymData.inventory.find(i=>i.id===itemId); if(item){ const cartItem=appState.gymData.cart.find(i=>i.id===itemId);if(cartItem){cartItem.quantity++;}else{appState.gymData.cart.push({...item,quantity:1});}updateCart();} }
-        function updateCart() { const cartList=document.getElementById('pos-cart'),totalEl=document.getElementById('pos-total');let total=0;if(appState.gymData.cart.length===0){cartList.innerHTML='<li class="list-group-item">El carrito está vacío.</li>';}else{cartList.innerHTML=appState.gymData.cart.map(item=>{total+=item.price*item.quantity;return`<li class="list-group-item d-flex justify-content-between"><span>${item.name}(x${item.quantity})</span><span>$${(item.price*item.quantity).toFixed(2)}</span></li>`;}).join('');}totalEl.innerText=total.toFixed(2); }
-        function processPayment() { if(appState.gymData.cart.length>0){showToast('Pago Procesado',`Venta por $${document.getElementById('pos-total').innerText} completada.`);appState.gymData.cart=[];updateCart();}else{showToast('Carrito Vacío','Agrega productos al carrito.','warning');} }
-        function handleProfileUpdate(e) { e.preventDefault(); const newName = document.getElementById('profile-input-name').value; const newEmail = document.getElementById('profile-input-email').value; appState.currentUser.name = newName; appState.currentUser.profile.email = newEmail; updateProfileSidebar(); showToast('Perfil Actualizado', 'Tus datos han sido guardados.'); updateProfileSection(); }
-        function handleAddEvaluation(e, studentId) { e.preventDefault(); const student = appState.users.student; const newEval = { date: new Date().toISOString().split('T')[0], weight: e.target.elements['eval-weight'].value, bodyFat: e.target.elements['eval-bodyfat'].value, notes: e.target.elements['eval-notes'].value, measurements: { chest: e.target.elements['eval-chest'].value, waist: e.target.elements['eval-waist'].value, hips: e.target.elements['eval-hips'].value } }; student.evaluations.push(newEval); showToast('Evaluación Añadida', `Nuevo registro guardado para ${student.name}.`); showStudentEvaluation(studentId); }
-        function handleCreateProduct(e) { e.preventDefault(); const newProduct = { id: Date.now(), sku: document.getElementById('product-sku').value, name: document.getElementById('product-name').value, stock: parseInt(document.getElementById('product-stock').value), price: parseFloat(document.getElementById('product-price').value) }; appState.gymData.inventory.push(newProduct); mainModal.hide(); updateAdminUI(); showToast('Producto Añadido', `El producto "${newProduct.name}" ha sido registrado.`); }
-        function handleCreatePlan(e) { e.preventDefault(); const form = e.target; const newPlan = { id: Date.now(), name: form.elements['plan-name'].value, price: parseFloat(form.elements['plan-price'].value), durationDays: parseInt(form.elements['plan-duration'].value), description: form.elements['plan-desc'].value, rules: { allowFreeze: form.elements['plan-freeze'].checked, upgrade: form.elements['plan-upgrade'].checked } }; appState.gymData.membershipPlans.push(newPlan); mainModal.hide(); updateAdminPlansUI(); showToast('Plan Creado', `El plan "${newPlan.name}" ha sido añadido al catálogo.`, 'success'); }
-        function toggleSidebar() { document.querySelector('.sidebar').classList.toggle('open'); }
-
-        // === MODALES ===
-        function showRoutineHistoryCalendar() { document.getElementById('mainModalTitle').innerText = 'Historial de Cumplimiento de Rutina'; document.getElementById('mainModalBody').innerHTML = '<div id="routine-history-calendar-container" style="min-height:400px;"><div class="d-flex justify-content-center align-items-center h-100"><div class="spinner-border" role="status"><span class="visually-hidden">Loading...</span></div></div></div>'; document.getElementById('mainModalFooter').innerHTML = '<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>'; mainModal.show(); }
-        function showEditExerciseModal(day, exerciseId) {
-            const exercise = appState.currentUser.routine[day].exercises.find(ex => ex.id === exerciseId);
-            if (!exercise) return;
-            document.getElementById('mainModalTitle').innerText = `Editar Ejercicio: ${exercise.name}`;
-            document.getElementById('mainModalBody').innerHTML = `
-                <div class="row g-3">
-                    <div class="col-12"><label class="form-label">Nombre del Ejercicio</label><input type="text" id="edit-ex-name" class="form-control" value="${exercise.name}" required></div>
-                    <div class="col-md-4"><label class="form-label">Peso</label><input type="text" id="edit-ex-weight" class="form-control" value="${exercise.weight}"></div>
-                    <div class="col-md-4"><label class="form-label">Series</label><input type="number" id="edit-ex-series" class="form-control" value="${exercise.series}"></div>
-                    <div class="col-md-4"><label class="form-label">Repeticiones</label><input type="text" id="edit-ex-reps" class="form-control" value="${exercise.reps}"></div>
-                </div>`;
-            document.getElementById('mainModalFooter').innerHTML = `<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button><button type="button" class="btn btn-primary" onclick="handleUpdateExercise('${day}', ${exerciseId})">Guardar Cambios</button>`;
-            mainModal.show();
-        }
-        function handleUpdateExercise(day, exerciseId) {
-            const exercise = appState.currentUser.routine[day].exercises.find(ex => ex.id === exerciseId);
-            if (!exercise) return;
-            exercise.name = document.getElementById('edit-ex-name').value;
-            exercise.weight = document.getElementById('edit-ex-weight').value;
-            exercise.series = document.getElementById('edit-ex-series').value;
-            exercise.reps = document.getElementById('edit-ex-reps').value;
-            updateStudentRoutineUI();
-            mainModal.hide();
-            showToast('Éxito', 'Ejercicio actualizado correctamente.', 'success');
-        }
-        function showAddProductModal() { document.getElementById('mainModalTitle').innerText = 'Registrar Nuevo Producto'; document.getElementById('mainModalBody').innerHTML = `<form id="add-product-form"><div class="row g-3"><div class="col-md-6"><label class="form-label">SKU</label><input type="text" id="product-sku" class="form-control" required></div><div class="col-md-6"><label class="form-label">Nombre del Producto</label><input type="text" id="product-name" class="form-control" required></div><div class="col-md-6"><label class="form-label">Stock Inicial</label><input type="number" id="product-stock" class="form-control" required></div><div class="col-md-6"><label class="form-label">Precio</label><input type="number" step="0.01" id="product-price" class="form-control" required></div></div></form>`; document.getElementById('mainModalFooter').innerHTML = `<button class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button><button type="submit" form="add-product-form" class="btn btn-primary" onclick="handleCreateProduct(event)">Guardar Producto</button>`; mainModal.show(); }
-        function showAddPlanModal() { document.getElementById('mainModalTitle').innerText = 'Crear Nuevo Plan de Membresía'; document.getElementById('mainModalBody').innerHTML = `<form id="add-plan-form" onsubmit="handleCreatePlan(event)"><div class="row g-3"><div class="col-12"><label class="form-label">Nombre del Plan</label><input name="plan-name" type="text" class="form-control" required></div><div class="col-md-6"><label class="form-label">Precio ($)</label><input name="plan-price" type="number" step="0.01" class="form-control" required></div><div class="col-md-6"><label class="form-label">Duración (días)</label><input name="plan-duration" type="number" class="form-control" required></div><div class="col-12"><label class="form-label">Descripción</label><textarea name="plan-desc" class="form-control" rows="2"></textarea></div><div class="col-12"><h5>Reglas del Plan</h5><div class="form-check form-switch"><input name="plan-freeze" class="form-check-input" type="checkbox" role="switch"><label class="form-check-label">Permitir congelación</label></div><div class="form-check form-switch"><input name="plan-upgrade" class="form-check-input" type="checkbox" role="switch" checked><label class="form-check-label">Permitir upgrade/downgrade</label></div></div></div></form>`; document.getElementById('mainModalFooter').innerHTML = `<button class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button><button type="submit" form="add-plan-form" class="btn btn-primary">Guardar Plan</button>`; mainModal.show(); }
-        function showCancellationModal(id) { classToCancel = id; cancellationModal.show(); document.getElementById('cancellationReason').value = ''; document.getElementById('cancellationReason').classList.remove('is-invalid'); }
-        function confirmCancellation() { const reasonEl = document.getElementById('cancellationReason'); if (!reasonEl.value) { reasonEl.classList.add('is-invalid'); return; } const classData = appState.gymData.classes.find(c => c.id === classToCancel); const studentId = appState.currentUser.id; const idx = classData.reservedBy.indexOf(studentId); if (idx > -1) { classData.reservedBy.splice(idx, 1); } showToast('Reserva Cancelada', `Tu reserva para ${classData.title} ha sido cancelada.`); cancellationModal.hide(); calendar.refetchEvents(); updateStudentClassesHistory(); classToCancel = null; }
-
-        // === COMPONENTES (CALENDARIO, GRÁFICOS, TOASTS) ===
-        const professorColors = ['#2E86C1', '#28B463', '#9B59B6', '#E67E22', '#F1C40F', '#1ABC9C'];
-        const getProfessors = () => Object.values(appState.users).filter(u => u.role === 'professor');
-        function hexToRgb(hex) {
-            let result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
-            return result ? `${parseInt(result[1], 16)}, ${parseInt(result[2], 16)}, ${parseInt(result[3], 16)}` : null;
-        }
-        function getProfessorColor(name) {
-            const professors = getProfessors().map(p => p.name);
-            const index = professors.indexOf(name);
-            return professorColors[index % professorColors.length] || '#707B7C';
-        }
-
-        function initializeCalendar(role) { 
-            if(calendar) calendar.destroy();
-            const calendarEl = document.getElementById('calendar');
-            calendar = new FullCalendar.Calendar(calendarEl, {
-                initialView: 'dayGridMonth',
-                locale: 'es',
-                headerToolbar:{ left: 'prev,next today', center: 'title', right: 'dayGridMonth,timeGridWeek,timeGridDay,listWeek' },
-                events: (fetchInfo, successCallback) => {
-                    const classEvents = appState.gymData.classes.map(c => {
-                        const color = getProfessorColor(c.teacher);
-                        const rgb = hexToRgb(color);
-                        return {
-                            id: c.id,
-                            title: c.title,
-                            start: c.start,
-                            extendedProps: { classData: c, themeColorRgb: rgb }
-                        };
-                    });
-                    successCallback(classEvents);
-                },
-                eventContent: function(arg) {
-                    const classData = arg.event.extendedProps.classData;
-                    const isReservedByMe = appState.currentUser.role === 'student' && classData.reservedBy.includes(appState.currentUser.id);
-                    let html = '';
-
-                    if (arg.view.type === 'dayGridMonth') {
-                        html = `<div>${arg.timeText} <span class="fc-event-title-strong">${arg.event.title}</span> ${isReservedByMe ? '<i class="fas fa-check-circle reserved-icon"></i>' : ''}</div>`;
-                    } else {
-                        html = `<div>
-                                    <div class="fc-event-title-strong">${arg.event.title} ${isReservedByMe ? '<i class="fas fa-check-circle reserved-icon"></i>' : ''}</div>
-                                    <div class="fc-event-details">${classData.teacher}</div>
-                                </div>`;
-                    }
-                    return { html: html };
-                },
-                eventDidMount: function(arg) {
-                    const classData = arg.event.extendedProps.classData;
-                    const rgb = arg.event.extendedProps.themeColorRgb;
-                    arg.el.style.setProperty('--fc-event-theme-color-rgb', rgb);
-
-                    // Inicializar Popover de Bootstrap
-                    const popoverContent = `
-                        <p class="mb-1"><strong>Profesor:</strong> ${classData.teacher}</p>
-                        <p class="mb-1"><strong>Hora:</strong> ${new Date(classData.start).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</p>
-                        <p class="mb-0"><strong>Inscritos:</strong> ${classData.reservedBy.length} / ${classData.spots}</p>
                     `;
-                    arg.el.popover = new bootstrap.Popover(arg.el, {
-                        title: classData.title,
-                        content: popoverContent,
-                        trigger: 'hover',
-                        placement: 'top',
-                        html: true,
-                        container: 'body'
-                    });
                 },
-                eventClick: (info) => {
-                    const userRole = appState.currentUser.role;
-                    if (userRole === 'admin' || userRole === 'professor') {
-                        showClassFormModal(info.event);
-                    } else {
-                        showClassReservationModal(info);
-                    }
-                }
-            }); 
-            calendar.render();
-        }
-
-        function showClassReservationModal(info) { 
-            const c=info.event.extendedProps.classData, u=appState.currentUser;
-            let b=`<p><i class="fas fa-chalkboard-teacher me-2 text-primary"></i><strong>Profesor:</strong> ${c.teacher}</p><p><i class="far fa-clock me-2 text-primary"></i><strong>Hora:</strong> ${new Date(c.start).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'})}</p><p><i class="fas fa-users me-2 text-primary"></i><strong>Cupos:</strong> ${c.reservedBy.length}/${c.spots}</p>`;
-            let f='';
-            const isR=c.reservedBy.includes(u.id), isF=c.reservedBy.length>=c.spots;
-            if(isR) f=`<button class="btn btn-danger" onclick="handleClassReservation(${c.id})"><i class="fas fa-times me-2"></i>Cancelar Reserva</button>`;
-            else if(isF) f=`<button class="btn btn-secondary" disabled>Clase Llena</button>`;
-            else f=`<button class="btn btn-success" onclick="handleClassReservation(${c.id})"><i class="fas fa-check me-2"></i>Inscribirme</button>`;
-            
-            document.getElementById('mainModalTitle').innerText=c.title;
-            document.getElementById('mainModalBody').innerHTML=b;
-            document.getElementById('mainModalFooter').innerHTML=f;
-            mainModal.show();
-        }
-
-        // *** NUEVO SISTEMA DE MODALES PARA CLASES ***
-        function showClassFormModal(event = null) {
-            const isEdit = event !== null;
-            const classData = isEdit ? event.extendedProps.classData : {};
-            const startDate = isEdit ? new Date(classData.start) : new Date();
-            const dateValue = startDate.toISOString().split('T')[0];
-            const timeValue = startDate.toTimeString().substring(0, 5);
-
-            const title = isEdit ? `Editar Clase: ${classData.title}` : 'Agendar Nueva Clase';
-            
-            let professorFieldHTML = '';
-            const professors = getProfessors();
-            if (appState.currentUser.role === 'admin') {
-                const options = professors.map(p => `<option value="${p.name}" ${isEdit && p.name === classData.teacher ? 'selected' : ''}>${p.name}</option>`).join('');
-                professorFieldHTML = `<div class="col-12"><label class="form-label">Profesor</label><select id="class-teacher" class="form-select" required>${options}</select></div>`;
-            } else { // Professor role
-                professorFieldHTML = `<div class="col-12"><label class="form-label">Profesor</label><input type="text" id="class-teacher" class="form-control" value="${appState.currentUser.name}" disabled></div>`;
-            }
-
-            const bodyHTML = `
-                <form id="class-form" onsubmit="event.preventDefault(); handleSaveClass(${isEdit ? classData.id : null});">
-                    <div class="row g-3">
-                        <div class="col-12"><label class="form-label">Título de la Clase</label><input type="text" id="class-title" class="form-control" value="${isEdit ? classData.title : ''}" required></div>
-                        <div class="col-md-6"><label class="form-label">Fecha</label><input type="date" id="class-date" class="form-control" value="${dateValue}" required></div>
-                        <div class="col-md-6"><label class="form-label">Hora</label><input type="time" id="class-time" class="form-control" value="${timeValue}" required></div>
-                        <div class="col-md-6"><label class="form-label">Cupos</label><input type="number" id="class-spots" class="form-control" value="${isEdit ? classData.spots : ''}" required></div>
-                        ${professorFieldHTML.replace('<div class="col-12">', '<div class="col-md-6">')}
+                professor: () => `<h3>Dashboard del Profesor</h3><p class="text-muted">Resumen de tus actividades para hoy, ${GymApp.state.currentUser.name}.</p><div class="row"><div class="col-md-6 mb-4"><div class="card h-100"><div class="card-header"><h5>Mis Clases de Hoy</h5></div><ul class="list-group list-group-flush">${GymApp.state.data.gymData.classes.filter(c=>c.teacher===GymApp.state.currentUser.name&&new Date(c.start).toDateString()===new Date().toDateString()).map(c=>`<li class="list-group-item d-flex justify-content-between align-items-center">${c.title}<span class="badge bg-primary rounded-pill">${new Date(c.start).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'})}</span></li>`).join('')||'<li class="list-group-item text-center text-muted">No tienes clases hoy.</li>'}</ul></div></div><div class="col-md-6 mb-4"><div class="card h-100"><div class="card-header"><h5>Mis Alumnos</h5></div><ul class="list-group list-group-flush">${Object.values(GymApp.state.data.users).filter(u => u.role === 'student' && u.professorId === GymApp.state.currentUser.id).slice(0, 5).map(m=>`<li class="list-group-item">${m.name}</li>`).join('') || '<li class="list-group-item text-center text-muted">Aún no tienes alumnos.</li>'}</ul></div></div></div>`,
+                student: () => { const s = GymApp.state.currentUser; const planDetails = GymApp.getUserPlanDetails(s); const goal = 20; const progress = Math.min((s.attendance / goal) * 100, 100); const isClaimable = s.attendance >= goal; return `<h3>Mi Dashboard</h3><p class="text-muted">¡Bienvenido de vuelta, ${s.name}!</p><div class="row"><div class="col-lg-7 mb-4"><div class="card h-100 ${isClaimable ? 'border-success' : ''}"><div class="card-body"><h5 class="card-title mb-3"><i class="fas fa-trophy me-2 ${isClaimable ? 'text-warning' : 'text-muted'}"></i>Metas y Recompensas</h5><p class="mb-1"><strong>Asistencia este mes:</strong> ${s.attendance} / ${goal} días.</p><div class="progress mb-3" style="height:1.5rem;"><div class="progress-bar bg-success rounded" style="width:${progress}%;">${Math.round(progress)}%</div></div><div class="d-grid"><button class="btn ${isClaimable ? 'btn-success' : 'btn-secondary'}" ${!isClaimable ? 'disabled' : ''}>${isClaimable ? '¡Reclamar Recompensa!' : `Faltan ${goal - s.attendance} días`}</button></div></div></div></div><div class="col-lg-5 mb-4"><div class="card h-100"><div class="card-body text-center d-flex flex-column justify-content-center"><h5 class="card-title"><i class="fas fa-id-card me-2 text-primary"></i>Estado de Membresía</h5><p class="fs-4"><strong>${planDetails.name}</strong></p><p>Estado: <span class="badge fs-6 ${planDetails.status === 'Activo' ? 'bg-success' : 'bg-danger'}">${planDetails.status}</span></p></div></div></div></div>`; }
+            },
+            crm: () => `<h3><i class="fas fa-users me-2"></i>CRM de Socios</h3><div class="card"><div class="card-body"><div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2"><div class="search-input-group flex-grow-1" style="max-width: 400px;"><i class="fas fa-search"></i><input type="text" class="form-control" placeholder="Buscar socio..." onkeyup="GymApp.filterTable(this.value, 'crm-table-body')"></div><div class="btn-group"><button class="btn btn-primary" onclick="GymApp.showCreateUserModal()"><i class="fas fa-user-plus me-2"></i>Nuevo</button><button class="btn btn-outline-secondary" onclick="GymApp.exportCRM()"><i class="fas fa-download me-2"></i>Exportar CSV</button></div></div><div class="table-responsive"><table class="table table-hover align-middle"><thead><tr><th>ID</th><th>Nombre</th><th>Plan</th><th>Vigencia</th><th>Estado</th><th>Profesor Asignado</th><th class="text-end">Acciones</th></tr></thead><tbody id="crm-table-body"></tbody></table></div></div></div>`,
+            plans: () => `<div class="d-flex justify-content-between align-items-center mb-4"><h3><i class="fas fa-id-card me-2"></i>Catálogo de Planes</h3><button class="btn btn-primary" onclick="GymApp.showPlanFormModal()"><i class="fas fa-plus me-2"></i>Crear Plan</button></div><div id="plans-container" class="row"></div>`,
+            billing: () => {
+                const isAdmin = GymApp.state.currentUser.role === 'admin';
+                return `
+                <div id="admin-billing-view" style="display:${isAdmin ? 'block' : 'none'}">
+                    <h3><i class="fas fa-cash-register me-2"></i>Punto de Venta (POS)</h3>
+                    <div class="row">
+                        <div class="col-lg-7 mb-4"><div class="card h-100"><div class="card-header"><h5>Productos</h5></div><div class="card-body"><div id="pos-items" class="list-group"></div></div></div></div>
+                        <div class="col-lg-5 mb-4"><div class="card h-100"><div class="card-header"><h5>Carrito</h5></div><div class="card-body d-flex flex-column"><ul id="pos-cart" class="list-group mb-3 flex-grow-1"></ul><hr><div class="d-flex justify-content-between align-items-center"><h4>Total:</h4><h4 class="fw-bold">$<span id="pos-total">0.00</span></h4></div><button class="btn btn-success w-100 mt-3" onclick="GymApp.processPayment()"><i class="fas fa-check me-2"></i>Procesar Pago</button></div></div></div>
                     </div>
-                </form>`;
+                </div>
+                <div id="student-billing-view" style="display:${!isAdmin ? 'block' : 'none'}">
+                     <h3><i class="fas fa-wallet me-2"></i>Mi Plan y Pagos</h3>
+                    <div class="row">
+                        <div class="col-lg-5 mb-4">
+                            <div class="card plan-card h-100">
+                                <div class="card-header py-3"><h4 class="my-0 fw-normal" id="student-plan-name">Cargando...</h4></div>
+                                <div class="card-body d-flex flex-column text-center">
+                                    <div class="d-flex justify-content-between align-items-center mb-3">
+                                        <h5 class="card-title mb-0">Estado</h5>
+                                        <span class="badge fs-6" id="student-plan-status"></span>
+                                    </div>
+                                    <div class="d-flex justify-content-between align-items-center mb-3">
+                                        <h5 class="card-title mb-0">Periodo</h5>
+                                        <strong id="student-plan-period"></strong>
+                                    </div>
+                                    <hr>
+                                    <h5 class="mb-3">Beneficios</h5>
+                                    <ul id="student-plan-benefits" class="list-unstyled text-start flex-grow-1"></ul>
+                                    <button class="btn btn-light mt-auto" onclick="GymApp.showToast('Info', 'Función no implementada.')">Renovar / Cambiar Plan</button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-7 mb-4">
+                            <div class="card h-100">
+                                <div class="card-header"><h5>Historial de Pagos</h5></div>
+                                <div class="card-body table-responsive">
+                                    <table class="table table-hover">
+                                        <thead><tr><th>Fecha</th><th>Descripción</th><th>Monto</th><th>Estado</th><th class="text-end">Comprobante</th></tr></thead>
+                                        <tbody><tr><td>2025-10-01</td><td>Membresía Mensual Fit</td><td>$49.99</td><td><span class="badge bg-success">Pagado</span></td><td class="text-end"><a href="#" class="btn btn-sm btn-outline-primary"><i class="fas fa-download me-1"></i></a></td></tr></tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>`;
+            },
+            schedule: () => `<div class="d-flex justify-content-between align-items-center mb-4"><h3 id="schedule-title" class="mb-0"></h3><button id="add-class-btn" class="btn btn-primary"><i class="fas fa-plus me-2"></i>Agendar Clase</button></div><div class="card"><div class="card-body p-lg-4 p-md-3 p-2"><div id="calendar"></div></div></div>`,
+            'attendance-log': () => `<h3><i class="fas fa-clipboard-list me-2"></i>Registro de Asistencia</h3><div class="card"><div class="card-body"><div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2"><div class="search-input-group flex-grow-1" style="max-width: 400px;"><i class="fas fa-search"></i><input type="text" class="form-control" placeholder="Buscar socio..." onkeyup="GymApp.filterTable(this.value, 'attendance-table-body')"></div></div><div class="table-responsive"><table class="table table-hover align-middle"><thead><tr><th>Socio</th><th>Fecha</th><th>Hora de Entrada</th></tr></thead><tbody id="attendance-table-body"></tbody></table></div></div></div>`,
+            inventory: () => `<h3><i class="fas fa-boxes me-2"></i>Gestión de Inventario</h3><div class="card"><div class="card-body"><div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2"><div class="search-input-group flex-grow-1" style="max-width: 400px;"><i class="fas fa-search"></i><input type="text" class="form-control" placeholder="Buscar producto..." onkeyup="GymApp.filterTable(this.value, 'inventory-table-body')"></div><div class="btn-group"><button class="btn btn-primary" onclick="GymApp.showProductFormModal()"><i class="fas fa-plus me-2"></i>Añadir</button><button class="btn btn-outline-secondary" onclick="GymApp.exportInventory()"><i class="fas fa-download me-2"></i>Exportar CSV</button></div></div><div class="table-responsive"><table class="table table-hover align-middle"><thead><tr><th>SKU</th><th>Producto</th><th>Stock</th><th>Precio</th><th class="text-end">Acciones</th></tr></thead><tbody id="inventory-table-body"></tbody></table></div></div></div>`,
+            profile: () => { const user = GymApp.state.currentUser; const initials = user.name.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase(); return `<h3>Mi Perfil</h3><div class="card"><div class="card-body p-4"><div class="row align-items-center"><div class="col-lg-4 text-center mb-4 mb-lg-0"><div class="profile-avatar" style="width:150px;height:150px;font-size:4rem;margin:0 auto;border-width:4px;">${initials}</div><button class="btn btn-secondary mt-3" onclick="GymApp.showToast('Info','Función no implementada.')"><i class="fas fa-camera me-2"></i>Cambiar Foto</button></div><div class="col-lg-8"><h5 class="card-title mb-3">Datos Personales</h5><form id="profile-form" onsubmit="GymApp.handleProfileUpdate(event)"><div class="mb-3"><label class="form-label">Nombre Completo</label><input type="text" id="profile-input-name" class="form-control" value="${user.name}" required></div><div class="mb-3"><label class="form-label">Email</label><input type="email" id="profile-input-email" class="form-control" value="${user.profile.email}" required></div><button type="submit" class="btn btn-primary"><i class="fas fa-save me-2"></i>Guardar Cambios</button></form></div></div></div></div>`; },
+            'routine-builder': () => `<h3><i class="fas fa-dumbbell me-2"></i>Constructor de Rutinas</h3><div class="row"><div class="col-md-4 mb-4"><div class="card h-100"><div class="card-header"><h5>Mis Alumnos</h5></div><div id="professor-student-list" class="list-group list-group-flush"></div></div></div><div class="col-md-8 mb-4"><div class="card h-100"><div class="card-header" id="routine-builder-header"><h5>Selecciona un alumno</h5></div><div class="card-body" id="routine-builder-body"><p class="text-muted">Elige un alumno de la lista para ver y editar su rutina.</p></div></div></div></div>`,
+            'manage-students': () => `<h3><i class="fas fa-users-cog me-2"></i>Gestionar Alumnos</h3><div class="row"><div class="col-lg-6 mb-4"><div class="card h-100"><div class="card-header"><h5>Mis Alumnos</h5></div><ul id="my-students-list" class="list-group list-group-flush"></ul></div></div><div class="col-lg-6 mb-4"><div class="card h-100"><div class="card-header"><h5>Alumnos sin Asignar</h5></div><ul id="unassigned-students-list" class="list-group list-group-flush"></ul></div></div></div>`,
+            evaluations: () => `<h3><i class="fas fa-clipboard-list me-2"></i>Evaluaciones Físicas</h3><div class="card"><div class="card-body"><label class="form-label">Seleccionar Alumno</label><select class="form-select mb-3" onchange="GymApp.renderEvaluationForStudent(this.value)"><option selected value="">Elige un alumno...</option>${Object.values(GymApp.state.data.users).filter(u => u.role === 'student').map(m=>`<option value="${m.id}">${m.name}</option>`).join('')}</select><div id="evaluation-content"><p class="text-muted">Selecciona un alumno para ver su historial o añadir una nueva evaluación.</p></div></div></div>`,
+            'my-routine': () => `<div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2"><div><h3><i class="fas fa-dumbbell me-2"></i>Mi Rutina Semanal</h3><p class="text-muted mb-0">Esta es tu rutina asignada. ¡A entrenar!</p></div></div><div id="routine-cards-container"></div>`,
+            'my-progress': () => `<h3><i class="fas fa-chart-line me-2"></i>Seguimiento Físico</h3><p class="text-muted">Registra tu progreso y visualiza tu evolución.</p><div class="row"><div class="col-12 mb-4"><div class="card"><div class="card-header"><h5>Registrar Nuevo Progreso</h5></div><div class="card-body"><form id="progress-form" onsubmit="GymApp.handleAddProgress(event)"><div class="row g-3"><div class="col-md-3 col-6"><label class="form-label">Peso (kg)</label><input type="number" step="0.1" class="form-control" id="progress-weight" required></div><div class="col-md-3 col-6"><label class="form-label">% Grasa</label><input type="number" step="0.1" class="form-control" id="progress-bodyfat"></div><div class="col-md-2 col-4"><label class="form-label">Pecho</label><input type="number" class="form-control" id="progress-chest"></div><div class="col-md-2 col-4"><label class="form-label">Cintura</label><input type="number" class="form-control" id="progress-waist"></div><div class="col-md-2 col-4"><label class="form-label">Cadera</label><input type="number" class="form-control" id="progress-hips"></div><div class="col-12 d-grid mt-3"><button type="submit" class="btn btn-primary"><i class="fas fa-plus me-2"></i>Añadir Registro</button></div></div></form></div></div></div><div class="col-lg-6 mb-4"><div class="card h-100"><div class="card-body"><h5 class="card-title">Peso y % Grasa Corporal</h5><div style="height:350px;"><canvas id="weightChart"></canvas></div></div></div></div><div class="col-lg-6 mb-4"><div class="card h-100"><div class="card-body"><h5 class="card-title">Medidas Corporales (cm)</h5><div style="height:350px;"><canvas id="measurementsChart"></canvas></div></div></div></div></div>`,
+            'my-classes': () => `<h3><i class="fas fa-history me-2"></i>Mis Clases</h3><div class="card"><div class="card-header"><h5>Clases Inscritas</h5></div><div id="my-classes-list" class="list-group list-group-flush"></div></div>`
+        };
+
+        Object.assign(GymApp, {
+            templates: GymApp.templates,
+            getUserPlanDetails(user) { if (!user.planId) { return { name: 'Sin Plan', status: 'Inactivo', startDate: 'N/A', endDate: 'N/A', benefits: [] }; } const plan = this.state.data.gymData.membershipPlans.find(p => p.id === user.planId); if (!plan) { return { name: 'Plan Desconocido', status: 'Error', startDate: 'N/A', endDate: 'N/A', benefits: [] }; } const startDate = new Date(user.membershipStartDate); const endDate = new Date(startDate); endDate.setDate(startDate.getDate() + plan.durationDays); const status = new Date() > endDate ? 'Vencido' : 'Activo'; return { ...plan, startDate: startDate.toLocaleDateString(), endDate: endDate.toLocaleDateString(), status }; },
+            updateAdminCRMTable() { const tbody = document.getElementById('crm-table-body'); if(tbody) tbody.innerHTML = Object.values(this.state.data.users).filter(u => u.role === 'student').map(m => { const planDetails = this.getUserPlanDetails(m); const professor = Object.values(this.state.data.users).find(u => u.id === m.professorId); return `<tr data-name="${m.name.toLowerCase()}"><td>${m.id}</td><td>${m.name}</td><td>${planDetails.name}</td><td>${planDetails.startDate} - ${planDetails.endDate}</td><td><span class="badge ${planDetails.status === 'Activo' ? 'bg-success' : 'bg-danger'}">${planDetails.status}</span></td><td>${professor ? professor.name : 'Sin Asignar'}</td><td class="text-end"><button class="btn btn-sm btn-info text-white" onclick="GymApp.showEditUserModal(${m.id})"><i class="fas fa-edit"></i></button></td></tr>`}).join(''); },
+            updateAdminPlansUI() { const container = document.getElementById('plans-container'); if(container) container.innerHTML = this.state.data.gymData.membershipPlans.map(p=>`<div class="col-lg-4 col-md-6 mb-4"><div class="card plan-card"><div class="card-header py-3"><h4 class="my-0 fw-normal">${p.name}</h4></div><div class="card-body text-center d-flex flex-column"><h1 class="card-title price">$${p.price}<span class="duration" style="font-size:1rem;font-weight:400;opacity:0.8;">/${p.durationDays>31?'año':'mes'}</span></h1><p class="flex-grow-1">${p.description}</p><ul class="list-group list-group-flush mb-3">${p.benefits.map(b => `<li class="list-group-item"><i class="fas fa-check text-success me-2"></i>${b}</li>`).join('')}</ul><button class="btn btn-outline-primary mt-auto" onclick="GymApp.showPlanFormModal(${p.id})"><i class="fas fa-edit me-2"></i>Editar Plan</button></div></div></div>`).join(''); },
+            updateAdminInventoryTable() { const tbody = document.getElementById('inventory-table-body'); if(tbody) tbody.innerHTML = this.state.data.gymData.inventory.map(i=>`<tr data-name="${i.name.toLowerCase()}"><td>${i.sku}</td><td>${i.name}</td><td>${i.stock}</td><td>$${i.price.toFixed(2)}</td><td class="text-end"><button class="btn btn-sm btn-info text-white" onclick="GymApp.showProductFormModal(${i.id})"><i class="fas fa-edit"></i></button></td></tr>`).join(''); },
+            updateAdminPosItems() { const container = document.getElementById('pos-items'); if(container) container.innerHTML = this.state.data.gymData.inventory.map(item => `<a href="#" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center" onclick="GymApp.addToCart(${item.id})"><span>${item.name}</span><span class="fw-bold text-primary">$${item.price.toFixed(2)}</span></a>`).join(''); },
+            updateCart() { const cartList = document.getElementById('pos-cart'), totalEl = document.getElementById('pos-total'); let total = 0; if (this.state.data.gymData.cart.length === 0) { cartList.innerHTML = '<li class="list-group-item">El carrito está vacío.</li>'; } else { cartList.innerHTML = this.state.data.gymData.cart.map(item => { total += item.price * item.quantity; return `<li class="list-group-item d-flex justify-content-between"><span>${item.name}(x${item.quantity})</span><span>$${(item.price * item.quantity).toFixed(2)}</span></li>`; }).join(''); } totalEl.innerText = total.toFixed(2); },
+            addToCart(itemId) { const item = this.state.data.gymData.inventory.find(i => i.id === itemId); if (item && item.stock > 0) { const cartItem = this.state.data.gymData.cart.find(c => c.id === itemId); if (cartItem) {if(item.stock > cartItem.quantity) cartItem.quantity++; else this.showToast('Stock insuficiente', '', 'warning');} else { this.state.data.gymData.cart.push({ ...item, quantity: 1 }); } this.updateCart(); } else { this.showToast('Sin Stock', 'Este producto no está disponible.', 'error'); }},
+            processPayment() { if (this.state.data.gymData.cart.length > 0) { this.state.data.gymData.cart.forEach(cartItem => { const inventoryItem = this.state.data.gymData.inventory.find(invItem => invItem.id === cartItem.id); if(inventoryItem) inventoryItem.stock -= cartItem.quantity; }); this.showToast('Pago Procesado', `Venta por $${document.getElementById('pos-total').innerText} completada.`); this.state.data.gymData.cart = []; this.updateCart(); this.saveState(); } else { this.showToast('Carrito Vacío', 'Agrega productos al carrito.', 'warning'); } },
+            updateStudentPlanUI() { const planDetails = this.getUserPlanDetails(this.state.currentUser); const nameEl = document.getElementById('student-plan-name'); const statusEl = document.getElementById('student-plan-status'); const periodEl = document.getElementById('student-plan-period'); const benefitsEl = document.getElementById('student-plan-benefits'); if (nameEl && statusEl && periodEl && benefitsEl) { nameEl.innerText = planDetails.name; statusEl.innerText = planDetails.status; statusEl.className = `badge fs-6 ${planDetails.status === 'Activo' ? 'bg-success' : 'bg-danger'}`; periodEl.innerText = `${planDetails.startDate} - ${planDetails.endDate}`; benefitsEl.innerHTML = planDetails.benefits.map(b => `<li class="mb-2"><i class="fas fa-check-circle text-success me-2"></i>${b}</li>`).join(''); } },
+            updateStudentClassesHistory() { const l=document.getElementById('my-classes-list');if(!l)return;const c=this.state.data.gymData.classes.filter(c=>c.reservedBy.includes(this.state.currentUser.id));if(c.length===0){l.innerHTML='<li class="list-group-item text-center text-muted">No estás inscrito en ninguna clase.</li>';return;}l.innerHTML=c.map(c=>`<li class="list-group-item d-flex justify-content-between align-items-center"><div><strong>${c.title}</strong><br><small class="text-muted">${new Date(c.start).toLocaleString('es-ES',{weekday:'long',month:'long',day:'numeric',hour:'2-digit',minute:'2-digit'})}</small></div><button class="btn btn-sm btn-outline-danger" onclick="GymApp.handleClassReservation(${c.id})"><i class="fas fa-times me-1"></i>Cancelar</button></li>`).join(''); },
+            updateStudentCharts() { Object.values(this.charts).forEach(c => c.destroy()); const p=this.state.currentUser.progress; const d=this.state.currentTheme==='dark'; const g=d?'rgba(255,255,255,0.1)':'rgba(0,0,0,0.1)'; const t=d?'#E0E0E0':'#666'; const o={responsive:true,maintainAspectRatio:false,scales:{x:{ticks:{color:t},grid:{color:g}},y:{type:'linear',display:true,position:'left',ticks:{color:t},grid:{color:g}}},plugins:{legend:{labels:{color:t}}}}; const wC=document.getElementById('weightChart'); if(wC)this.charts.weight=new Chart(wC.getContext('2d'),{type:'line',data:{labels:p.labels,datasets:[{label:'Peso (kg)',data:p.weights,borderColor:'var(--primary-color)',yAxisID:'y'},{label:'% Grasa',data:p.bodyFat,borderColor:'var(--danger-color)',yAxisID:'y1'}]},options:{...o,scales:{...o.scales,y1:{type:'linear',display:true,position:'right',grid:{drawOnChartArea:false},ticks:{color:t}}}}}); const mC=document.getElementById('measurementsChart'); if(mC)this.charts.measurements=new Chart(mC.getContext('2d'),{type:'line',data:{labels:p.labels,datasets:[{label:'Pecho (cm)',data:p.measurements.chest,borderColor:'var(--success-color)'},{label:'Cintura (cm)',data:p.measurements.waist,borderColor:'var(--warning-color)'},{label:'Cadera (cm)',data:p.measurements.hips,borderColor:'var(--info-color)'}]},options:o}); },
+            updateManageStudentsUI() { const myStudentsList = document.getElementById('my-students-list'); const unassignedList = document.getElementById('unassigned-students-list'); const students = Object.values(this.state.data.users).filter(u => u.role === 'student'); const myStudents = students.filter(s => s.professorId === this.state.currentUser.id); const unassignedStudents = students.filter(s => !s.professorId); if(myStudents.length > 0) { myStudentsList.innerHTML = myStudents.map(s => `<li class="list-group-item d-flex justify-content-between align-items-center">${s.name}<button class="btn btn-sm btn-outline-primary" onclick="GymApp.navigateTo('routine-builder'); setTimeout(() => GymApp.loadRoutineForStudent(${s.id}, document.querySelector('[data-student-id=\'${s.id}\']')), 50);">Ver Rutina</button></li>`).join(''); } else { myStudentsList.innerHTML = `<li class="list-group-item text-muted text-center">No tienes alumnos asignados.</li>`; } if(unassignedStudents.length > 0) { unassignedList.innerHTML = unassignedStudents.map(s => `<li class="list-group-item d-flex justify-content-between align-items-center">${s.name}<button class="btn btn-sm btn-success" onclick="GymApp.claimStudent(${s.id})">Tomar Alumno</button></li>`).join(''); } else { unassignedList.innerHTML = `<li class="list-group-item text-muted text-center">No hay alumnos sin asignar.</li>`; } },
+            claimStudent(studentId) { const student = Object.values(this.state.data.users).find(u=>u.id === studentId); if(student) { student.professorId = this.state.currentUser.id; this.saveState(); this.showToast('¡Éxito!', `${student.name} ha sido asignado a tu lista.`, 'success'); this.updateManageStudentsUI(); } },
             
-            let footerHTML = `<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>`;
-            if (isEdit) {
-                footerHTML += `<button type="button" class="btn btn-danger me-auto" onclick="handleDeleteClass(${classData.id})"><i class="fas fa-trash-alt me-2"></i>Eliminar</button>`;
-            }
-            footerHTML += `<button type="submit" form="class-form" class="btn btn-primary"><i class="fas fa-save me-2"></i>Guardar Cambios</button>`;
+            initializeCalendar(role) {
+                if (this.calendar) this.calendar.destroy();
+                const el = document.getElementById('calendar');
+                if (!el) return;
 
-            document.getElementById('mainModalTitle').innerText = title;
-            document.getElementById('mainModalBody').innerHTML = bodyHTML;
-            document.getElementById('mainModalFooter').innerHTML = footerHTML;
-            mainModal.show();
-        }
+                const isMobile = window.innerWidth < 768;
 
-        function handleSaveClass(classId = null) {
-            const isEdit = classId !== null;
-            const title = document.getElementById('class-title').value;
-            const date = document.getElementById('class-date').value;
-            const time = document.getElementById('class-time').value;
-            const spots = parseInt(document.getElementById('class-spots').value);
-            const teacher = document.getElementById('class-teacher').value;
-            const start = `${date}T${time}:00`;
-
-            if (!title || !date || !time || !spots || !teacher) {
-                showToast('Error', 'Todos los campos son obligatorios.', 'danger');
-                return;
-            }
-
-            if (isEdit) {
-                const classIndex = appState.gymData.classes.findIndex(c => c.id === classId);
-                if (classIndex > -1) {
-                    appState.gymData.classes[classIndex] = { ...appState.gymData.classes[classIndex], title, start, spots, teacher };
-                    showToast('Clase Actualizada', `La clase "${title}" se actualizó correctamente.`);
-                }
-            } else {
-                const newClass = { id: Date.now(), title, start, spots, teacher, reservedBy: [] };
-                appState.gymData.classes.push(newClass);
-                showToast('Clase Creada', `La clase "${title}" ha sido agendada.`);
-            }
-            
-            mainModal.hide();
-            calendar.refetchEvents();
-        }
-
-        function handleDeleteClass(classId) {
-            if (window.confirm('¿Estás seguro de que quieres eliminar esta clase? Esta acción no se puede deshacer.')) {
-                appState.gymData.classes = appState.gymData.classes.filter(c => c.id !== classId);
-                mainModal.hide();
-                calendar.refetchEvents();
-                showToast('Clase Eliminada', 'La clase ha sido eliminada del calendario.', 'success');
-            }
-        }
-        
-        function updateStudentCharts() { Object.values(charts).forEach(c=>c.destroy()); const p = appState.currentUser.progress; const wC = document.getElementById('weightChart'); const mC = document.getElementById('measurementsChart'); if(!wC || !mC) return; charts.weight = new Chart(wC.getContext('2d'),{type:'line',data:{labels:p.labels,datasets:[{label:'Peso (kg)',data:p.weights,borderColor:'var(--primary-color)',yAxisID:'y'},{label:'% Grasa',data:p.bodyFat,borderColor:'var(--danger-color)',yAxisID:'y1'}]},options:{scales:{y:{type:'linear',display:true,position:'left'},y1:{type:'linear',display:true,position:'right',grid:{drawOnChartArea:false}}}}}); charts.measurements = new Chart(mC.getContext('2d'), {type:'line', data:{labels:p.labels, datasets:[{label:'Pecho (cm)',data:p.measurements.chest,borderColor:'var(--success-color)'},{label:'Cintura (cm)',data:p.measurements.waist,borderColor:'var(--warning-color)'},{label:'Cadera (cm)',data:p.measurements.hips,borderColor:'var(--info-color)'}]}}); }
-        function showToast(title,body,type='success'){const tE=document.getElementById('appToast'),tI=tE.querySelector('.toast-header i');tE.classList.remove('bg-success','bg-danger','bg-warning','bg-info','text-white');tI.className='rounded me-2';const tM={success:{bg:'bg-success',icon:'fa-check-circle'},danger:{bg:'bg-danger',icon:'fa-times-circle'},warning:{bg:'bg-warning',icon:'fa-exclamation-triangle'},info:{bg:'bg-info',icon:'fa-info-circle'}};if(tM[type]){tE.classList.add(tM[type].bg,'text-white');tI.classList.add('fas',tM[type].icon);}document.getElementById('toast-title').innerText=title;document.getElementById('toast-body').innerText=body;appToast.show();}
-
-        // === FUNCIONES DE PROFESOR (Rutinas, Evaluaciones) ===
-        function loadRoutineForStudent(id, el) { document.querySelectorAll('#professor-student-list .list-group-item').forEach(e=>e.classList.remove('active')); el.classList.add('active'); const s=appState.gymData.members.find(m=>m.id===id); document.getElementById('routine-builder-header').innerHTML=`<h5>Editando rutina de: <strong>${s.name}</strong></h5>`; const r=appState.users.student.routine; let rHTML=Object.keys(r).map(d=>`<div class="mb-3"><label class="form-label fw-bold">${d}</label><textarea class="form-control" rows="3">${r[d].exercises.map(ex => `${ex.name} - ${ex.series}x${ex.reps} ${ex.weight}`).join('\n')}</textarea></div>`).join(''); document.getElementById('routine-builder-body').innerHTML=`${rHTML}<button class="btn btn-primary w-100" onclick="saveStudentRoutine(${id})"><i class="fas fa-save me-2"></i>Guardar Cambios</button>`; }
-        function saveStudentRoutine(id) { showToast('Rutina Guardada',`La rutina para ${appState.gymData.members.find(m=>m.id===id).name} ha sido actualizada.`); }
-        function showStudentEvaluation(id) { const contentEl = document.getElementById('evaluation-content'); if(!id) { contentEl.innerHTML = ''; return; } const student = appState.users.student; let historyHTML = student.evaluations.map(ev => `<tr><td>${new Date(ev.date).toLocaleDateString()}</td><td>${ev.weight} kg</td><td>${ev.bodyFat}%</td><td>${ev.measurements.chest} cm</td><td>${ev.measurements.waist} cm</td><td>${ev.measurements.hips} cm</td><td>${ev.notes}</td></tr>`).reverse().join('') || '<tr><td colspan="7" class="text-center">No hay registros.</td></tr>'; contentEl.innerHTML = `<hr><h4>Añadir Nueva Evaluación para ${student.name}</h4><div class="card p-3 mb-4"><form id="eval-form" onsubmit="handleAddEvaluation(event, ${id})"><div class="row g-3"><div class="col-md-4"><label class="form-label">Peso (kg)</label><input name="eval-weight" type="number" step="0.1" class="form-control" required></div><div class="col-md-4"><label class="form-label">% Grasa</label><input name="eval-bodyfat" type="number" step="0.1" class="form-control" required></div><div class="col-md-4"><label class="form-label">Pecho (cm)</label><input name="eval-chest" type="number" step="0.1" class="form-control" required></div><div class="col-md-4"><label class="form-label">Cintura (cm)</label><input name="eval-waist" type="number" step="0.1" class="form-control" required></div><div class="col-md-4"><label class="form-label">Cadera (cm)</label><input name="eval-hips" type="number" step="0.1" class="form-control" required></div><div class="col-12"><label class="form-label">Notas</label><textarea name="eval-notes" class="form-control" rows="2"></textarea></div><div class="col-12 d-grid"><button type="submit" class="btn btn-primary">Añadir Registro</button></div></div></form></div><hr><h4>Historial de Evaluaciones</h4><div class="table-responsive"><table class="table table-striped table-sm"><thead><tr><th>Fecha</th><th>Peso</th><th>% Grasa</th><th>Pecho</th><th>Cintura</th><th>Cadera</th><th>Notas</th></tr></thead><tbody>${historyHTML}</tbody></table></div>`; }
-
-        // === GAMIFICATION ===
-        function renderGamificationOnDashboard(){ const section = document.getElementById('gamification-dashboard-section'); if(!section) return; const { attendance } = appState.currentUser, goal = 20, progress = Math.min((attendance/goal)*100, 100), isClaimable = attendance >= goal; section.innerHTML = `<div class="card h-100 ${isClaimable ? 'border-success' : ''}"><div class="card-body"><h5 class="card-title"><i class="fas fa-trophy me-2 ${isClaimable ? 'text-warning' : ''}"></i>Metas y Recompensas</h5><p class="mb-1"><strong>Asistencia este mes:</strong> ${attendance} / ${goal} días.</p><div class="progress mb-3" style="height:1.25rem;"><div class="progress-bar bg-success" style="width:${progress}%;">${Math.round(progress)}%</div></div><div class="d-grid"><button class="btn ${isClaimable?'btn-success':'btn-secondary'}" ${!isClaimable?'disabled':''}>${isClaimable?'¡Reclamar Recompensa!':`Faltan ${goal-attendance} días`}</button></div></div></div>`; }
-
-        // --- INICIO DE LA APP ---
-        document.addEventListener('DOMContentLoaded', () => {
-            const mainModalEl = document.getElementById('mainModal');
-            mainModal = new bootstrap.Modal(mainModalEl);
-            cancellationModal = new bootstrap.Modal(document.getElementById('cancellationModal'));
-            appToast = new bootstrap.Toast(document.getElementById('appToast'));
-
-            mainModalEl.addEventListener('shown.bs.modal', function (event) {
-                const calendarElContainer = document.getElementById('routine-history-calendar-container');
-                if (calendarElContainer && !historyCalendar) {
-                    const historyEvents = [];
-                    Object.values(appState.currentUser.routine).forEach(dayData => {
-                        dayData.completionHistory.forEach(date => {
-                            historyEvents.push({ start: date, display: 'background', color: 'var(--success-color)' });
-                        });
-                    });
+                this.calendar = new FullCalendar.Calendar(el, {
+                    initialView: 'dayGridMonth',
+                    locale: 'es',
+                    headerToolbar: {
+                        left: 'prev,next today',
+                        center: 'title',
+                        right: 'dayGridMonth,timeGridWeek,listWeek'
+                    },
+                    height: 'auto',
+                    dayMaxEvents: true, // <-- **LA SOLUCIÓN PRINCIPAL**
+                    titleFormat: isMobile ? { month: 'short', year: 'numeric' } : { month: 'long', year: 'numeric' },
+                    dayHeaderFormat: isMobile ? { weekday: 'narrow' } : { weekday: 'short' },
                     
-                    calendarElContainer.innerHTML = '';
-                    historyCalendar = new FullCalendar.Calendar(calendarElContainer, {
-                        initialView: 'dayGridMonth', locale: 'es', events: historyEvents,
-                        headerToolbar: { left: 'prev,next today', center: 'title', right: '' },
-                        dayCellClassNames: arg => historyEvents.some(e => e.start === arg.dateStr) ? ['completed-day'] : []
-                    });
-                    historyCalendar.render();
-                }
-            });
+                    events: (fetchInfo, successCallback, failureCallback) => {
+                        const eventData = this.state.data.gymData.classes.map(c => ({
+                            id: c.id,
+                            title: new Date(c.start).toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' }),
+                            start: c.start,
+                            extendedProps: { classData: c },
+                            backgroundColor: c.teacher === 'Carlos Rivas' ? 'var(--primary-color)' : 'var(--info-color)',
+                            borderColor: c.teacher === 'Carlos Rivas' ? 'var(--primary-color)' : 'var(--info-color)',
+                        }));
+                        successCallback(eventData);
+                    },
+                    eventClick: (info) => {
+                        const d = info.event.extendedProps.classData;
+                        if (role === 'admin' || role === 'professor') {
+                            this.showClassFormModal(d.id);
+                        } else {
+                            const r = d.reservedBy.includes(this.state.currentUser.id);
+                            const f = d.reservedBy.length >= d.spots;
+                            Swal.fire({
+                                title: d.title,
+                                html: `<p><strong>Profesor:</strong> ${d.teacher}</p><p><strong>Cupos:</strong> ${d.reservedBy.length} / ${d.spots}</p>`,
+                                icon: 'info',
+                                showCancelButton: true,
+                                confirmButtonText: r ? 'Cancelar Reserva' : (f ? 'Clase Llena' : 'Inscribirme'),
+                                confirmButtonColor: r ? 'var(--danger-color)' : 'var(--success-color)',
+                                cancelButtonText: 'Cerrar',
+                                preConfirm: () => this.handleClassReservation(d.id),
+                                allowOutsideClick: () => !Swal.isLoading()
+                            });
+                        }
+                    }
+                });
+                this.calendar.render();
+            },
 
-            mainModalEl.addEventListener('hidden.bs.modal', function () {
-                if (historyCalendar) {
-                    historyCalendar.destroy();
-                    historyCalendar = null;
-                }
-            });
-
-            renderAllSections();
+            handleClassReservation(id) {const c=this.state.data.gymData.classes.find(c=>c.id===id);const s=this.state.currentUser.id;const i=c.reservedBy.indexOf(s);if(i>-1){c.reservedBy.splice(i,1);this.showToast('Reserva Cancelada',`Cancelaste tu reserva para ${c.title}.`);}else if(c.reservedBy.length<c.spots){c.reservedBy.push(s);this.showToast('¡Inscrito!',`Te inscribiste a ${c.title}.`);}else{this.showToast('Error','Clase llena.','error');} if(this.calendar) this.calendar.refetchEvents(); this.updateStudentClassesHistory();this.saveState(); },
+            handleAddProgress(e) { e.preventDefault(); const p=this.state.currentUser.progress;p.labels.push(new Date().toLocaleString('es-ES',{month:'long'}));p.weights.push(parseFloat(document.getElementById('progress-weight').value)||p.weights.slice(-1)[0]);p.bodyFat.push(parseFloat(document.getElementById('progress-bodyfat').value)||p.bodyFat.slice(-1)[0]);p.measurements.chest.push(parseFloat(document.getElementById('progress-chest').value)||p.measurements.chest.slice(-1)[0]);p.measurements.waist.push(parseFloat(document.getElementById('progress-waist').value)||p.measurements.waist.slice(-1)[0]);p.measurements.hips.push(parseFloat(document.getElementById('progress-hips').value)||p.measurements.hips.slice(-1)[0]);this.updateStudentCharts();this.showToast('Progreso Guardado','Tu nuevo registro ha sido añadido.');this.saveState();e.target.reset(); },
+            handleProfileUpdate(e) { e.preventDefault(); this.state.currentUser.name = document.getElementById('profile-input-name').value; this.state.currentUser.profile.email = document.getElementById('profile-input-email').value; this.setupUIForRole(); this.showToast('Perfil Actualizado', 'Tus datos han sido guardados.'); this.saveState(); },
+            toggleCompletionForToday(day) { const routineDay = this.state.currentUser.routine[day]; const todayISO = new Date().toISOString().split('T')[0]; const index = routineDay.completionHistory.indexOf(todayISO); if (index > -1) { routineDay.completionHistory.splice(index, 1); this.showToast('Progreso desmarcado', `El día de hoy ya no está marcado.`); } else { routineDay.completionHistory.push(todayISO); this.showToast('¡Felicidades!', `Has completado la rutina de hoy.`, 'success'); } this.saveState(); this.updateStudentRoutineUI(); },
+            toggleRestDay(day, studentId) { const user = Object.values(this.state.data.users).find(u => u.id === studentId); if (!user) return; if (!user.routine[day]) user.routine[day] = { exercises: [], completionHistory: [], isRestDay: false }; user.routine[day].isRestDay = !user.routine[day].isRestDay; if (user.routine[day].isRestDay) { user.routine[day].exercises = []; } this.saveState(); const isOwnerView = studentId === this.state.currentUser.id; if (this.state.currentUser.role === 'professor' && !isOwnerView) { this.updateStudentRoutineUI(studentId); } else { this.updateStudentRoutineUI(); } },
+            deleteExercise(day, exerciseId, studentId) { Swal.fire({title:'¿Estás seguro?',text:"No podrás revertir esto.",icon:'warning',showCancelButton:true,confirmButtonText:'Sí, eliminar',cancelButtonText:'Cancelar'}).then(r=>{if(r.isConfirmed){const user=Object.values(this.state.data.users).find(u=>u.id===studentId);if(user&&user.routine[day]){user.routine[day].exercises=user.routine[day].exercises.filter(e=>e.id!==exerciseId);this.showToast('Eliminado','El ejercicio ha sido eliminado.','success');this.saveState(); const isOwnerView = studentId === this.state.currentUser.id; if(this.state.currentUser.role==='professor' && !isOwnerView){this.updateStudentRoutineUI(studentId);}else{this.updateStudentRoutineUI();}}}}); },
+            handleExerciseFormSubmit(event, day, exerciseId, studentId) { event.preventDefault(); const user = Object.values(this.state.data.users).find(u => u.id === studentId); if (!user) return; const form = event.target; const exerciseData = { name: form.elements.exerciseName.value, weight: form.elements.exerciseWeight.value || 'N/A', series: form.elements.exerciseSeries.value || 'N/A', reps: form.elements.exerciseReps.value || 'N/A' }; if (exerciseId) { const exercise = user.routine[day].exercises.find(ex => ex.id === exerciseId); if (exercise) Object.assign(exercise, exerciseData); } else { exerciseData.id = Date.now(); if (!user.routine[day]) user.routine[day] = { exercises: [], completionHistory:[], isRestDay: false }; user.routine[day].exercises.push(exerciseData); } this.showToast('Éxito', `Ejercicio ${exerciseId ? 'actualizado' : 'añadido'}.`, 'success'); this.mainModal.hide(); this.saveState(); const isOwnerView = studentId === this.state.currentUser.id; if (this.state.currentUser.role === 'professor' && !isOwnerView) { this.updateStudentRoutineUI(studentId); } else { this.updateStudentRoutineUI(); } },
+            showEditExerciseModal(day, exerciseId = null, studentId = null) { const isEdit = exerciseId !== null; const user = Object.values(this.state.data.users).find(u => u.id === studentId); if (!user) return; const exercise = isEdit ? user.routine[day].exercises.find(ex => ex.id === exerciseId) : {}; document.getElementById('mainModalTitle').innerText = isEdit ? `Editar Ejercicio: ${exercise.name}` : `Añadir Ejercicio a ${day}`; document.getElementById('mainModalBody').innerHTML = `<form id="exerciseForm"><div class="mb-3"><label class="form-label">Nombre del Ejercicio</label><input type="text" name="exerciseName" class="form-control" value="${isEdit ? exercise.name : ''}" required></div><div class="row"><div class="col-md-4 mb-3"><label class="form-label">Peso</label><input type="text" name="exerciseWeight" class="form-control" value="${isEdit ? exercise.weight : ''}"></div><div class="col-md-4 mb-3"><label class="form-label">Series</label><input type="number" name="exerciseSeries" class="form-control" value="${isEdit ? exercise.series : ''}"></div><div class="col-md-4 mb-3"><label class="form-label">Repeticiones</label><input type="text" name="exerciseReps" class="form-control" value="${isEdit ? exercise.reps : ''}"></div></div></form>`; document.getElementById('mainModalFooter').innerHTML = `<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button><button type="submit" form="exerciseForm" class="btn btn-primary">Guardar Cambios</button>`; document.getElementById('exerciseForm').onsubmit = (event) => this.handleExerciseFormSubmit(event, day, exerciseId, studentId); this.mainModal.show(); },
+            calculatePeakHours() { const hourlyCounts = Array(24).fill(0); this.state.data.gymData.attendanceLog.forEach(log => { const hour = new Date(log.timestamp).getHours(); hourlyCounts[hour]++; }); const labels = Array.from({length: 15}, (_, i) => i + 6).map(h => `${h}:00`); const data = hourlyCounts.slice(6, 21); return { labels, data }; },
+            renderAdminCharts() { Object.values(this.charts).forEach(c => c.destroy()); const isDark = this.state.currentTheme === 'dark'; const gridColor = isDark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)'; const textColor = isDark ? '#E0E0E0' : '#666'; const peakHoursData = this.calculatePeakHours(); const peakHoursCtx = document.getElementById('peakHoursChart')?.getContext('2d'); if(peakHoursCtx) this.charts.peakHours = new Chart(peakHoursCtx, { type: 'bar', data: { labels: peakHoursData.labels, datasets: [{ label: 'Nº de Asistencias', data: peakHoursData.data, backgroundColor: 'rgba(94, 92, 230, 0.6)', borderColor: 'var(--primary-color)', borderWidth: 1 }] }, options: { responsive: true, maintainAspectRatio: false, scales: { y: { beginAtZero: true, ticks: { color: textColor, stepSize: 1 }, grid: { color: gridColor } }, x: { ticks: { color: textColor }, grid: { color: gridColor } } }, plugins: { legend: { display: false } } } }); const revenueCtx = document.getElementById('revenueChart')?.getContext('2d'); if(revenueCtx) this.charts.revenue = new Chart(revenueCtx, { type: 'line', data: { labels: ['Julio', 'Agosto', 'Septiembre', 'Octubre'], datasets: [{ label: 'Ingresos', data: [9800, 11200, 10500, 12450], fill: false, borderColor: 'var(--success-color)', tension: 0.1 }] }, options: { responsive: true, maintainAspectRatio: false, scales: { y: { ticks: { color: textColor }, grid: { color: gridColor } }, x: { ticks: { color: textColor }, grid: { color: gridColor } } }, plugins: { legend: { display: false } } } }); const churnCtx = document.getElementById('churnChart')?.getContext('2d'); if(churnCtx) this.charts.churn = new Chart(churnCtx, { type: 'line', data: { labels: ['Julio', 'Agosto', 'Septiembre', 'Octubre'], datasets: [{ label: 'Tasa de Churn', data: [5.2, 4.8, 5.5, 4.1], fill: false, borderColor: 'var(--danger-color)', tension: 0.1 }] }, options: { responsive: true, maintainAspectRatio: false, scales: { y: { ticks: { callback: (value) => value + '%', color: textColor }, grid: { color: gridColor } }, x: { ticks: { color: textColor }, grid: { color: gridColor } } }, plugins: { legend: { display: false } } } }); },
+            exportToCSV(data, filename = 'export.csv') { const headers = Object.keys(data[0]); const csvRows = [headers.join(',')]; for (const row of data) { const values = headers.map(header => { const escaped = (''+row[header]).replace(/"/g, '\\"'); return `"${escaped}"`; }); csvRows.push(values.join(',')); } const blob = new Blob([csvRows.join('\n')], { type: 'text/csv' }); const url = window.URL.createObjectURL(blob); const a = document.createElement('a'); a.setAttribute('hidden', ''); a.setAttribute('href', url); a.setAttribute('download', filename); document.body.appendChild(a); a.click(); document.body.removeChild(a); },
+            exportCRM() { const members = Object.values(this.state.data.users).filter(u => u.role === 'student').map(user => { const planDetails = this.getUserPlanDetails(user); const professor = Object.values(this.state.data.users).find(u=> u.id === user.professorId); return { id: user.id, nombre: user.name, email: user.profile.email, plan: planDetails.name, estado_membresia: planDetails.status, fecha_fin: planDetails.endDate, profesor: professor ? professor.name : 'Sin Asignar' }; }); this.exportToCSV(members, 'socios_gymapp.csv'); },
+            exportInventory() { this.exportToCSV(this.state.data.gymData.inventory, 'inventario_gymapp.csv'); },
+            showCreateUserModal() { const plans = this.state.data.gymData.membershipPlans.map(p => `<option value="${p.id}">${p.name}</option>`).join(''); const professors = Object.values(this.state.data.users).filter(u => u.role === 'professor').map(p => `<option value="${p.id}">${p.name}</option>`).join(''); document.getElementById('mainModalTitle').innerText = 'Crear Nuevo Socio'; document.getElementById('mainModalBody').innerHTML = `<form id="userForm"><div class="row"><div class="col-md-6 mb-3"><label class="form-label">Nombre Completo</label><input type="text" name="userName" class="form-control" required></div><div class="col-md-6 mb-3"><label class="form-label">Email</label><input type="email" name="userEmail" class="form-control" required></div></div><div class="row"><div class="col-md-6 mb-3"><label class="form-label">Contraseña</label><input type="password" name="userPassword" class="form-control" required></div><div class="col-md-6 mb-3"><label class="form-label">Asignar Plan</label><select name="planId" class="form-select">${plans}</select></div></div><div class="mb-3"><label class="form-label">Asignar Profesor</label><select name="professorId" class="form-select"><option value="">Sin Asignar</option>${professors}</select></div></form>`; document.getElementById('mainModalFooter').innerHTML = `<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button><button type="submit" form="userForm" class="btn btn-primary">Crear Socio</button>`; document.getElementById('userForm').onsubmit = (event) => this.handleUserFormSubmit(event); this.mainModal.show(); },
+            showEditUserModal(userId) { const user = Object.values(this.state.data.users).find(u => u.id === userId); if (!user) return; const plans = this.state.data.gymData.membershipPlans.map(p => `<option value="${p.id}" ${p.id === user.planId ? 'selected' : ''}>${p.name}</option>`).join(''); const professors = Object.values(this.state.data.users).filter(u => u.role === 'professor').map(p => `<option value="${p.id}" ${p.id === user.professorId ? 'selected' : ''}>${p.name}</option>`).join(''); document.getElementById('mainModalTitle').innerText = `Editando a ${user.name}`; document.getElementById('mainModalBody').innerHTML = `<form id="userForm"><div class="row"><div class="col-md-6 mb-3"><label class="form-label">Nombre Completo</label><input type="text" name="userName" class="form-control" value="${user.name}" required></div><div class="col-md-6 mb-3"><label class="form-label">Email</label><input type="email" name="userEmail" class="form-control" value="${user.profile.email}" required></div></div><div class="row"><div class="col-md-6 mb-3"><label class="form-label">Asignar Plan</label><select name="planId" class="form-select">${plans}</select></div><div class="col-md-6 mb-3"><label class="form-label">Asignar Profesor</label><select name="professorId" class="form-select"><option value="">Sin Asignar</option>${professors}</select></div></div></form>`; document.getElementById('mainModalFooter').innerHTML = `<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button><button type="submit" form="userForm" class="btn btn-primary">Guardar Cambios</button>`; document.getElementById('userForm').onsubmit = (event) => this.handleUserFormSubmit(event, userId); this.mainModal.show(); },
+            handleUserFormSubmit(event, userId = null) { event.preventDefault(); const form = event.target; if (userId) { const user = Object.values(this.state.data.users).find(u => u.id === userId); if (user) { user.name = form.elements.userName.value; user.profile.email = form.elements.userEmail.value; user.planId = parseInt(form.elements.planId.value); user.professorId = form.elements.professorId.value ? parseInt(form.elements.professorId.value) : null; this.showToast('Éxito', 'Socio actualizado.', 'success'); } } else { const newId = Date.now(); const newUser = { id: newId, role: 'student', name: form.elements.userName.value, profile: { email: form.elements.userEmail.value }, password: form.elements.userPassword.value, planId: parseInt(form.elements.planId.value), membershipStartDate: new Date().toISOString().split('T')[0], professorId: form.elements.professorId.value ? parseInt(form.elements.professorId.value) : null, routine: { Lunes: {}, Martes: {}, Miércoles: {}, Jueves: {}, Viernes: {}, Sábado: {}, Domingo: {} }, evaluations: [] }; this.state.data.users[`user-${newId}`] = newUser; this.showToast('Éxito', 'Nuevo socio creado.', 'success'); } this.saveState(); this.mainModal.hide(); this.updateAdminCRMTable(); },
+            renderEvaluationForStudent(studentId) { const contentEl = document.getElementById('evaluation-content'); if (!studentId) { contentEl.innerHTML = '<p class="text-muted">Selecciona un alumno para ver su historial o añadir una nueva evaluación.</p>'; return; } const student = Object.values(this.state.data.users).find(u=>u.id === parseInt(studentId)); if (!student) return; let historyHTML = (student.evaluations && student.evaluations.length > 0) ? student.evaluations.map(ev => `<tr><td>${new Date(ev.date).toLocaleDateString()}</td><td>${ev.weight} kg</td><td>${ev.bodyFat}%</td><td>${ev.measurements.chest} cm</td><td>${ev.measurements.waist} cm</td><td>${ev.measurements.hips} cm</td><td>${ev.notes}</td></tr>`).reverse().join('') : '<tr><td colspan="7" class="text-center text-muted">No hay registros de evaluación.</td></tr>'; contentEl.innerHTML = `<h4>Evaluación para ${student.name}</h4><div class="card mb-4"><div class="card-header"><h5>Añadir Nueva Evaluación</h5></div><div class="card-body"><form id="eval-form" onsubmit="GymApp.handleAddEvaluation(event, ${studentId})"><div class="row g-3"><div class="col-md-4"><label class="form-label">Peso (kg)</label><input name="eval-weight" type="number" step="0.1" class="form-control" required></div><div class="col-md-4"><label class="form-label">% Grasa</label><input name="eval-bodyfat" type="number" step="0.1" class="form-control" required></div><div class="col-md-4"><label class="form-label">Pecho (cm)</label><input name="eval-chest" type="number" step="0.1" class="form-control"></div><div class="col-md-4"><label class="form-label">Cintura (cm)</label><input name="eval-waist" type="number" step="0.1" class="form-control"></div><div class="col-md-4"><label class="form-label">Cadera (cm)</label><input name="eval-hips" type="number" step="0.1" class="form-control"></div><div class="col-12"><label class="form-label">Notas</label><textarea name="eval-notes" class="form-control" rows="2"></textarea></div><div class="col-12 d-grid"><button type="submit" class="btn btn-primary">Añadir Registro</button></div></div></form></div></div><h4>Historial de Evaluaciones</h4><div class="table-responsive"><table class="table table-striped table-sm"><thead><tr><th>Fecha</th><th>Peso</th><th>% Grasa</th><th>Pecho</th><th>Cintura</th><th>Cadera</th><th>Notas</th></tr></thead><tbody>${historyHTML}</tbody></table></div>`; },
+            handleAddEvaluation(event, studentId) { event.preventDefault(); const student = Object.values(this.state.data.users).find(u=>u.id === studentId); const form = event.target; const newEval = { date: new Date().toISOString().split('T')[0], weight: form.elements['eval-weight'].value, bodyFat: form.elements['eval-bodyfat'].value, notes: form.elements['eval-notes'].value, measurements: { chest: form.elements['eval-chest'].value, waist: form.elements['eval-waist'].value, hips: form.elements['eval-hips'].value } }; if (!student.evaluations) student.evaluations = []; student.evaluations.push(newEval); this.saveState(); this.showToast('Evaluación Añadida', `Nuevo registro guardado para ${student.name}.`); this.renderEvaluationForStudent(studentId); },
+            showPlanFormModal(planId = null) { const isEdit = planId !== null; const plan = isEdit ? this.state.data.gymData.membershipPlans.find(p => p.id === planId) : {}; document.getElementById('mainModalTitle').innerText = isEdit ? `Editar Plan: ${plan.name}` : 'Crear Nuevo Plan'; document.getElementById('mainModalBody').innerHTML = `<form id="planForm"><div class="row"><div class="col-md-8 mb-3"><label class="form-label">Nombre del Plan</label><input type="text" name="planName" class="form-control" value="${isEdit ? plan.name : ''}" required></div><div class="col-md-4 mb-3"><label class="form-label">Precio ($)</label><input type="number" name="planPrice" step="0.01" class="form-control" value="${isEdit ? plan.price : ''}" required></div></div><div class="mb-3"><label class="form-label">Descripción</label><textarea name="planDescription" class="form-control" rows="2">${isEdit ? plan.description : ''}</textarea></div><div class="mb-3"><label class="form-label">Beneficios (uno por línea)</label><textarea name="planBenefits" class="form-control" rows="3">${isEdit ? plan.benefits.join('\n') : ''}</textarea></div><div class="row"><div class="col-md-6 mb-3"><label class="form-label">Duración (días)</label><input type="number" name="planDuration" class="form-control" value="${isEdit ? plan.durationDays : ''}" required></div><div class="col-md-6 mb-3 d-flex align-items-end"><div class="form-check form-switch"><input class="form-check-input" type="checkbox" name="planFreeze" role="switch" ${isEdit && plan.rules.allowFreeze ? 'checked' : ''}><label class="form-check-label">Permitir congelación</label></div></div></div></form>`; document.getElementById('mainModalFooter').innerHTML = `<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button><button type="submit" form="planForm" class="btn btn-primary">Guardar</button>`; document.getElementById('planForm').onsubmit = (event) => this.handlePlanFormSubmit(event, planId); this.mainModal.show(); },
+            handlePlanFormSubmit(event, planId = null) { event.preventDefault(); const form = event.target; const benefits = form.elements.planBenefits.value.split('\n').filter(b => b.trim() !== ''); if (planId) { const plan = this.state.data.gymData.membershipPlans.find(p => p.id === planId); if (plan) { Object.assign(plan, { name: form.elements.planName.value, price: parseFloat(form.elements.planPrice.value), description: form.elements.planDescription.value, benefits, durationDays: parseInt(form.elements.planDuration.value), rules: { allowFreeze: form.elements.planFreeze.checked } }); this.showToast('Éxito', 'Plan actualizado.', 'success'); } } else { const newId = Date.now(); const newPlan = { id: newId, name: form.elements.planName.value, price: parseFloat(form.elements.planPrice.value), description: form.elements.planDescription.value, benefits, durationDays: parseInt(form.elements.planDuration.value), rules: { allowFreeze: form.elements.planFreeze.checked } }; this.state.data.gymData.membershipPlans.push(newPlan); this.showToast('Éxito', 'Nuevo plan creado.', 'success'); } this.saveState(); this.mainModal.hide(); this.updateAdminPlansUI(); },
+            showProductFormModal(productId = null) { const isEdit = productId !== null; const product = isEdit ? this.state.data.gymData.inventory.find(p => p.id === productId) : {}; document.getElementById('mainModalTitle').innerText = isEdit ? `Editar Producto: ${product.name}` : 'Añadir Nuevo Producto'; document.getElementById('mainModalBody').innerHTML = `<form id="productForm"><div class="row"><div class="col-md-6 mb-3"><label class="form-label">Nombre del Producto</label><input type="text" name="productName" class="form-control" value="${isEdit ? product.name : ''}" required></div><div class="col-md-6 mb-3"><label class="form-label">SKU</label><input type="text" name="productSku" class="form-control" value="${isEdit ? product.sku : ''}" required></div></div><div class="row"><div class="col-md-6 mb-3"><label class="form-label">Stock</label><input type="number" name="productStock" class="form-control" value="${isEdit ? product.stock : ''}" required></div><div class="col-md-6 mb-3"><label class="form-label">Precio ($)</label><input type="number" name="productPrice" step="0.01" class="form-control" value="${isEdit ? product.price : ''}" required></div></div></form>`; document.getElementById('mainModalFooter').innerHTML = `<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button><button type="submit" form="productForm" class="btn btn-primary">Guardar</button>`; document.getElementById('productForm').onsubmit = (event) => this.handleProductFormSubmit(event, productId); this.mainModal.show(); },
+            handleProductFormSubmit(event, productId = null) { event.preventDefault(); const form = event.target; if (productId) { const product = this.state.data.gymData.inventory.find(p => p.id === productId); if (product) { Object.assign(product, { name: form.elements.productName.value, sku: form.elements.productSku.value, stock: parseInt(form.elements.productStock.value), price: parseFloat(form.elements.productPrice.value) }); this.showToast('Éxito', 'Producto actualizado.', 'success'); } } else { const newId = Date.now(); const newProduct = { id: newId, name: form.elements.productName.value, sku: form.elements.productSku.value, stock: parseInt(form.elements.productStock.value), price: parseFloat(form.elements.productPrice.value) }; this.state.data.gymData.inventory.push(newProduct); this.showToast('Éxito', 'Nuevo producto añadido.', 'success'); } this.saveState(); this.mainModal.hide(); this.updateAdminInventoryTable(); },
+            showClassFormModal(classId = null) { const isEdit = classId !== null; const classData = isEdit ? this.state.data.gymData.classes.find(c => c.id === classId) : {}; const startDate = isEdit ? new Date(classData.start) : new Date(); startDate.setMinutes(startDate.getMinutes() - startDate.getTimezoneOffset()); const dateValue = startDate.toISOString().split('T')[0]; const timeValue = startDate.toTimeString().substring(0, 5); const isProfessorRole = this.state.currentUser.role === 'professor'; const currentUserName = this.state.currentUser.name; let teacherInputHTML = ''; if (isProfessorRole) { teacherInputHTML = `<input id="swal-teacher" class="swal2-input" value="${currentUserName}" disabled>`; } else { const professors = Object.values(this.state.data.users).filter(u => u.role === 'professor').map(p => `<option value="${p.name}" ${isEdit && p.name === classData.teacher ? 'selected' : ''}>${p.name}</option>`).join(''); teacherInputHTML = `<select id="swal-teacher" class="swal2-select">${professors}</select>`; } const formHTML = `<style>#swal2-html-container { overflow: visible !important; }.swal-form-group { text-align: left; margin-bottom: 1rem; }.swal-form-group label { display: block; margin-bottom: .35rem; font-weight: 500; color: #545454; font-size: 0.9rem; }body.dark-mode .swal-form-group label { color: #ccc; }.swal-form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }.swal2-input, .swal2-select { width: 100% !important; margin: 0 !important; }</style><div class="swal-form-group"><label for="swal-title">Título de la Clase</label><input id="swal-title" class="swal2-input" placeholder="Ej: Yoga Avanzado" value="${isEdit ? classData.title : ''}"></div><div class="swal-form-grid"><div class="swal-form-group"><label for="swal-date">Fecha</label><input id="swal-date" type="date" class="swal2-input" value="${dateValue}"></div><div class="swal-form-group"><label for="swal-time">Hora</label><input id="swal-time" type="time" class="swal2-input" value="${timeValue}"></div></div><div class="swal-form-grid"><div class="swal-form-group"><label for="swal-spots">Cupos Disponibles</label><input id="swal-spots" type="number" class="swal2-input" placeholder="Ej: 15" value="${isEdit ? classData.spots : ''}"></div><div class="swal-form-group"><label for="swal-teacher">Profesor</label>${teacherInputHTML}</div></div>`; Swal.fire({ title: isEdit ? 'Editar Clase' : 'Agendar Nueva Clase', html: formHTML, focusConfirm: false, showCancelButton: true, showDenyButton: isEdit, confirmButtonText: 'Guardar', cancelButtonText: 'Cancelar', denyButtonText: 'Eliminar', preConfirm: () => [ document.getElementById('swal-title').value, document.getElementById('swal-date').value, document.getElementById('swal-time').value, document.getElementById('swal-spots').value, document.getElementById('swal-teacher').value ] }).then(result => { if (result.isConfirmed) { this.handleSaveClass(isEdit ? classData.id : null, result.value); } else if (result.isDenied) { this.handleDeleteClass(classData.id); } }); },
+            handleSaveClass(classId, values) { const [title, date, time, spots, teacher] = values; if (!title || !date || !time || !spots || !teacher) { this.showToast('Error', 'Todos los campos son obligatorios.', 'error'); return; } if (classId) { const classIndex = this.state.data.gymData.classes.findIndex(c => c.id === classId); if (classIndex > -1) { Object.assign(this.state.data.gymData.classes[classIndex], { title, start: `${date}T${time}:00`, spots: parseInt(spots), teacher }); this.showToast('Clase Actualizada', `La clase "${title}" se actualizó.`); } } else { this.state.data.gymData.classes.push({ id: Date.now(), title, start: `${date}T${time}:00`, spots: parseInt(spots), teacher, reservedBy: [] }); this.showToast('Clase Creada', `La clase "${title}" ha sido agendada.`); } if(this.calendar) this.calendar.refetchEvents(); this.saveState(); },
+            handleDeleteClass(classId) { Swal.fire({ title: '¿Confirmar eliminación?', text: "Esta acción no se puede deshacer.", icon: 'warning', showCancelButton: true, confirmButtonColor: '#d33', confirmButtonText: 'Sí, eliminar', cancelButtonText: 'No, mantener' }).then(r => { if (r.isConfirmed) { this.state.data.gymData.classes = this.state.data.gymData.classes.filter(c => c.id !== classId); if(this.calendar) this.calendar.refetchEvents(); this.showToast('Clase Eliminada', 'La clase ha sido eliminada del calendario.', 'success'); this.saveState(); } }); },
+            updateAdminAttendanceTable() { const tbody = document.getElementById('attendance-table-body'); if (!tbody) return; const logs = [...this.state.data.gymData.attendanceLog].sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp)); const userMap = Object.values(this.state.data.users).reduce((acc, user) => { acc[user.id] = user.name; return acc; }, {}); tbody.innerHTML = logs.map(log => { const userName = userMap[log.memberId] || 'Socio Desconocido'; const logDate = new Date(log.timestamp); const date = logDate.toLocaleDateString('es-ES'); const time = logDate.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' }); return `<tr data-name="${userName.toLowerCase()}"><td>${userName}</td><td>${date}</td><td>${time}</td></tr>`; }).join(''); },
         });
+
+        document.addEventListener('DOMContentLoaded', () => GymApp.init());
     </script>
 </body>
 </html>
