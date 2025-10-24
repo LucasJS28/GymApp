@@ -180,7 +180,7 @@
             z-index: 1002; box-shadow: 5px 0 25px rgba(0,0,0,0.05);
             display: flex; flex-direction: column;
             border-right: 1px solid var(--light-border-color);
-            overflow: hidden; 
+            /* [FIX] Se eliminó overflow:hidden para permitir el scroll en pantallas pequeñas */
         }
         .sidebar-header {
             padding: 1.5rem;
@@ -459,7 +459,9 @@
             position: absolute; left: 0; top: 2px; color: var(--success-color);
         }
 
-        /* [NUEVO Y MEJORADO] ESTILOS PARA GESTIÓN DE INSTALACIONES */
+        /* =================================================================
+           == 🔧 [SUPER-MEJORADO] ESTILOS GESTIÓN DE INSTALACIONES 🔧 ==
+           ================================================================= */
         #facilities-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
@@ -499,6 +501,23 @@
         .status-mantenimiento { border-left: 4px solid var(--warning-color); }
         .status-averiado { border-left: 4px solid var(--danger-color); }
 
+        .maintenance-item {
+            padding: 0.75rem;
+            border-radius: 0.5rem;
+            border: 1px solid var(--light-border-color);
+            transition: all 0.2s;
+        }
+        .dark-mode .maintenance-item {
+            border-color: var(--dark-border-color);
+        }
+        .maintenance-item:hover {
+            background-color: var(--light-bg);
+            border-color: var(--primary-color);
+        }
+        .dark-mode .maintenance-item:hover {
+            background-color: var(--dark-bg);
+        }
+
         /* [FIX] Colores de texto de badges en modo oscuro para mayor contraste */
         .dark-mode .text-success-emphasis { color: #A7F3D0 !important; }
         .dark-mode .text-warning-emphasis { color: #FCD34D !important; }
@@ -506,6 +525,13 @@
         .dark-mode .text-info-emphasis { color: #A5F3FC !important; }
         .dark-mode .text-primary-emphasis { color: #C4B5FD !important; }
         
+        /* [FIX] Color de fondo de badges sutiles para modo oscuro */
+        .dark-mode .bg-primary-subtle { background-color: rgba(124, 93, 255, 0.2) !important; }
+        .dark-mode .bg-info-subtle { background-color: rgba(0, 212, 200, 0.2) !important; }
+        .dark-mode .bg-success-subtle { background-color: rgba(52, 211, 153, 0.15) !important; }
+        .dark-mode .bg-danger-subtle { background-color: rgba(239, 68, 68, 0.15) !important; }
+        .dark-mode .bg-warning-subtle { background-color: rgba(245, 158, 11, 0.15) !important; }
+
         /* [NUEVO] Estilos para Avatares en la tabla de asistencia */
         .attendance-avatar {
             width: 40px; height: 40px; border-radius: 50%;
@@ -1084,9 +1110,9 @@
                         attendanceLog: [ { memberId: 1, timestamp: '2025-10-21T08:05:12' }, { memberId: 2, timestamp: '2025-10-21T09:15:30' }, { memberId: 3, timestamp: '2025-10-21T17:02:00' }, { memberId: 1, timestamp: '2025-10-21T18:30:15' }, { memberId: 2, timestamp: '2025-10-20T19:00:05' }, { memberId: 1, timestamp: '2025-10-19T08:00:21' } ],
                         transactions: [ {id: 1, date: '2025-10-21', description: 'Venta POS', amount: 3500, method: 'Efectivo'}, {id: 2, date: '2025-10-21', description: 'Membresía', amount: 49990, method: 'Tarjeta'}, {id: 3, date: '2025-10-21', description: 'Venta POS', amount: 2500, method: 'Tarjeta'} ],
                         equipment: [
-                            { id: 1, name: 'Cinta de Correr #1', type: 'Cardio', status: 'Operativo', lastMaintenance: '2025-09-15', nextMaintenance: '2025-12-15', technician: 'Juan Silva - TecnicoFit', notes: '' },
-                            { id: 2, name: 'Prensa de Piernas', type: 'Fuerza', status: 'En Mantenimiento', lastMaintenance: '2025-10-20', nextMaintenance: '2025-10-25', technician: 'Pedro Gonzalez', notes: 'Revisión de polea principal.' },
-                            { id: 3, name: 'Bicicleta Spinning #5', type: 'Cardio', status: 'Averiado', lastMaintenance: '2025-08-01', nextMaintenance: null, technician: 'Juan Silva - TecnicoFit', notes: 'Pedal izquierdo suelto, no usar.' }
+                            { id: 1, name: 'Cinta de Correr #1', type: 'Cardio', status: 'Operativo', nextMaintenanceDate: '2025-12-15', technician: 'Juan Silva - TecnicoFit', notes: 'Funciona perfectamente.', scheduledMaintenance: [], maintenanceHistory: [ {id: 1, date: '2025-09-15', description: 'Mantenimiento preventivo general.', cost: 35000, technician: 'Juan Silva - TecnicoFit', notes: 'Se realizó limpieza y lubricación.' } ] },
+                            { id: 2, name: 'Prensa de Piernas', type: 'Fuerza', status: 'En Mantenimiento', nextMaintenanceDate: '2026-01-20', technician: 'Pedro Gonzalez', notes: 'Actualmente en revisión de polea.', scheduledMaintenance: [ { id: 101, scheduledDate: '2025-10-24', description: 'Revisión y cambio de polea principal', technician: 'Pedro Gonzalez', status: 'Agendado' } ], maintenanceHistory: [ {id: 3, date: '2025-07-20', description: 'Engrase y limpieza.', cost: 25000, technician: 'Pedro Gonzalez', notes: 'Todo en orden.'} ] },
+                            { id: 3, name: 'Bicicleta Spinning #5', type: 'Cardio', status: 'Averiado', nextMaintenanceDate: null, technician: '', notes: 'Pedal izquierdo suelto, no usar hasta reparar.', scheduledMaintenance: [ { id: 102, scheduledDate: '2025-10-25', description: 'Reparación de pedal izquierdo.', technician: 'Juan Silva - TecnicoFit', status: 'Agendado' } ], maintenanceHistory: [ {id: 4, date: '2025-08-01', description: 'Revisión de cadena.', cost: 30000, technician: 'Juan Silva - TecnicoFit', notes: 'Cadena tensada.'} ] }
                         ],
                         assessmentRequests: [
                             { id: 1, studentId: 2, professorId: 101, status: 'pending', requestedAt: '2025-10-22T10:00:00Z' }
@@ -1272,7 +1298,7 @@
                     if (sectionId === 'plans') this.updateAdminPlansUI();
                     if (sectionId === 'billing') { this.updateAdminPosItems(); this.updateCart(); }
                     if (sectionId === 'attendance-log') this.updateAdminAttendanceTable();
-                    if (sectionId === 'facilities') this.updateFacilitiesTable();
+                    if (sectionId === 'facilities') this.updateFacilitiesGrid();
                 }
                 if (role === 'professor') {
                     if (sectionId === 'routine-builder') this.updateProfessorRoutineBuilderUI();
@@ -1839,7 +1865,7 @@
                 </div>`;
             },
             schedule: () => `<div class="page-header d-flex justify-content-between align-items-center flex-wrap gap-2"><div><h2 id="schedule-title">Agenda de Clases</h2><p class="text-muted mb-0">${GymApp.state.currentUser.role === 'student' ? 'Inscríbete en tus clases favoritas.' : 'Administra el horario de clases grupales.'}</p></div><button id="add-class-btn" class="btn btn-primary"><i class="fas fa-plus me-2"></i>Agendar Clase</button></div><div class="card"><div class="card-body p-lg-4 p-md-3 p-2"><div id="calendar"></div></div></div>`,
-            facilities: () => `<div class="page-header"><h2><i class="fas fa-wrench me-2"></i>Gestión de Instalaciones</h2><p class="text-muted">Administra el estado y mantenimiento de los equipos del gimnasio.</p></div><div class="card"><div class="card-body"><div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2"><div class="search-input-group flex-grow-1" style="max-width: 400px;"><i class="fas fa-search"></i><input type="text" class="form-control" placeholder="Buscar equipo..." onkeyup="GymApp.filterTable(this.value, 'facilities-grid')"></div><button class="btn btn-primary" onclick="GymApp.showEquipmentFormModal()"><i class="fas fa-plus me-2"></i>Añadir Equipo</button></div></div></div><div id="facilities-grid" class="mt-4"></div>`,
+            facilities: () => `<div class="page-header"><h2><i class="fas fa-wrench me-2"></i>Gestión de Instalaciones</h2><p class="text-muted">Administra el estado y mantenimiento de los equipos del gimnasio.</p></div><div class="card"><div class="card-body"><div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2"><div class="search-input-group flex-grow-1" style="max-width: 400px;"><i class="fas fa-search"></i><input type="text" class="form-control" placeholder="Buscar equipo..." onkeyup="GymApp.filterTable(this.value, 'facilities-grid')"></div><button class="btn btn-primary" onclick="GymApp.showEquipmentDetailsModal()"><i class="fas fa-plus me-2"></i>Añadir Equipo</button></div></div></div><div id="facilities-grid" class="mt-4"></div>`,
             'attendance-log': () => `<div class="page-header"><h2><i class="fas fa-clipboard-list me-2"></i>Registro de Asistencia</h2><p class="text-muted">Consulta el historial de ingresos de los socios al gimnasio.</p></div><div class="card"><div class="card-body"><div class="search-input-group flex-grow-1 mb-3" style="max-width: 400px;"><i class="fas fa-search"></i><input type="text" class="form-control" placeholder="Buscar socio..." onkeyup="GymApp.filterTable(this.value, 'attendance-table-body')"></div><div class="table-responsive"><table class="table table-hover align-middle"><thead><tr><th style="width: 50%;">Socio</th><th>Fecha</th><th>Hora de Entrada</th></tr></thead><tbody id="attendance-table-body"></tbody></table></div></div></div>`,
             inventory: () => `<div class="page-header"><h2><i class="fas fa-boxes me-2"></i>Gestión de Inventario</h2><p class="text-muted">Controla el stock y los precios de los productos en venta.</p></div><div class="card"><div class="card-body"><div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2"><div class="search-input-group flex-grow-1" style="max-width: 400px;"><i class="fas fa-search"></i><input type="text" class="form-control" placeholder="Buscar producto..." onkeyup="GymApp.filterTable(this.value, 'inventory-table-body')"></div><div class="btn-group"><button class="btn btn-primary" onclick="GymApp.showProductFormModal()"><i class="fas fa-plus me-2"></i>Añadir</button><button class="btn btn-outline-secondary" onclick="GymApp.exportInventory()"><i class="fas fa-download me-2"></i>Exportar CSV</button></div></div><div class="table-responsive"><table class="table table-hover align-middle"><thead><tr><th>SKU</th><th>Producto</th><th>Stock</th><th>Precio</th><th class="text-end">Acciones</th></tr></thead><tbody id="inventory-table-body"></tbody></table></div></div></div>`,
             profile: () => {
@@ -2450,21 +2476,19 @@
                     </div>
                 </div>`;
             },
-            updateFacilitiesTable() {
+            updateFacilitiesGrid() {
                 const grid = document.getElementById('facilities-grid');
                 if (!grid) return;
-                
                 const equipmentList = this.state.data.gymData.equipment;
-                
-                const statusInfo = { 'Operativo': { class: 'status-operativo', textClass: 'text-success-emphasis', icon: 'fa-check-circle' }, 'En Mantenimiento': { class: 'status-mantenimiento', textClass: 'text-warning-emphasis', icon: 'fa-tools' }, 'Averiado': { class: 'status-averiado', textClass: 'text-danger-emphasis', icon: 'fa-exclamation-triangle' } };
+                const statusInfo = { 'Operativo': { class: 'status-operativo', textClass: 'text-success-emphasis' }, 'En Mantenimiento': { class: 'status-mantenimiento', textClass: 'text-warning-emphasis' }, 'Averiado': { class: 'status-averiado', textClass: 'text-danger-emphasis' } };
                 const typeIcons = { 'Cardio': 'fa-heart-pulse', 'Fuerza': 'fa-dumbbell', 'Funcional': 'fa-running', 'Accesorios': 'fa-puzzle-piece' };
 
                 if (equipmentList.length === 0) { grid.innerHTML = `<div class="col-12 text-center text-muted p-5"><p>No hay equipos registrados.</p></div>`; return; }
 
                 grid.innerHTML = equipmentList.map(item => {
-                    const status = statusInfo[item.status] || { class: '', textClass: '', icon: 'fa-question-circle' };
-                    const lastMaint = item.lastMaintenance ? new Date(item.lastMaintenance).toLocaleDateString('es-CL') : 'N/A';
-                    const nextMaint = item.nextMaintenance ? new Date(item.nextMaintenance).toLocaleDateString('es-CL') : 'N/A';
+                    const status = statusInfo[item.status] || { class: '', textClass: '' };
+                    const lastMaint = item.maintenanceHistory && item.maintenanceHistory.length > 0 ? new Date([...item.maintenanceHistory].sort((a,b) => new Date(a.date) - new Date(b.date)).pop().date).toLocaleDateString('es-CL') : 'N/A';
+                    const nextMaint = item.nextMaintenanceDate ? new Date(item.nextMaintenanceDate).toLocaleDateString('es-CL') : 'N/A';
                     
                     return `
                     <div class="card equipment-card ${status.class}" data-name="${item.name.toLowerCase()}">
@@ -2479,116 +2503,232 @@
                                     <strong>Estado</strong>
                                     <span class="badge bg-${status.class.replace('status-', '')}-subtle ${status.textClass} rounded-pill">${item.status}</span>
                                 </li>
-                                <li>
-                                    <span class="icon"><i class="fas fa-calendar-alt"></i></span>
-                                    <strong>Último Mant.</strong>
-                                    <span>${lastMaint}</span>
-                                </li>
-                                <li>
-                                    <span class="icon"><i class="fas fa-calendar-check"></i></span>
-                                    <strong>Próximo Mant.</strong>
-                                    <span>${nextMaint}</span>
-                                </li>
-                                <li>
-                                    <span class="icon"><i class="fas fa-user-cog"></i></span>
-                                    <strong>Técnico</strong>
-                                    <span>${item.technician || 'N/A'}</span>
-                                </li>
+                                <li><span class="icon"><i class="fas fa-calendar-alt"></i></span><strong>Último Mant.</strong><span>${lastMaint}</span></li>
+                                <li><span class="icon"><i class="fas fa-calendar-check"></i></span><strong>Próximo Mant.</strong><span>${nextMaint}</span></li>
+                                <li><span class="icon"><i class="fas fa-user-cog"></i></span><strong>Técnico Frecuente</strong><span>${item.technician || 'N/A'}</span></li>
                             </ul>
                         </div>
                         <div class="card-footer d-grid">
-                             <button class="btn btn-sm btn-outline-primary" onclick="GymApp.showEquipmentFormModal(${item.id})">
-                                <i class="fas fa-edit me-1"></i> Editar
-                            </button>
+                             <button class="btn btn-sm btn-outline-primary" onclick="GymApp.showEquipmentDetailsModal(${item.id})"><i class="fas fa-edit me-1"></i> Ver Detalles y Agenda</button>
                         </div>
                     </div>`;
                 }).join('');
             },
-            showEquipmentFormModal(equipmentId = null) {
+            showEquipmentDetailsModal(equipmentId = null) {
                 const isEdit = equipmentId !== null;
                 const item = isEdit ? this.state.data.gymData.equipment.find(e => e.id === equipmentId) : {};
-                
-                document.getElementById('mainModalTitle').innerText = isEdit ? `Editar Equipo: ${item.name}` : 'Añadir Nuevo Equipo';
+                const title = isEdit ? `Detalles: ${item.name}` : 'Añadir Nuevo Equipo';
+
+                document.getElementById('mainModalTitle').innerText = title;
                 document.getElementById('mainModalBody').innerHTML = `
-                    <form id="equipmentForm">
-                        <div class="row">
-                            <div class="col-md-8 mb-3">
-                                <label class="form-label">Nombre del Equipo</label>
-                                <input type="text" name="name" class="form-control" value="${item.name || ''}" required>
-                            </div>
-                            <div class="col-md-4 mb-3">
-                                <label class="form-label">Tipo</label>
-                                <select name="type" class="form-select" required>
-                                    <option ${!item.type ? 'selected' : ''} disabled value="">Seleccionar...</option>
-                                    <option value="Cardio" ${item.type === 'Cardio' ? 'selected' : ''}>Cardio</option>
-                                    <option value="Fuerza" ${item.type === 'Fuerza' ? 'selected' : ''}>Fuerza</option>
-                                    <option value="Funcional" ${item.type === 'Funcional' ? 'selected' : ''}>Funcional</option>
-                                    <option value="Accesorios" ${item.type === 'Accesorios' ? 'selected' : ''}>Accesorios</option>
-                                </select>
-                            </div>
+                    <nav><div class="nav nav-tabs" id="equipmentTab" role="tablist">
+                        <button class="nav-link active" id="details-tab" data-bs-toggle="tab" data-bs-target="#details" type="button" role="tab">Información General</button>
+                        ${isEdit ? '<button class="nav-link" id="maintenance-tab" data-bs-toggle="tab" data-bs-target="#maintenance" type="button" role="tab">Agenda y Mantenimiento</button>' : ''}
+                    </div></nav>
+                    <div class="tab-content" id="equipmentTabContent">
+                        <div class="tab-pane fade show active p-3" id="details" role="tabpanel">
+                            <form id="equipmentForm">
+                                <div class="row"><div class="col-md-8 mb-3"><label class="form-label">Nombre del Equipo</label><input type="text" name="name" class="form-control" value="${item.name || ''}" required></div><div class="col-md-4 mb-3"><label class="form-label">Tipo</label><select name="type" class="form-select" required><option ${!item.type ? 'selected' : ''} disabled value="">Seleccionar...</option><option value="Cardio" ${item.type === 'Cardio' ? 'selected' : ''}>Cardio</option><option value="Fuerza" ${item.type === 'Fuerza' ? 'selected' : ''}>Fuerza</option><option value="Funcional" ${item.type === 'Funcional' ? 'selected' : ''}>Funcional</option><option value="Accesorios" ${item.type === 'Accesorios' ? 'selected' : ''}>Accesorios</option></select></div></div>
+                                <div class="row"><div class="col-md-6 mb-3"><label class="form-label">Estado</label><select name="status" class="form-select" required><option value="Operativo" ${item.status === 'Operativo' ? 'selected' : ''}>Operativo</option><option value="En Mantenimiento" ${item.status === 'En Mantenimiento' ? 'selected' : ''}>En Mantenimiento</option><option value="Averiado" ${item.status === 'Averiado' ? 'selected' : ''}>Averiado</option></select></div><div class="col-md-6 mb-3"><label class="form-label">Técnico Frecuente</label><input type="text" name="technician" class="form-control" value="${item.technician || ''}"></div></div>
+                                <div class="row"><div class="col-md-6 mb-3"><label class="form-label">Fecha Próximo Mantenimiento</label><input type="date" name="nextMaintenanceDate" class="form-control" value="${item.nextMaintenanceDate || ''}"></div></div>
+                                <div class="mb-3"><label class="form-label">Notas Adicionales</label><textarea name="notes" class="form-control" rows="2">${item.notes || ''}</textarea></div>
+                            </form>
                         </div>
-                        <div class="row">
-                             <div class="col-md-6 mb-3">
-                                <label class="form-label">Estado</label>
-                                <select name="status" class="form-select" required>
-                                    <option value="Operativo" ${item.status === 'Operativo' ? 'selected' : ''}>Operativo</option>
-                                    <option value="En Mantenimiento" ${item.status === 'En Mantenimiento' ? 'selected' : ''}>En Mantenimiento</option>
-                                    <option value="Averiado" ${item.status === 'Averiado' ? 'selected' : ''}>Averiado</option>
-                                </select>
+                        ${isEdit ? `<div class="tab-pane fade p-3" id="maintenance" role="tabpanel">
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <h5><i class="fas fa-calendar-alt me-2 text-primary"></i>Próximas Mantenciones Agendadas</h5>
+                                <button class="btn btn-sm btn-primary" onclick="GymApp.showScheduleMaintenanceModal(${equipmentId})"><i class="fas fa-plus me-1"></i>Agendar Nueva</button>
                             </div>
-                             <div class="col-md-6 mb-3">
-                                <label class="form-label">Técnico Asignado</label>
-                                <input type="text" name="technician" class="form-control" value="${item.technician || ''}">
-                            </div>
-                        </div>
-                         <div class="row">
-                            <div class="col-md-6 mb-3">
-                                <label class="form-label">Fecha Último Mantenimiento</label>
-                                <input type="date" name="lastMaintenance" class="form-control" value="${item.lastMaintenance || ''}">
-                            </div>
-                            <div class="col-md-6 mb-3">
-                                <label class="form-label">Fecha Próximo Mantenimiento</label>
-                                <input type="date" name="nextMaintenance" class="form-control" value="${item.nextMaintenance || ''}">
-                            </div>
-                        </div>
-                        <div class="mb-3">
-                             <label class="form-label">Notas Adicionales</label>
-                             <textarea name="notes" class="form-control" rows="3">${item.notes || ''}</textarea>
-                        </div>
-                    </form>
+                            <div id="scheduled-maintenance-container" class="mb-4"></div>
+                            <hr>
+                            <h5><i class="fas fa-history me-2 text-info"></i>Historial de Mantenimiento Completado</h5>
+                            <div id="maintenance-history-container"></div>
+                        </div>` : ''}
+                    </div>
                 `;
-                document.getElementById('mainModalFooter').innerHTML = `<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button><button type="submit" form="equipmentForm" class="btn btn-primary">Guardar</button>`;
-                document.getElementById('equipmentForm').onsubmit = (event) => this.handleEquipmentFormSubmit(event, equipmentId);
+                document.getElementById('mainModalFooter').innerHTML = `<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button><button type="submit" form="equipmentForm" class="btn btn-primary">Guardar Cambios</button>`;
+                document.getElementById('equipmentForm').onsubmit = (event) => { this.handleEquipmentFormSubmit(event, equipmentId); };
+                
+                if (isEdit) {
+                    this.renderScheduledMaintenance(equipmentId);
+                    this.renderMaintenanceHistoryTable(equipmentId);
+                }
                 this.mainModal.show();
+            },
+            renderScheduledMaintenance(equipmentId) {
+                 const container = document.getElementById('scheduled-maintenance-container');
+                if (!container) return;
+                const item = this.state.data.gymData.equipment.find(e => e.id === equipmentId);
+                if (!item || !item.scheduledMaintenance || item.scheduledMaintenance.length === 0) {
+                    container.innerHTML = `<p class="text-muted text-center p-3">No hay mantenimientos agendados.</p>`;
+                    return;
+                }
+                const scheduled = [...item.scheduledMaintenance].sort((a,b) => new Date(a.scheduledDate) - new Date(b.scheduledDate));
+                container.innerHTML = scheduled.map(rec => `
+                    <div class="maintenance-item d-flex justify-content-between align-items-center mb-2">
+                        <div>
+                            <strong>${new Date(rec.scheduledDate + 'T00:00:00').toLocaleDateString('es-CL', { year: 'numeric', month: 'long', day: 'numeric'})}</strong>
+                            <div class="text-muted">${rec.description}</div>
+                            <small>Técnico: ${rec.technician || 'No especificado'}</small>
+                        </div>
+                        <div class="btn-group">
+                            <button class="btn btn-sm btn-success" title="Confirmar Realización" onclick="GymApp.confirmMaintenanceCompletion(${equipmentId}, ${rec.id})"><i class="fas fa-check"></i></button>
+                            <button class="btn btn-sm btn-danger" title="Cancelar" onclick="GymApp.cancelScheduledMaintenance(${equipmentId}, ${rec.id})"><i class="fas fa-times"></i></button>
+                        </div>
+                    </div>`).join('');
+            },
+            renderMaintenanceHistoryTable(equipmentId) {
+                const container = document.getElementById('maintenance-history-container');
+                if (!container) return;
+                const item = this.state.data.gymData.equipment.find(e => e.id === equipmentId);
+                if (!item || !item.maintenanceHistory || item.maintenanceHistory.length === 0) {
+                    container.innerHTML = `<p class="text-muted text-center p-3">No hay registros de mantenimiento.</p>`;
+                    return;
+                }
+                const history = [...item.maintenanceHistory].sort((a,b) => new Date(b.date) - new Date(a.date));
+                container.innerHTML = `
+                    <div class="table-responsive">
+                        <table class="table table-sm">
+                            <thead><tr><th>Fecha</th><th>Descripción</th><th>Costo</th><th>Técnico</th><th></th></tr></thead>
+                            <tbody>${history.map(rec => `
+                                <tr>
+                                    <td>${new Date(rec.date).toLocaleDateString('es-CL')}</td>
+                                    <td>${rec.description} <small class="d-block text-muted fst-italic">${rec.notes || ''}</small></td>
+                                    <td>${this.formatCurrency(rec.cost)}</td>
+                                    <td>${rec.technician}</td>
+                                    <td class="text-end"><button class="btn btn-sm btn-link text-danger p-0" onclick="GymApp.deleteMaintenanceRecord(${equipmentId}, ${rec.id})"><i class="fas fa-trash"></i></button></td>
+                                </tr>`).join('')}</tbody>
+                        </table>
+                    </div>`;
+            },
+            showScheduleMaintenanceModal(equipmentId) {
+                Swal.fire({
+                    title: 'Agendar Nuevo Mantenimiento',
+                    html: `
+                        <input id="swal-date" type="date" class="swal2-input" placeholder="Fecha">
+                        <textarea id="swal-desc" class="swal2-textarea" placeholder="Descripción del trabajo a realizar..."></textarea>
+                        <input id="swal-tech" class="swal2-input" placeholder="Nombre del Técnico">`,
+                    confirmButtonText: 'Agendar',
+                    focusConfirm: false,
+                    didOpen: () => { document.getElementById('swal-date').valueAsDate = new Date(); },
+                    preConfirm: () => [ document.getElementById('swal-date').value, document.getElementById('swal-desc').value, document.getElementById('swal-tech').value ]
+                }).then(result => { if (result.isConfirmed) { this.handleScheduleMaintenanceSubmit(equipmentId, result.value); } });
+            },
+            handleScheduleMaintenanceSubmit(equipmentId, values) {
+                const [date, description, technician] = values;
+                if (!date || !description) { this.showToast('Error', 'La fecha y descripción son obligatorias.', 'error'); return; }
+                const item = this.state.data.gymData.equipment.find(e => e.id === equipmentId);
+                if (item) {
+                    if (!item.scheduledMaintenance) item.scheduledMaintenance = [];
+                    item.scheduledMaintenance.push({ id: Date.now(), scheduledDate: date, description, technician, status: 'Agendado' });
+                    this.saveState();
+                    this.showToast('Éxito', 'Mantenimiento agendado.');
+                    this.renderScheduledMaintenance(equipmentId);
+                }
+            },
+            confirmMaintenanceCompletion(equipmentId, scheduledId) {
+                const item = this.state.data.gymData.equipment.find(e => e.id === equipmentId);
+                if (!item) return;
+                const scheduledItem = item.scheduledMaintenance.find(rec => rec.id === scheduledId);
+                if (!scheduledItem) return;
+
+                Swal.fire({
+                    title: 'Confirmar Mantenimiento Realizado',
+                    html: `
+                        <p class="text-start"><strong>Fecha:</strong> ${new Date(scheduledItem.scheduledDate + 'T00:00:00').toLocaleDateString('es-CL')}</p>
+                        <p class="text-start"><strong>Trabajo:</strong> ${scheduledItem.description}</p>
+                        <input id="swal-cost" type="number" class="swal2-input" placeholder="Costo Final (CLP)">
+                        <textarea id="swal-notes" class="swal2-textarea" placeholder="Notas finales o detalles adicionales..."></textarea>`,
+                    confirmButtonText: 'Confirmar y Registrar',
+                    focusConfirm: false,
+                    preConfirm: () => [ document.getElementById('swal-cost').value, document.getElementById('swal-notes').value ]
+                }).then(result => {
+                    if (result.isConfirmed) {
+                        const [cost, notes] = result.value;
+                        item.maintenanceHistory.push({
+                            id: Date.now(),
+                            date: scheduledItem.scheduledDate,
+                            description: scheduledItem.description,
+                            cost: parseFloat(cost) || 0,
+                            technician: scheduledItem.technician,
+                            notes: notes
+                        });
+                        item.scheduledMaintenance = item.scheduledMaintenance.filter(rec => rec.id !== scheduledId);
+                        item.status = 'Operativo';
+                        this.showToast('Mantenimiento Registrado', 'El equipo ahora está operativo.');
+                        this.renderScheduledMaintenance(equipmentId);
+                        this.renderMaintenanceHistoryTable(equipmentId);
+                        this.updateFacilitiesGrid(); // Actualiza la tarjeta principal
+                        this.saveState();
+                        
+                        // Preguntar por la próxima fecha
+                        Swal.fire({
+                            title: 'Planificación Futura',
+                            text: '¿Cuándo debería ser el próximo mantenimiento preventivo para este equipo?',
+                            input: 'date',
+                            confirmButtonText: 'Establecer Fecha'
+                        }).then(dateResult => {
+                            if (dateResult.isConfirmed && dateResult.value) {
+                                item.nextMaintenanceDate = dateResult.value;
+                                this.saveState();
+                                this.updateFacilitiesGrid();
+                                this.showToast('Fecha guardada', 'Próximo mantenimiento planificado.');
+                            }
+                        });
+                    }
+                });
+            },
+            cancelScheduledMaintenance(equipmentId, scheduledId) {
+                Swal.fire({title:'¿Cancelar este mantenimiento?', text:'Esta acción eliminará el agendamiento.', icon:'warning', showCancelButton:true, confirmButtonText:'Sí, cancelar'}).then(r => {
+                    if (r.isConfirmed) {
+                        const item = this.state.data.gymData.equipment.find(e => e.id === equipmentId);
+                        if (item) {
+                            item.scheduledMaintenance = item.scheduledMaintenance.filter(rec => rec.id !== scheduledId);
+                            this.saveState();
+                            this.showToast('Cancelado', 'El agendamiento ha sido eliminado.');
+                            this.renderScheduledMaintenance(equipmentId);
+                        }
+                    }
+                });
+            },
+            deleteMaintenanceRecord(equipmentId, recordId) {
+                Swal.fire({title:'¿Eliminar este registro del historial?',text:'Esta acción no se puede deshacer.',icon:'warning',showCancelButton:true,confirmButtonColor:'#d33',confirmButtonText:'Sí, eliminar'}).then(r => {
+                    if (r.isConfirmed) {
+                        const item = this.state.data.gymData.equipment.find(e => e.id === equipmentId);
+                        if (item && item.maintenanceHistory) {
+                            item.maintenanceHistory = item.maintenanceHistory.filter(rec => rec.id !== recordId);
+                            this.saveState();
+                            this.showToast('Eliminado', 'El registro ha sido eliminado del historial.');
+                            this.renderMaintenanceHistoryTable(equipmentId);
+                            this.updateFacilitiesGrid();
+                        }
+                    }
+                });
             },
             handleEquipmentFormSubmit(event, equipmentId = null) {
                 event.preventDefault();
                 const form = event.target;
                 const formData = {
-                    name: form.elements.name.value,
-                    type: form.elements.type.value,
-                    status: form.elements.status.value,
-                    lastMaintenance: form.elements.lastMaintenance.value,
-                    nextMaintenance: form.elements.nextMaintenance.value,
-                    technician: form.elements.technician.value,
-                    notes: form.elements.notes.value,
+                    name: form.elements.name.value, type: form.elements.type.value, status: form.elements.status.value,
+                    nextMaintenanceDate: form.elements.nextMaintenanceDate.value, technician: form.elements.technician.value, notes: form.elements.notes.value,
                 };
 
                 if (equipmentId) {
                     const itemIndex = this.state.data.gymData.equipment.findIndex(e => e.id === equipmentId);
                     if (itemIndex > -1) {
+                        // Conserva los historiales existentes al actualizar
                         this.state.data.gymData.equipment[itemIndex] = { ...this.state.data.gymData.equipment[itemIndex], ...formData };
                         this.showToast('Éxito', 'Equipo actualizado.', 'success');
                     }
                 } else {
-                    const newItem = { id: Date.now(), ...formData };
+                    const newItem = { id: Date.now(), ...formData, scheduledMaintenance: [], maintenanceHistory: [] };
                     this.state.data.gymData.equipment.push(newItem);
                     this.showToast('Éxito', 'Nuevo equipo registrado.', 'success');
                 }
                 
                 this.saveState();
                 this.mainModal.hide();
-                this.updateFacilitiesTable();
+                this.updateFacilitiesGrid();
             },
             renderExerciseLibrary() {
                 const muscleGroups = ['Todos', ...new Set(this.state.data.gymData.exerciseLibrary.map(ex => ex.muscleGroup))];
