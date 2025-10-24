@@ -474,7 +474,7 @@
             transform: translateY(-5px);
             box-shadow: var(--light-shadow);
         }
-        dark-mode .equipment-card:hover { box-shadow: var(--dark-shadow); }
+        .dark-mode .equipment-card:hover { box-shadow: var(--dark-shadow); }
         .equipment-card .card-header {
             display: flex; justify-content: space-between; align-items: center;
             background-color: transparent !important;
@@ -498,7 +498,26 @@
         .status-operativo { border-left: 4px solid var(--success-color); }
         .status-mantenimiento { border-left: 4px solid var(--warning-color); }
         .status-averiado { border-left: 4px solid var(--danger-color); }
+
+        /* [FIX] Colores de texto de badges en modo oscuro para mayor contraste */
+        .dark-mode .text-success-emphasis { color: #A7F3D0 !important; }
+        .dark-mode .text-warning-emphasis { color: #FCD34D !important; }
+        .dark-mode .text-danger-emphasis { color: #FCA5A5 !important; }
+        .dark-mode .text-info-emphasis { color: #A5F3FC !important; }
+        .dark-mode .text-primary-emphasis { color: #C4B5FD !important; }
         
+        /* [NUEVO] Estilos para Avatares en la tabla de asistencia */
+        .attendance-avatar {
+            width: 40px; height: 40px; border-radius: 50%;
+            background-color: var(--primary-light); color: var(--primary-color);
+            font-weight: 600;
+            display: inline-flex; align-items: center; justify-content: center;
+            flex-shrink: 0;
+        }
+        .dark-mode .attendance-avatar {
+            background-color: #252945;
+        }
+
         /* =================================================================
            == 🏋️ BIBLIOTECA DE EJERCICIOS MEJORADA 🏋️ ==
            ================================================================= */
@@ -888,7 +907,16 @@
         .dark-mode .metric-item span {
             color: var(--dark-text-muted);
         }
-
+        .pending-request-card {
+            transition: all 0.2s;
+        }
+        .pending-request-card:hover {
+            background-color: var(--primary-light);
+            border-color: var(--primary-color);
+        }
+        .dark-mode .pending-request-card:hover {
+            background-color: rgba(124, 93, 255, 0.1);
+        }
 
         /* =================================================================
            == 📐 MEDIA QUERIES RESPONSIVE 📐 ==
@@ -1060,6 +1088,9 @@
                             { id: 2, name: 'Prensa de Piernas', type: 'Fuerza', status: 'En Mantenimiento', lastMaintenance: '2025-10-20', nextMaintenance: '2025-10-25', technician: 'Pedro Gonzalez', notes: 'Revisión de polea principal.' },
                             { id: 3, name: 'Bicicleta Spinning #5', type: 'Cardio', status: 'Averiado', lastMaintenance: '2025-08-01', nextMaintenance: null, technician: 'Juan Silva - TecnicoFit', notes: 'Pedal izquierdo suelto, no usar.' }
                         ],
+                        assessmentRequests: [
+                            { id: 1, studentId: 2, professorId: 101, status: 'pending', requestedAt: '2025-10-22T10:00:00Z' }
+                        ],
                         cart: [],
                     }
                 },
@@ -1229,7 +1260,7 @@
                     const btn = document.getElementById('add-class-btn');
                     btn.style.display = (role === 'admin' || role === 'professor') ? 'block' : 'none';
                     btn.onclick = () => this.showClassFormModal();
-                    this.initializeCalendar(role);
+                    this.initializeCalendar();
                 }
                 if (sectionId === 'exercise-library') {
                     this.renderExerciseLibrary();
@@ -1246,11 +1277,12 @@
                 if (role === 'professor') {
                     if (sectionId === 'routine-builder') this.updateProfessorRoutineBuilderUI();
                     if (sectionId === 'manage-students') this.updateManageStudentsUI();
+                    if (sectionId === 'evaluations') this.renderPendingAssessmentRequests();
                 }
                 if (role === 'student') {
                     if (sectionId === 'billing') this.updateStudentPlanUI();
                     if (sectionId === 'my-routine') this.updateStudentRoutineUI();
-                    if (sectionId === 'my-progress') { this.updateStudentCharts(); this.updateStudentGoalsUI(); }
+                    if (sectionId === 'my-progress') { this.updateStudentCharts(); this.updateStudentGoalsUI(); this.updateStudentAssessmentRequestStatusUI(); }
                     if (sectionId === 'my-classes') this.updateStudentClassesHistory();
                 }
             },
@@ -1808,7 +1840,7 @@
             },
             schedule: () => `<div class="page-header d-flex justify-content-between align-items-center flex-wrap gap-2"><div><h2 id="schedule-title">Agenda de Clases</h2><p class="text-muted mb-0">${GymApp.state.currentUser.role === 'student' ? 'Inscríbete en tus clases favoritas.' : 'Administra el horario de clases grupales.'}</p></div><button id="add-class-btn" class="btn btn-primary"><i class="fas fa-plus me-2"></i>Agendar Clase</button></div><div class="card"><div class="card-body p-lg-4 p-md-3 p-2"><div id="calendar"></div></div></div>`,
             facilities: () => `<div class="page-header"><h2><i class="fas fa-wrench me-2"></i>Gestión de Instalaciones</h2><p class="text-muted">Administra el estado y mantenimiento de los equipos del gimnasio.</p></div><div class="card"><div class="card-body"><div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2"><div class="search-input-group flex-grow-1" style="max-width: 400px;"><i class="fas fa-search"></i><input type="text" class="form-control" placeholder="Buscar equipo..." onkeyup="GymApp.filterTable(this.value, 'facilities-grid')"></div><button class="btn btn-primary" onclick="GymApp.showEquipmentFormModal()"><i class="fas fa-plus me-2"></i>Añadir Equipo</button></div></div></div><div id="facilities-grid" class="mt-4"></div>`,
-            'attendance-log': () => `<div class="page-header"><h2><i class="fas fa-clipboard-list me-2"></i>Registro de Asistencia</h2><p class="text-muted">Consulta el historial de ingresos de los socios al gimnasio.</p></div><div class="card"><div class="card-body"><div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2"><div class="search-input-group flex-grow-1" style="max-width: 400px;"><i class="fas fa-search"></i><input type="text" class="form-control" placeholder="Buscar socio..." onkeyup="GymApp.filterTable(this.value, 'attendance-table-body')"></div></div><div class="table-responsive"><table class="table table-hover align-middle"><thead><tr><th>Socio</th><th>Fecha</th><th>Hora de Entrada</th></tr></thead><tbody id="attendance-table-body"></tbody></table></div></div></div>`,
+            'attendance-log': () => `<div class="page-header"><h2><i class="fas fa-clipboard-list me-2"></i>Registro de Asistencia</h2><p class="text-muted">Consulta el historial de ingresos de los socios al gimnasio.</p></div><div class="card"><div class="card-body"><div class="search-input-group flex-grow-1 mb-3" style="max-width: 400px;"><i class="fas fa-search"></i><input type="text" class="form-control" placeholder="Buscar socio..." onkeyup="GymApp.filterTable(this.value, 'attendance-table-body')"></div><div class="table-responsive"><table class="table table-hover align-middle"><thead><tr><th style="width: 50%;">Socio</th><th>Fecha</th><th>Hora de Entrada</th></tr></thead><tbody id="attendance-table-body"></tbody></table></div></div></div>`,
             inventory: () => `<div class="page-header"><h2><i class="fas fa-boxes me-2"></i>Gestión de Inventario</h2><p class="text-muted">Controla el stock y los precios de los productos en venta.</p></div><div class="card"><div class="card-body"><div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2"><div class="search-input-group flex-grow-1" style="max-width: 400px;"><i class="fas fa-search"></i><input type="text" class="form-control" placeholder="Buscar producto..." onkeyup="GymApp.filterTable(this.value, 'inventory-table-body')"></div><div class="btn-group"><button class="btn btn-primary" onclick="GymApp.showProductFormModal()"><i class="fas fa-plus me-2"></i>Añadir</button><button class="btn btn-outline-secondary" onclick="GymApp.exportInventory()"><i class="fas fa-download me-2"></i>Exportar CSV</button></div></div><div class="table-responsive"><table class="table table-hover align-middle"><thead><tr><th>SKU</th><th>Producto</th><th>Stock</th><th>Precio</th><th class="text-end">Acciones</th></tr></thead><tbody id="inventory-table-body"></tbody></table></div></div></div>`,
             profile: () => {
                 const user = GymApp.state.currentUser;
@@ -1856,7 +1888,7 @@
             },
             'routine-builder': () => `<div class="page-header"><h2><i class="fas fa-dumbbell me-2"></i>Constructor de Rutinas</h2><p class="text-muted">Diseña y asigna planes de entrenamiento personalizados para tus alumnos.</p></div><div class="row"><div class="col-md-4 mb-4"><div class="card h-100"><div class="card-header"><h5>Mis Alumnos</h5></div><div id="professor-student-list" class="list-group list-group-flush"></div></div></div><div class="col-md-8 mb-4"><div class="card h-100"><div class="card-header" id="routine-builder-header"><h5>Selecciona un alumno</h5></div><div class="card-body" id="routine-builder-body"><p class="text-muted text-center p-5"><i class="fas fa-arrow-left fa-2x mb-2"></i><br>Elige un alumno de la lista para ver y editar su rutina.</p></div></div></div></div>`,
             'manage-students': () => `<div class="page-header"><h2><i class="fas fa-users-cog me-2"></i>Gestionar Alumnos</h2><p class="text-muted">Asigna alumnos a tu cargo y revisa la lista de alumnos sin profesor.</p></div><nav><div class="nav nav-tabs mb-3" id="nav-tab" role="tablist"><button class="nav-link active" id="nav-my-students-tab" data-bs-toggle="tab" data-bs-target="#nav-my-students" type="button">Mis Alumnos</button><button class="nav-link" id="nav-unassigned-tab" data-bs-toggle="tab" data-bs-target="#nav-unassigned" type="button">Alumnos sin Asignar</button></div></nav><div class="tab-content" id="nav-tabContent"><div class="tab-pane fade show active" id="nav-my-students"><div class="card"><div class="card-body"><div class="search-input-group mb-3"><i class="fas fa-search"></i><input type="text" class="form-control" placeholder="Buscar en mis alumnos..." onkeyup="GymApp.filterTable(this.value, 'my-students-grid')"></div><div id="my-students-grid"></div></div></div></div><div class="tab-pane fade" id="nav-unassigned"><div class="card"><div class="card-body"><div id="unassigned-students-grid"></div></div></div></div></div>`,
-            evaluations: () => `<div class="page-header"><h2><i class="fas fa-clipboard-list me-2"></i>Evaluaciones Físicas</h2><p class="text-muted">Registra y consulta el progreso físico y métricas de tus alumnos.</p></div><div class="card"><div class="card-body"><label class="form-label">Seleccionar Alumno</label><select id="evaluation-student-select" class="form-select mb-3" onchange="GymApp.renderEvaluationForStudent(this.value)"><option selected value="">Elige un alumno...</option>${Object.values(GymApp.state.data.users).filter(u => u.role === 'student' && u.professorId === GymApp.state.currentUser.id).map(m=>`<option value="${m.id}">${m.name}</option>`).join('')}</select><div id="evaluation-content"><p class="text-muted text-center p-5"><i class="fas fa-user-check fa-2x mb-2"></i><br>Selecciona un alumno para ver su historial o añadir una nueva evaluación.</p></div></div></div>`,
+            evaluations: () => `<div class="page-header"><h2><i class="fas fa-clipboard-list me-2"></i>Evaluaciones Físicas</h2><p class="text-muted">Registra y consulta el progreso físico y métricas de tus alumnos.</p></div><div id="assessment-requests-container" class="mb-4"></div><div class="card"><div class="card-body"><label class="form-label">Seleccionar Alumno</label><select id="evaluation-student-select" class="form-select mb-3" onchange="GymApp.renderEvaluationForStudent(this.value)"><option selected value="">Elige un alumno...</option>${Object.values(GymApp.state.data.users).filter(u => u.role === 'student' && u.professorId === GymApp.state.currentUser.id).map(m=>`<option value="${m.id}">${m.name}</option>`).join('')}</select><div id="evaluation-content"><p class="text-muted text-center p-5"><i class="fas fa-user-check fa-2x mb-2"></i><br>Selecciona un alumno para ver su historial o añadir una nueva evaluación.</p></div></div></div>`,
             'my-routine': () => {
                 const routine = GymApp.state.currentUser.routine;
                 let trainingDays = 0, restDays = 0;
@@ -1866,6 +1898,7 @@
             'my-progress': () => {
                 const recommendationsHTML = GymApp.getHealthRecommendations();
                 return `<div class="page-header"><h2><i class="fas fa-chart-line me-2"></i>Seguimiento Físico</h2><p class="text-muted">Visualiza tu evolución, define tus metas y registra tu progreso.</p></div>
+                <div id="assessment-status-container" class="mb-4"></div>
                 <div class="card mb-4"><div class="card-body"><div class="d-flex justify-content-between align-items-center mb-3"><h5><i class="fas fa-bullseye me-2 text-primary"></i>Mis Objetivos Actuales</h5><button class="btn btn-sm btn-outline-primary" onclick="GymApp.showGoalSettingModal()"><i class="fas fa-edit me-1"></i>Definir/Editar Objetivos</button></div><div id="goal-progress-container" class="row g-3"></div></div></div>
                 ${recommendationsHTML}
                 <div class="row"><div class="col-12 mb-4"><div class="card"><div class="card-header"><h5>Registrar Nuevo Progreso</h5></div><div class="card-body"><form id="progress-form" onsubmit="GymApp.handleAddProgress(event)"><div class="row g-3"><div class="col-md-3 col-6"><label class="form-label">Peso (kg)</label><input type="number" step="0.1" class="form-control" id="progress-weight" required></div><div class="col-md-3 col-6"><label class="form-label">% Grasa</label><input type="number" step="0.1" class="form-control" id="progress-bodyfat"></div><div class="col-md-2 col-4"><label class="form-label">Pecho</label><input type="number" class="form-control" id="progress-chest"></div><div class="col-md-2 col-4"><label class="form-label">Cintura</label><input type="number" class="form-control" id="progress-waist"></div><div class="col-md-2 col-4"><label class="form-label">Cadera</label><input type="number" class="form-control" id="progress-hips"></div><div class="col-12 d-grid mt-3"><button type="submit" class="btn btn-primary"><i class="fas fa-plus me-2"></i>Añadir Registro</button></div></div></form></div></div></div><div class="col-lg-6 mb-4"><div class="card h-100"><div class="card-body"><h5 class="card-title">Peso y % Grasa Corporal</h5><div style="height:350px;"><canvas id="weightChart"></canvas></div></div></div></div><div class="col-lg-6 mb-4"><div class="card h-100"><div class="card-body"><h5 class="card-title">Medidas Corporales (cm)</h5><div style="height:350px;"><canvas id="measurementsChart"></canvas></div></div></div></div></div>`;
@@ -2027,37 +2060,40 @@
             updateManageStudentsUI() { const myStudentsGrid = document.getElementById('my-students-grid'); const unassignedGrid = document.getElementById('unassigned-students-grid'); const students = Object.values(this.state.data.users).filter(u => u.role === 'student'); const myStudents = students.filter(s => s.professorId === this.state.currentUser.id); const unassignedStudents = students.filter(s => !s.professorId); const createStudentCard = (s, isMyStudent) => { const plan = this.getUserPlanDetails(s); const initials = s.name.split(' ').map(n=>n[0]).join('').substring(0,2).toUpperCase(); const phone = s.profile.phone || ''; const whatsappNumber = phone.startsWith('9') && phone.length === 9 ? `56${phone}` : phone.replace(/[^0-9]/g, ''); return `<div class="card student-card" data-name="${s.name.toLowerCase()}"><div class="card-body"><div class="d-flex align-items-center gap-3 mb-3"><div class="student-card-avatar">${initials}</div><div><h5 class="mb-0">${s.name}</h5><small class="text-muted">${s.profile.email}</small></div></div><div class="d-flex justify-content-between text-center small mb-3"><div class="w-50"><strong>Plan:</strong><br>${plan.name}</div><div class="w-50 border-start"><strong>Estado:</strong><br><span class="badge ${plan.status === 'Activo' ? 'bg-success' : 'bg-danger'}">${plan.status}</span></div></div><div class="d-flex gap-2">${isMyStudent ? `<button class="btn btn-sm btn-outline-primary flex-grow-1" onclick="GymApp.navigateTo('routine-builder'); setTimeout(() => GymApp.loadRoutineForStudent(${s.id}, document.querySelector('#professor-student-list [data-student-id=\\'${s.id}\\']')), 50);">Rutina</button><button class="btn btn-sm btn-outline-info" title="Chatear con ${s.name}" onclick="GymApp.openChatWithStudent(${s.id})"><i class="fas fa-comments"></i></button><a href="mailto:${s.profile.email}" class="btn btn-sm btn-outline-secondary" title="Enviar Email"><i class="fas fa-envelope"></i></a><a href="https://wa.me/${whatsappNumber}" target="_blank" class="btn btn-sm btn-outline-success" title="Contactar por WhatsApp"><i class="fab fa-whatsapp"></i></a>` : `<button class="btn btn-sm btn-success w-100" onclick="GymApp.claimStudent(${s.id})"><i class="fas fa-plus me-1"></i> Asignarme Alumno</button>`}</div></div></div>`; }; if(myStudents.length > 0) { myStudentsGrid.innerHTML = `<div id="students-grid">${myStudents.map(s => createStudentCard(s, true)).join('')}</div>`; } else { myStudentsGrid.innerHTML = `<p class="text-muted text-center p-4">No tienes alumnos asignados.</p>`; } if(unassignedStudents.length > 0) { unassignedGrid.innerHTML = `<div id="students-grid">${unassignedStudents.map(s => createStudentCard(s, false)).join('')}</div>`; } else { unassignedGrid.innerHTML = `<p class="text-muted text-center p-4">No hay alumnos sin asignar.</p>`; } },
             claimStudent(studentId) { const student = Object.values(this.state.data.users).find(u=>u.id === studentId); if(student) { student.professorId = this.state.currentUser.id; this.saveState(); this.showToast('¡Éxito!', `${student.name} ha sido asignado a tu lista.`, 'success'); this.updateManageStudentsUI(); } },
             
-            initializeCalendar(role) {
+            initializeCalendar() {
                 if (this.calendar) this.calendar.destroy();
                 const el = document.getElementById('calendar');
                 if (!el) return;
+                const role = this.state.currentUser.role;
+                const userId = this.state.currentUser.id;
 
                 const isMobile = window.innerWidth < 768;
+
+                const events = this.state.data.gymData.classes.map(c => {
+                    let display = 'auto';
+                    if (role === 'student' && !c.reservedBy.includes(userId) && !c.isAssessment) {
+                        display = 'background';
+                    }
+                    return {
+                        id: c.id,
+                        title: c.title,
+                        start: c.start,
+                        extendedProps: { classData: c },
+                        backgroundColor: c.isAssessment ? 'var(--warning-color)' : (c.teacher === 'Carlos Rivas' ? 'var(--primary-color)' : 'var(--info-color)'),
+                        borderColor: c.isAssessment ? 'var(--warning-color)' : (c.teacher === 'Carlos Rivas' ? 'var(--primary-color)' : 'var(--info-color)'),
+                        display: display
+                    }
+                });
 
                 this.calendar = new FullCalendar.Calendar(el, {
                     initialView: 'dayGridMonth',
                     locale: 'es',
-                    headerToolbar: {
-                        left: 'prev,next today',
-                        center: 'title',
-                        right: 'dayGridMonth,timeGridWeek,listWeek'
-                    },
+                    headerToolbar: { left: 'prev,next today', center: 'title', right: 'dayGridMonth,timeGridWeek,listWeek' },
                     height: 'auto',
                     dayMaxEvents: true,
                     titleFormat: isMobile ? { month: 'short', year: 'numeric' } : { month: 'long', year: 'numeric' },
                     dayHeaderFormat: isMobile ? { weekday: 'narrow' } : { weekday: 'short' },
-                    
-                    events: (fetchInfo, successCallback, failureCallback) => {
-                        const eventData = this.state.data.gymData.classes.map(c => ({
-                            id: c.id,
-                            title: c.title,
-                            start: c.start,
-                            extendedProps: { classData: c },
-                            backgroundColor: c.teacher === 'Carlos Rivas' ? 'var(--primary-color)' : 'var(--info-color)',
-                            borderColor: c.teacher === 'Carlos Rivas' ? 'var(--primary-color)' : 'var(--info-color)',
-                        }));
-                        successCallback(eventData);
-                    },
+                    events: events,
                     eventClick: (info) => {
                         const d = info.event.extendedProps.classData;
                         if (role === 'admin' || role === 'professor') {
@@ -2065,6 +2101,12 @@
                         } else {
                             const r = d.reservedBy.includes(this.state.currentUser.id);
                             const f = d.reservedBy.length >= d.spots;
+                            if (d.isAssessment) {
+                                if (r) {
+                                    Swal.fire({title: d.title, text: `Tu evaluación con ${d.teacher} está agendada.`, icon: 'info'});
+                                }
+                                return;
+                            }
                             Swal.fire({
                                 title: d.title,
                                 html: `<p><strong>Profesor:</strong> ${d.teacher}</p><p><strong>Cupos:</strong> ${d.reservedBy.length} / ${d.spots}</p>`,
@@ -2082,7 +2124,7 @@
                 this.calendar.render();
             },
 
-            handleClassReservation(id) {const c=this.state.data.gymData.classes.find(c=>c.id===id);const s=this.state.currentUser.id;const i=c.reservedBy.indexOf(s);if(i>-1){c.reservedBy.splice(i,1);this.showToast('Reserva Cancelada',`Cancelaste tu reserva para ${c.title}.`);}else if(c.reservedBy.length<c.spots){c.reservedBy.push(s);this.showToast('¡Inscrito!',`Te inscribiste a ${c.title}.`);}else{this.showToast('Error','Clase llena.','error');} if(this.calendar) this.calendar.refetchEvents(); this.updateStudentClassesHistory(); if(document.querySelector('.page-header h2').innerText === 'Mi Dashboard') { this.navigateTo('dashboard'); } this.saveState(); },
+            handleClassReservation(id) {const c=this.state.data.gymData.classes.find(c=>c.id===id);const s=this.state.currentUser.id;const i=c.reservedBy.indexOf(s);if(i>-1){c.reservedBy.splice(i,1);this.showToast('Reserva Cancelada',`Cancelaste tu reserva para ${c.title}.`);}else if(c.reservedBy.length<c.spots){c.reservedBy.push(s);this.showToast('¡Inscrito!',`Te inscribiste a ${c.title}.`);}else{this.showToast('Error','Clase llena.','error');} this.initializeCalendar(); this.updateStudentClassesHistory(); if(document.querySelector('.page-header h2').innerText === 'Mi Dashboard') { this.navigateTo('dashboard'); } this.saveState(); },
             handleAddProgress(e) { e.preventDefault(); const p=this.state.currentUser.progress;p.labels.push(new Date().toLocaleString('es-ES',{month:'long'}));p.weights.push(parseFloat(document.getElementById('progress-weight').value)||p.weights.slice(-1)[0]);p.bodyFat.push(parseFloat(document.getElementById('progress-bodyfat').value)||p.bodyFat.slice(-1)[0]);p.measurements.chest.push(parseFloat(document.getElementById('progress-chest').value)||p.measurements.chest.slice(-1)[0]);p.measurements.waist.push(parseFloat(document.getElementById('progress-waist').value)||p.measurements.waist.slice(-1)[0]);p.measurements.hips.push(parseFloat(document.getElementById('progress-hips').value)||p.measurements.hips.slice(-1)[0]);this.updateStudentCharts();this.updateStudentGoalsUI();this.showToast('Progreso Guardado','Tu nuevo registro ha sido añadido.');this.saveState();e.target.reset(); },
             handleProfileUpdate(event) {
                 event.preventDefault();
@@ -2240,10 +2282,10 @@
             handlePlanFormSubmit(event, planId = null) { event.preventDefault(); const form = event.target; const benefits = form.elements.planBenefits.value.split('\n').filter(b => b.trim() !== ''); if (planId) { const plan = this.state.data.gymData.membershipPlans.find(p => p.id === planId); if (plan) { Object.assign(plan, { name: form.elements.planName.value, price: parseFloat(form.elements.planPrice.value), description: form.elements.planDescription.value, benefits, durationDays: parseInt(form.elements.planDuration.value), rules: { allowFreeze: form.elements.planFreeze.checked } }); this.showToast('Éxito', 'Plan actualizado.', 'success'); } } else { const newId = Date.now(); const newPlan = { id: newId, name: form.elements.planName.value, price: parseFloat(form.elements.planPrice.value), description: form.elements.planDescription.value, benefits, durationDays: parseInt(form.elements.planDuration.value), rules: { allowFreeze: form.elements.planFreeze.checked } }; this.state.data.gymData.membershipPlans.push(newPlan); this.showToast('Éxito', 'Nuevo plan creado.', 'success'); } this.saveState(); this.mainModal.hide(); this.updateAdminPlansUI(); },
             showProductFormModal(productId = null) { const isEdit = productId !== null; const product = isEdit ? this.state.data.gymData.inventory.find(p => p.id === productId) : {}; document.getElementById('mainModalTitle').innerText = isEdit ? `Editar Producto: ${product.name}` : 'Añadir Nuevo Producto'; document.getElementById('mainModalBody').innerHTML = `<form id="productForm"><div class="row"><div class="col-md-6 mb-3"><label class="form-label">Nombre del Producto</label><input type="text" name="productName" class="form-control" value="${isEdit ? product.name : ''}" required></div><div class="col-md-6 mb-3"><label class="form-label">SKU</label><input type="text" name="productSku" class="form-control" value="${isEdit ? product.sku : ''}" required></div></div><div class="row"><div class="col-md-6 mb-3"><label class="form-label">Stock</label><input type="number" name="productStock" class="form-control" value="${isEdit ? product.stock : ''}" required></div><div class="col-md-6 mb-3"><label class="form-label">Precio (CLP)</label><input type="number" name="productPrice" step="10" class="form-control" value="${isEdit ? product.price : ''}" required></div></div></form>`; document.getElementById('mainModalFooter').innerHTML = `<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button><button type="submit" form="productForm" class="btn btn-primary">Guardar</button>`; document.getElementById('productForm').onsubmit = (event) => this.handleProductFormSubmit(event, productId); this.mainModal.show(); },
             handleProductFormSubmit(event, productId = null) { event.preventDefault(); const form = event.target; if (productId) { const product = this.state.data.gymData.inventory.find(p => p.id === productId); if (product) { Object.assign(product, { name: form.elements.productName.value, sku: form.elements.productSku.value, stock: parseInt(form.elements.productStock.value), price: parseFloat(form.elements.productPrice.value) }); this.showToast('Éxito', 'Producto actualizado.', 'success'); } } else { const newId = Date.now(); const newProduct = { id: newId, name: form.elements.productName.value, sku: form.elements.productSku.value, stock: parseInt(form.elements.productStock.value), price: parseFloat(form.elements.productPrice.value) }; this.state.data.gymData.inventory.push(newProduct); this.showToast('Éxito', 'Nuevo producto añadido.', 'success'); } this.saveState(); this.mainModal.hide(); this.updateAdminInventoryTable(); },
-            showClassFormModal(classId = null) { const isEdit = classId !== null; const classData = isEdit ? this.state.data.gymData.classes.find(c => c.id === classId) : {}; const startDate = isEdit ? new Date(classData.start) : new Date(); startDate.setMinutes(startDate.getMinutes() - startDate.getTimezoneOffset()); const dateValue = startDate.toISOString().split('T')[0]; const timeValue = startDate.toTimeString().substring(0, 5); const isProfessorRole = this.state.currentUser.role === 'professor'; const currentUserName = this.state.currentUser.name; let teacherInputHTML = ''; if (isProfessorRole) { teacherInputHTML = `<input id="swal-teacher" class="swal2-input" value="${currentUserName}" disabled>`; } else { const professors = Object.values(this.state.data.users).filter(u => u.role === 'professor').map(p => `<option value="${p.name}" ${isEdit && p.name === classData.teacher ? 'selected' : ''}>${p.name}</option>`).join(''); teacherInputHTML = `<select id="swal-teacher" class="swal2-select">${professors}</select>`; } const formHTML = `<style>#swal2-html-container { overflow: visible !important; }.swal-form-group { text-align: left; margin-bottom: 1rem; }.swal-form-group label { display: block; margin-bottom: .35rem; font-weight: 500; color: #545454; font-size: 0.85em; }body.dark-mode .swal-form-group label { color: #ccc; }.swal-form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; }.swal2-input, .swal2-select { width: 100% !important; margin: 0 !important; font-size: 0.9em !important; }</style><div class="swal-form-group"><label for="swal-title">Título de la Clase</label><input id="swal-title" class="swal2-input" placeholder="Ej: Yoga Avanzado" value="${isEdit ? classData.title : ''}"></div><div class="swal-form-grid"><div class="swal-form-group"><label for="swal-date">Fecha</label><input id="swal-date" type="date" class="swal2-input" value="${dateValue}"></div><div class="swal-form-group"><label for="swal-time">Hora</label><input id="swal-time" type="time" class="swal2-input" value="${timeValue}"></div></div><div class="swal-form-grid"><div class="swal-form-group"><label for="swal-spots">Cupos Disponibles</label><input id="swal-spots" type="number" class="swal2-input" placeholder="Ej: 15" value="${isEdit ? classData.spots : ''}"></div><div class="swal-form-group"><label for="swal-teacher">Profesor</label>${teacherInputHTML}</div></div>`; Swal.fire({ title: isEdit ? 'Editar Clase' : 'Agendar Nueva Clase', html: formHTML, focusConfirm: false, showCancelButton: true, showDenyButton: isEdit, confirmButtonText: 'Guardar', cancelButtonText: 'Cancelar', denyButtonText: 'Eliminar', preConfirm: () => [ document.getElementById('swal-title').value, document.getElementById('swal-date').value, document.getElementById('swal-time').value, document.getElementById('swal-spots').value, document.getElementById('swal-teacher').value ] }).then(result => { if (result.isConfirmed) { this.handleSaveClass(isEdit ? classData.id : null, result.value); } else if (result.isDenied) { this.handleDeleteClass(classData.id); } }); },
-            handleSaveClass(classId, values) { const [title, date, time, spots, teacher] = values; if (!title || !date || !time || !spots || !teacher) { this.showToast('Error', 'Todos los campos son obligatorios.', 'error'); return; } if (classId) { const classIndex = this.state.data.gymData.classes.findIndex(c => c.id === classId); if (classIndex > -1) { Object.assign(this.state.data.gymData.classes[classIndex], { title, start: `${date}T${time}:00`, spots: parseInt(spots), teacher }); this.showToast('Clase Actualizada', `La clase "${title}" se actualizó.`); } } else { this.state.data.gymData.classes.push({ id: Date.now(), title, start: `${date}T${time}:00`, spots: parseInt(spots), teacher, reservedBy: [] }); this.showToast('Clase Creada', `La clase "${title}" ha sido agendada.`); } if(this.calendar) this.calendar.refetchEvents(); this.saveState(); },
-            handleDeleteClass(classId) { Swal.fire({ title: '¿Confirmar eliminación?', text: "Esta acción no se puede deshacer.", icon: 'warning', showCancelButton: true, confirmButtonColor: '#d33', confirmButtonText: 'Sí, eliminar', cancelButtonText: 'No, mantener' }).then(r => { if (r.isConfirmed) { this.state.data.gymData.classes = this.state.data.gymData.classes.filter(c => c.id !== classId); if(this.calendar) this.calendar.refetchEvents(); this.showToast('Clase Eliminada', 'La clase ha sido eliminada del calendario.', 'success'); this.saveState(); } }); },
-            updateAdminAttendanceTable() { const tbody = document.getElementById('attendance-table-body'); if (!tbody) return; const logs = [...this.state.data.gymData.attendanceLog].sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp)); const userMap = Object.values(this.state.data.users).reduce((acc, user) => { acc[user.id] = user.name; return acc; }, {}); tbody.innerHTML = logs.map(log => { const userName = userMap[log.memberId] || 'Socio Desconocido'; const logDate = new Date(log.timestamp); const date = logDate.toLocaleDateString('es-CL'); const time = logDate.toLocaleTimeString('es-CL', { hour: '2-digit', minute: '2-digit' }); return `<tr data-name="${userName.toLowerCase()}"><td>${userName}</td><td>${date}</td><td>${time}</td></tr>`; }).join(''); },
+            showClassFormModal(classId = null, prefill = {}) { const isEdit = classId !== null; const classData = isEdit ? this.state.data.gymData.classes.find(c => c.id === classId) : {}; const startDate = isEdit ? new Date(classData.start) : new Date(); startDate.setMinutes(startDate.getMinutes() - startDate.getTimezoneOffset()); const dateValue = startDate.toISOString().split('T')[0]; const timeValue = startDate.toTimeString().substring(0, 5); const isProfessorRole = this.state.currentUser.role === 'professor'; const currentUserName = this.state.currentUser.name; let teacherInputHTML = ''; if (isProfessorRole) { teacherInputHTML = `<input id="swal-teacher" class="swal2-input" value="${currentUserName}" disabled>`; } else { const professors = Object.values(this.state.data.users).filter(u => u.role === 'professor').map(p => `<option value="${p.name}" ${isEdit && p.name === classData.teacher ? 'selected' : ''}>${p.name}</option>`).join(''); teacherInputHTML = `<select id="swal-teacher" class="swal2-select">${professors}</select>`; } const formHTML = `<style>#swal2-html-container { overflow: visible !important; }.swal-form-group { text-align: left; margin-bottom: 1rem; }.swal-form-group label { display: block; margin-bottom: .35rem; font-weight: 500; color: #545454; font-size: 0.85em; }body.dark-mode .swal-form-group label { color: #ccc; }.swal-form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; }.swal2-input, .swal2-select { width: 100% !important; margin: 0 !important; font-size: 0.9em !important; }</style><div class="swal-form-group"><label for="swal-title">Título de la Clase</label><input id="swal-title" class="swal2-input" placeholder="Ej: Yoga Avanzado" value="${isEdit ? classData.title : (prefill.title || '')}"></div><div class="swal-form-grid"><div class="swal-form-group"><label for="swal-date">Fecha</label><input id="swal-date" type="date" class="swal2-input" value="${dateValue}"></div><div class="swal-form-group"><label for="swal-time">Hora</label><input id="swal-time" type="time" class="swal2-input" value="${timeValue}"></div></div><div class="swal-form-grid"><div class="swal-form-group"><label for="swal-spots">Cupos Disponibles</label><input id="swal-spots" type="number" class="swal2-input" placeholder="Ej: 15" value="${isEdit ? classData.spots : (prefill.spots || '')}"></div><div class="swal-form-group"><label for="swal-teacher">Profesor</label>${teacherInputHTML}</div></div>`; Swal.fire({ title: isEdit ? 'Editar Clase' : 'Agendar Nueva Clase', html: formHTML, focusConfirm: false, showCancelButton: true, showDenyButton: isEdit, confirmButtonText: 'Guardar', cancelButtonText: 'Cancelar', denyButtonText: 'Eliminar', preConfirm: () => [ document.getElementById('swal-title').value, document.getElementById('swal-date').value, document.getElementById('swal-time').value, document.getElementById('swal-spots').value, document.getElementById('swal-teacher').value, prefill.isAssessment || false ] }).then(result => { if (result.isConfirmed) { this.handleSaveClass(isEdit ? classData.id : null, result.value); if(prefill.requestId) { this.updateAssessmentRequestStatus(prefill.requestId, 'agendada'); this.renderPendingAssessmentRequests(); } } else if (result.isDenied) { this.handleDeleteClass(classData.id); } }); },
+            handleSaveClass(classId, values) { const [title, date, time, spots, teacher, isAssessment] = values; if (!title || !date || !time || !spots || !teacher) { this.showToast('Error', 'Todos los campos son obligatorios.', 'error'); return; } if (classId) { const classIndex = this.state.data.gymData.classes.findIndex(c => c.id === classId); if (classIndex > -1) { Object.assign(this.state.data.gymData.classes[classIndex], { title, start: `${date}T${time}:00`, spots: parseInt(spots), teacher, isAssessment }); this.showToast('Clase Actualizada', `La clase "${title}" se actualizó.`); } } else { this.state.data.gymData.classes.push({ id: Date.now(), title, start: `${date}T${time}:00`, spots: parseInt(spots), teacher, reservedBy: [], isAssessment }); this.showToast('Clase Creada', `La clase "${title}" ha sido agendada.`); } this.initializeCalendar(); this.saveState(); },
+            handleDeleteClass(classId) { Swal.fire({ title: '¿Confirmar eliminación?', text: "Esta acción no se puede deshacer.", icon: 'warning', showCancelButton: true, confirmButtonColor: '#d33', confirmButtonText: 'Sí, eliminar', cancelButtonText: 'No, mantener' }).then(r => { if (r.isConfirmed) { this.state.data.gymData.classes = this.state.data.gymData.classes.filter(c => c.id !== classId); this.initializeCalendar(); this.showToast('Clase Eliminada', 'La clase ha sido eliminada del calendario.', 'success'); this.saveState(); } }); },
+            updateAdminAttendanceTable() { const tbody = document.getElementById('attendance-table-body'); if (!tbody) return; const logs = [...this.state.data.gymData.attendanceLog].sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp)); const userMap = Object.values(this.state.data.users).reduce((acc, user) => { acc[user.id] = user; return acc; }, {}); tbody.innerHTML = logs.map(log => { const user = userMap[log.memberId]; const userName = user ? user.name : 'Socio Desconocido'; const initials = userName.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase(); const logDate = new Date(log.timestamp); const date = logDate.toLocaleDateString('es-CL'); const time = logDate.toLocaleTimeString('es-CL', { hour: '2-digit', minute: '2-digit' }); return `<tr data-name="${userName.toLowerCase()}"><td><div class="d-flex align-items-center gap-3"><div class="attendance-avatar">${initials}</div><strong>${userName}</strong></div></td><td>${date}</td><td>${time}</td></tr>`; }).join(''); },
             
             showGoalSettingModal() {
                 const user = this.state.currentUser;
@@ -2414,7 +2456,7 @@
                 
                 const equipmentList = this.state.data.gymData.equipment;
                 
-                const statusInfo = { 'Operativo': { class: 'status-operativo', textClass: 'text-success', icon: 'fa-check-circle' }, 'En Mantenimiento': { class: 'status-mantenimiento', textClass: 'text-warning', icon: 'fa-tools' }, 'Averiado': { class: 'status-averiado', textClass: 'text-danger', icon: 'fa-exclamation-triangle' } };
+                const statusInfo = { 'Operativo': { class: 'status-operativo', textClass: 'text-success-emphasis', icon: 'fa-check-circle' }, 'En Mantenimiento': { class: 'status-mantenimiento', textClass: 'text-warning-emphasis', icon: 'fa-tools' }, 'Averiado': { class: 'status-averiado', textClass: 'text-danger-emphasis', icon: 'fa-exclamation-triangle' } };
                 const typeIcons = { 'Cardio': 'fa-heart-pulse', 'Fuerza': 'fa-dumbbell', 'Funcional': 'fa-running', 'Accesorios': 'fa-puzzle-piece' };
 
                 if (equipmentList.length === 0) { grid.innerHTML = `<div class="col-12 text-center text-muted p-5"><p>No hay equipos registrados.</p></div>`; return; }
@@ -2435,7 +2477,7 @@
                                 <li>
                                     <span class="icon"><i class="fas fa-info-circle"></i></span>
                                     <strong>Estado</strong>
-                                    <span class="badge ${status.class.replace('status-', 'bg-')}-subtle ${status.textClass}-emphasis rounded-pill">${item.status}</span>
+                                    <span class="badge bg-${status.class.replace('status-', '')}-subtle ${status.textClass} rounded-pill">${item.status}</span>
                                 </li>
                                 <li>
                                     <span class="icon"><i class="fas fa-calendar-alt"></i></span>
@@ -2688,6 +2730,79 @@
                         this.renderExerciseLibrary();
                     }
                 });
+            },
+            requestAssessment() {
+                const studentId = this.state.currentUser.id;
+                const professorId = this.state.currentUser.professorId;
+                if (!professorId) { this.showToast('Error', 'No tienes un profesor asignado.', 'error'); return; }
+                const existingRequest = this.state.data.gymData.assessmentRequests.find(r => r.studentId === studentId && r.status === 'pending');
+                if (existingRequest) { this.showToast('Ya tienes una solicitud pendiente', 'Tu profesor la revisará pronto.', 'info'); return; }
+                const newRequest = { id: Date.now(), studentId, professorId, status: 'pending', requestedAt: new Date().toISOString() };
+                this.state.data.gymData.assessmentRequests.push(newRequest);
+                this.saveState();
+                this.showToast('Solicitud Enviada', 'Tu profesor ha sido notificado.', 'success');
+                this.updateStudentAssessmentRequestStatusUI();
+            },
+            updateStudentAssessmentRequestStatusUI() {
+                const container = document.getElementById('assessment-status-container');
+                if (!container) return;
+                const request = this.state.data.gymData.assessmentRequests.find(r => r.studentId === this.state.currentUser.id);
+                let contentHTML = '';
+                if (request) {
+                    const statusMap = { pending: { text: 'Solicitud Pendiente', icon: 'fa-clock', color: 'info' }, agendada: { text: 'Evaluación Agendada', icon: 'fa-calendar-check', color: 'success' }, rechazada: { text: 'Solicitud Rechazada', icon: 'fa-times-circle', color: 'danger' } };
+                    const currentStatus = statusMap[request.status] || {text: 'Estado Desconocido', icon: 'fa-question-circle', color: 'secondary'};
+                    contentHTML = `<div class="card bg-${currentStatus.color}-subtle"><div class="card-body d-flex justify-content-between align-items-center"><div><h5 class="mb-0 text-${currentStatus.color}-emphasis"><i class="fas ${currentStatus.icon} me-2"></i>${currentStatus.text}</h5><small>Tu profesor revisará tu solicitud.</small></div>${request.status === 'agendada' ? `<button class="btn btn-sm btn-${currentStatus.color}" onclick="GymApp.navigateTo('schedule')">Ver Agenda</button>` : ''}${request.status === 'rechazada' ? `<button class="btn btn-sm btn-primary" onclick="GymApp.requestAssessment()">Solicitar de Nuevo</button>` : ''}</div></div>`;
+                } else {
+                    contentHTML = `<div class="card"><div class="card-body d-flex justify-content-between align-items-center"><div><h5 class="mb-0">¿Necesitas una evaluación?</h5><p class="mb-0 text-muted">Solicita una evaluación corporal para medir tu progreso.</p></div><button class="btn btn-primary" onclick="GymApp.requestAssessment()">Solicitar Evaluación</button></div></div>`;
+                }
+                container.innerHTML = contentHTML;
+            },
+            renderPendingAssessmentRequests() {
+                const container = document.getElementById('assessment-requests-container');
+                if(!container) return;
+                const professorId = this.state.currentUser.id;
+                const pendingRequests = this.state.data.gymData.assessmentRequests.filter(r => r.professorId === professorId && r.status === 'pending');
+                
+                if (pendingRequests.length === 0) {
+                    container.innerHTML = '';
+                    return;
+                }
+                
+                const requestCards = pendingRequests.map(req => {
+                    const student = Object.values(this.state.data.users).find(u => u.id === req.studentId);
+                    if (!student) return '';
+                    const requestedDate = new Date(req.requestedAt).toLocaleDateString('es-CL');
+                    return `<div class="card card-body pending-request-card mb-2">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div><strong>${student.name}</strong> ha solicitado una evaluación.<br><small class="text-muted">Solicitado el ${requestedDate}</small></div>
+                            <div class="btn-group"><button class="btn btn-sm btn-success" onclick="GymApp.scheduleAssessment(${req.id})">Agendar</button><button class="btn btn-sm btn-danger" onclick="GymApp.updateAssessmentRequestStatus(${req.id}, 'rechazada')">Rechazar</button></div>
+                        </div>
+                    </div>`;
+                }).join('');
+
+                container.innerHTML = `<div class="card mb-4"><div class="card-header"><h5><i class="fas fa-inbox me-2"></i>Solicitudes Pendientes</h5></div><div class="card-body">${requestCards}</div></div>`;
+            },
+            scheduleAssessment(requestId) {
+                const request = this.state.data.gymData.assessmentRequests.find(r => r.id === requestId);
+                if (!request) return;
+                const student = Object.values(this.state.data.users).find(u => u.id === request.studentId);
+                const prefillData = {
+                    title: `Evaluación Corporal: ${student.name}`,
+                    spots: 1,
+                    isAssessment: true,
+                    requestId: requestId
+                };
+                this.navigateTo('schedule');
+                setTimeout(() => this.showClassFormModal(null, prefillData), 100);
+            },
+            updateAssessmentRequestStatus(requestId, newStatus) {
+                const request = this.state.data.gymData.assessmentRequests.find(r => r.id === requestId);
+                if (request) {
+                    request.status = newStatus;
+                    this.saveState();
+                    this.showToast('Solicitud Actualizada', `La solicitud ha sido marcada como '${newStatus}'.`, 'success');
+                    this.renderPendingAssessmentRequests();
+                }
             }
         });
 
