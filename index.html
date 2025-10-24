@@ -342,6 +342,36 @@
         .dark-mode .mobile-header { background-color: #1E2139; color: white; border-bottom-color: var(--dark-border-color); }
         .hamburger-btn { background: transparent; border: none; color: var(--light-text-color); font-size: 1.5rem; }
         .dark-mode .hamburger-btn { color: white; }
+        
+        /* [NUEVO] ESTILOS PARA CONTROLES DE LA CABECERA MÓVIL */
+        .mobile-header-controls {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+        .mobile-header-controls .theme-toggle-btn,
+        .mobile-header-controls .logout-btn {
+            background: none;
+            border: none;
+            font-size: 1.3rem;
+            cursor: pointer;
+            color: var(--light-text-muted);
+            padding: 0.25rem 0.5rem;
+            transition: color var(--transition-speed);
+        }
+        .mobile-header-controls .theme-toggle-btn:hover,
+        .mobile-header-controls .logout-btn:hover {
+            color: var(--primary-color);
+        }
+        .dark-mode .mobile-header-controls .theme-toggle-btn,
+        .dark-mode .mobile-header-controls .logout-btn {
+            color: var(--dark-text-muted);
+        }
+        #mobile-theme-sun { display: none; }
+        .dark-mode #mobile-theme-sun { display: inline-block; }
+        .dark-mode #mobile-theme-moon { display: none; }
+        .mobile-header-controls .logout-btn { color: var(--danger-color); }
+        
         .sidebar-overlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background-color: rgba(0, 0, 0, 0.6); z-index: 1001;
@@ -467,24 +497,6 @@
             grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
             gap: 1.5rem;
         }
-
-        @media (max-width: 992px) {
-    .sidebar {
-        overflow-y: auto; /* Nuevo: Permite scroll en todo el sidebar en móvil */
-        -webkit-overflow-scrolling: touch; /* Suaviza scroll en iOS */
-    }
-    .sidebar-footer {
-        position: sticky; /* Opcional: "Pega" el footer al fondo cuando scrollees */
-        bottom: 0;
-        background-color: var(--light-content-bg); /* O dark-bg en dark mode */
-        z-index: 1;
-        border-top: 1px solid var(--light-border-color);
-    }
-    .dark-mode .sidebar-footer {
-        background-color: var(--dark-content-bg);
-        border-top-color: var(--dark-border-color);
-    }
-}
         .equipment-card {
             transition: transform 0.2s, box-shadow 0.2s;
             position: relative;
@@ -534,6 +546,16 @@
         }
         .dark-mode .maintenance-item:hover {
             background-color: var(--dark-bg);
+        }
+
+        /* [NUEVO] ESTILOS PARA FORMULARIOS EN MODALES */
+        .modal-form-group .input-group-text {
+            background-color: var(--light-bg);
+            border-color: var(--light-border-color);
+        }
+        .dark-mode .modal-form-group .input-group-text {
+            background-color: var(--dark-bg);
+            border-color: var(--dark-border-color);
         }
 
         /* [FIX] Colores de texto de badges en modo oscuro para mayor contraste */
@@ -970,6 +992,10 @@
             .sidebar.open { transform: translateX(0); }
             .content { margin-left: 0; width: 100%; padding: 1.5rem; padding-top: calc(var(--mobile-header-height) + 1.5rem); }
             .mobile-header { display: flex; }
+            /* [NUEVO] Ocultar el pie del sidebar en modo responsivo */
+            .sidebar-footer {
+                display: none;
+            }
         }
         @media (min-width: 768px) {
             .chat-sidebar { width: 130px; position: static; transform: none; }
@@ -994,7 +1020,17 @@
     <header class="mobile-header">
         <button class="hamburger-btn" onclick="GymApp.toggleSidebar()"><i class="fas fa-bars"></i></button>
         <div class="mobile-header-title">GymApp Pro</div>
-        <div></div>
+        <div class="mobile-header-controls">
+            <button class="theme-toggle-btn" id="mobile-theme-moon" onclick="GymApp.setTheme('dark')" title="Modo Oscuro">
+                <i class="fas fa-moon"></i>
+            </button>
+            <button class="theme-toggle-btn" id="mobile-theme-sun" onclick="GymApp.setTheme('light')" title="Modo Claro">
+                <i class="fas fa-sun"></i>
+            </button>
+            <button class="logout-btn" onclick="GymApp.logout()" title="Cerrar Sesión">
+                <i class="fas fa-sign-out-alt"></i>
+            </button>
+        </div>
     </header>
     
     <div id="app-container" style="display: none;">
@@ -1069,6 +1105,10 @@
     </section>
     
     <div class="modal fade" id="mainModal" tabindex="-1"><div class="modal-dialog modal-lg"><div class="modal-content"><div class="modal-header"><h5 class="modal-title" id="mainModalTitle"></h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div><div class="modal-body" id="mainModalBody"></div><div class="modal-footer" id="mainModalFooter"></div></div></div></div>
+    
+    <!-- [NUEVO] Modal dedicado para formularios de mantenimiento -->
+    <div class="modal fade" id="maintenanceModal" tabindex="-1"><div class="modal-dialog"><div class="modal-content"><div class="modal-header"><h5 class="modal-title" id="maintenanceModalTitle"></h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div><div class="modal-body" id="maintenanceModalBody"></div><div class="modal-footer" id="maintenanceModalFooter"></div></div></div></div>
+
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -1128,9 +1168,9 @@
                         attendanceLog: [ { memberId: 1, timestamp: '2025-10-21T08:05:12' }, { memberId: 2, timestamp: '2025-10-21T09:15:30' }, { memberId: 3, timestamp: '2025-10-21T17:02:00' }, { memberId: 1, timestamp: '2025-10-21T18:30:15' }, { memberId: 2, timestamp: '2025-10-20T19:00:05' }, { memberId: 1, timestamp: '2025-10-19T08:00:21' } ],
                         transactions: [ {id: 1, date: '2025-10-21', description: 'Venta POS', amount: 3500, method: 'Efectivo'}, {id: 2, date: '2025-10-21', description: 'Membresía', amount: 49990, method: 'Tarjeta'}, {id: 3, date: '2025-10-21', description: 'Venta POS', amount: 2500, method: 'Tarjeta'} ],
                         equipment: [
-                            { id: 1, name: 'Cinta de Correr #1', type: 'Cardio', status: 'Operativo', nextMaintenanceDate: '2025-12-15', technician: 'Juan Silva - TecnicoFit', notes: 'Funciona perfectamente.', scheduledMaintenance: [], maintenanceHistory: [ {id: 1, date: '2025-09-15', description: 'Mantenimiento preventivo general.', cost: 35000, technician: 'Juan Silva - TecnicoFit', notes: 'Se realizó limpieza y lubricación.' } ] },
-                            { id: 2, name: 'Prensa de Piernas', type: 'Fuerza', status: 'En Mantenimiento', nextMaintenanceDate: '2026-01-20', technician: 'Pedro Gonzalez', notes: 'Actualmente en revisión de polea.', scheduledMaintenance: [ { id: 101, scheduledDate: '2025-10-24', description: 'Revisión y cambio de polea principal', technician: 'Pedro Gonzalez', status: 'Agendado' } ], maintenanceHistory: [ {id: 3, date: '2025-07-20', description: 'Engrase y limpieza.', cost: 25000, technician: 'Pedro Gonzalez', notes: 'Todo en orden.'} ] },
-                            { id: 3, name: 'Bicicleta Spinning #5', type: 'Cardio', status: 'Averiado', nextMaintenanceDate: null, technician: '', notes: 'Pedal izquierdo suelto, no usar hasta reparar.', scheduledMaintenance: [ { id: 102, scheduledDate: '2025-10-25', description: 'Reparación de pedal izquierdo.', technician: 'Juan Silva - TecnicoFit', status: 'Agendado' } ], maintenanceHistory: [ {id: 4, date: '2025-08-01', description: 'Revisión de cadena.', cost: 30000, technician: 'Juan Silva - TecnicoFit', notes: 'Cadena tensada.'} ] }
+                            { id: 1, name: 'Cinta de Correr #1', type: 'Cardio', status: 'Operativo', nextMaintenanceDate: '2025-12-15', notes: 'Funciona perfectamente.', scheduledMaintenance: [], maintenanceHistory: [ {id: 1, date: '2025-09-15', description: 'Mantenimiento preventivo general.', cost: 35000, technician: 'Juan Silva - TecnicoFit', notes: 'Se realizó limpieza y lubricación.' } ] },
+                            { id: 2, name: 'Prensa de Piernas', type: 'Fuerza', status: 'En Mantenimiento', nextMaintenanceDate: '2026-01-20', notes: 'Actualmente en revisión de polea.', scheduledMaintenance: [ { id: 101, scheduledDate: '2025-10-24', description: 'Revisión y cambio de polea principal', technician: 'Pedro Gonzalez', status: 'Agendado' } ], maintenanceHistory: [ {id: 3, date: '2025-07-20', description: 'Engrase y limpieza.', cost: 25000, technician: 'Pedro Gonzalez', notes: 'Todo en orden.'} ] },
+                            { id: 3, name: 'Bicicleta Spinning #5', type: 'Cardio', status: 'Averiado', nextMaintenanceDate: null, notes: 'Pedal izquierdo suelto, no usar hasta reparar.', scheduledMaintenance: [ { id: 102, scheduledDate: '2025-10-25', description: 'Reparación de pedal izquierdo.', technician: 'Juan Silva - TecnicoFit', status: 'Agendado' } ], maintenanceHistory: [ {id: 4, date: '2025-08-01', description: 'Revisión de cadena.', cost: 30000, technician: 'Juan Silva - TecnicoFit', notes: 'Cadena tensada.'} ] }
                         ],
                         assessmentRequests: [
                             { id: 1, studentId: 2, professorId: 101, status: 'pending', requestedAt: '2025-10-22T10:00:00Z' }
@@ -1145,6 +1185,7 @@
             calendar: null,
             charts: {},
             mainModal: null,
+            maintenanceModal: null,
 
             init() {
                 this.elements.mainContent = document.querySelector('.content');
@@ -1153,6 +1194,7 @@
                 this.elements.appLoader = document.getElementById('app-loader');
                 this.elements.navContainer = document.querySelector('.sidebar-nav-container');
                 this.mainModal = new bootstrap.Modal(document.getElementById('mainModal'));
+                this.maintenanceModal = new bootstrap.Modal(document.getElementById('maintenanceModal'));
 
                 this.loadState();
                 
@@ -1458,6 +1500,7 @@
             },
 
             formatCurrency(number) {
+                if (typeof number !== 'number') return '$0';
                 return '$' + new Intl.NumberFormat('es-CL').format(number);
             },
             openChatWithStudent(studentId) {
@@ -2506,7 +2549,7 @@
                 grid.innerHTML = equipmentList.map(item => {
                     const status = statusInfo[item.status] || { class: '', textClass: '' };
                     const lastMaint = item.maintenanceHistory && item.maintenanceHistory.length > 0 ? new Date([...item.maintenanceHistory].sort((a,b) => new Date(a.date) - new Date(b.date)).pop().date).toLocaleDateString('es-CL') : 'N/A';
-                    const nextMaint = item.nextMaintenanceDate ? new Date(item.nextMaintenanceDate).toLocaleDateString('es-CL') : 'N/A';
+                    const nextMaint = item.nextMaintenanceDate ? new Date(item.nextMaintenanceDate  + 'T00:00:00').toLocaleDateString('es-CL') : 'N/A';
                     
                     return `
                     <div class="card equipment-card ${status.class}" data-name="${item.name.toLowerCase()}">
@@ -2523,7 +2566,6 @@
                                 </li>
                                 <li><span class="icon"><i class="fas fa-calendar-alt"></i></span><strong>Último Mant.</strong><span>${lastMaint}</span></li>
                                 <li><span class="icon"><i class="fas fa-calendar-check"></i></span><strong>Próximo Mant.</strong><span>${nextMaint}</span></li>
-                                <li><span class="icon"><i class="fas fa-user-cog"></i></span><strong>Técnico Frecuente</strong><span>${item.technician || 'N/A'}</span></li>
                             </ul>
                         </div>
                         <div class="card-footer d-grid">
@@ -2546,9 +2588,14 @@
                     <div class="tab-content" id="equipmentTabContent">
                         <div class="tab-pane fade show active p-3" id="details" role="tabpanel">
                             <form id="equipmentForm">
-                                <div class="row"><div class="col-md-8 mb-3"><label class="form-label">Nombre del Equipo</label><input type="text" name="name" class="form-control" value="${item.name || ''}" required></div><div class="col-md-4 mb-3"><label class="form-label">Tipo</label><select name="type" class="form-select" required><option ${!item.type ? 'selected' : ''} disabled value="">Seleccionar...</option><option value="Cardio" ${item.type === 'Cardio' ? 'selected' : ''}>Cardio</option><option value="Fuerza" ${item.type === 'Fuerza' ? 'selected' : ''}>Fuerza</option><option value="Funcional" ${item.type === 'Funcional' ? 'selected' : ''}>Funcional</option><option value="Accesorios" ${item.type === 'Accesorios' ? 'selected' : ''}>Accesorios</option></select></div></div>
-                                <div class="row"><div class="col-md-6 mb-3"><label class="form-label">Estado</label><select name="status" class="form-select" required><option value="Operativo" ${item.status === 'Operativo' ? 'selected' : ''}>Operativo</option><option value="En Mantenimiento" ${item.status === 'En Mantenimiento' ? 'selected' : ''}>En Mantenimiento</option><option value="Averiado" ${item.status === 'Averiado' ? 'selected' : ''}>Averiado</option></select></div><div class="col-md-6 mb-3"><label class="form-label">Técnico Frecuente</label><input type="text" name="technician" class="form-control" value="${item.technician || ''}"></div></div>
-                                <div class="row"><div class="col-md-6 mb-3"><label class="form-label">Fecha Próximo Mantenimiento</label><input type="date" name="nextMaintenanceDate" class="form-control" value="${item.nextMaintenanceDate || ''}"></div></div>
+                                <div class="row">
+                                    <div class="col-md-8 mb-3"><label class="form-label">Nombre del Equipo</label><input type="text" name="name" class="form-control" value="${item.name || ''}" required></div>
+                                    <div class="col-md-4 mb-3"><label class="form-label">Tipo</label><select name="type" class="form-select" required><option ${!item.type ? 'selected' : ''} disabled value="">Seleccionar...</option><option value="Cardio" ${item.type === 'Cardio' ? 'selected' : ''}>Cardio</option><option value="Fuerza" ${item.type === 'Fuerza' ? 'selected' : ''}>Fuerza</option><option value="Funcional" ${item.type === 'Funcional' ? 'selected' : ''}>Funcional</option><option value="Accesorios" ${item.type === 'Accesorios' ? 'selected' : ''}>Accesorios</option></select></div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-6 mb-3"><label class="form-label">Estado</label><select name="status" class="form-select" required><option value="Operativo" ${item.status === 'Operativo' ? 'selected' : ''}>Operativo</option><option value="En Mantenimiento" ${item.status === 'En Mantenimiento' ? 'selected' : ''}>En Mantenimiento</option><option value="Averiado" ${item.status === 'Averiado' ? 'selected' : ''}>Averiado</option></select></div>
+                                    <div class="col-md-6 mb-3"><label class="form-label">Fecha Próximo Mantenimiento</label><input type="date" name="nextMaintenanceDate" class="form-control" value="${item.nextMaintenanceDate || ''}"></div>
+                                </div>
                                 <div class="mb-3"><label class="form-label">Notas Adicionales</label><textarea name="notes" class="form-control" rows="2">${item.notes || ''}</textarea></div>
                             </form>
                         </div>
@@ -2620,20 +2667,31 @@
                     </div>`;
             },
             showScheduleMaintenanceModal(equipmentId) {
-                Swal.fire({
-                    title: 'Agendar Nuevo Mantenimiento',
-                    html: `
-                        <input id="swal-date" type="date" class="swal2-input" placeholder="Fecha">
-                        <textarea id="swal-desc" class="swal2-textarea" placeholder="Descripción del trabajo a realizar..."></textarea>
-                        <input id="swal-tech" class="swal2-input" placeholder="Nombre del Técnico">`,
-                    confirmButtonText: 'Agendar',
-                    focusConfirm: false,
-                    didOpen: () => { document.getElementById('swal-date').valueAsDate = new Date(); },
-                    preConfirm: () => [ document.getElementById('swal-date').value, document.getElementById('swal-desc').value, document.getElementById('swal-tech').value ]
-                }).then(result => { if (result.isConfirmed) { this.handleScheduleMaintenanceSubmit(equipmentId, result.value); } });
+                document.getElementById('maintenanceModalTitle').innerText = 'Agendar Nuevo Mantenimiento';
+                document.getElementById('maintenanceModalBody').innerHTML = `
+                    <form id="scheduleMaintForm">
+                        <div class="mb-3 modal-form-group">
+                            <label for="maint-date" class="form-label">Fecha Programada</label>
+                            <div class="input-group"><span class="input-group-text"><i class="fas fa-calendar-alt"></i></span><input id="maint-date" type="date" class="form-control" required></div>
+                        </div>
+                        <div class="mb-3 modal-form-group">
+                            <label for="maint-desc" class="form-label">Descripción del Trabajo</label>
+                            <textarea id="maint-desc" class="form-control" rows="3" placeholder="Ej: Revisión y lubricación de cadena" required></textarea>
+                        </div>
+                         <div class="mb-3 modal-form-group">
+                             <label for="maint-tech" class="form-label">Técnico (Opcional)</label>
+                             <div class="input-group"><span class="input-group-text"><i class="fas fa-user-cog"></i></span><input id="maint-tech" type="text" class="form-control" placeholder="Nombre del técnico o empresa"></div>
+                        </div>
+                    </form>`;
+                document.getElementById('maintenanceModalFooter').innerHTML = `<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button><button type="submit" form="scheduleMaintForm" class="btn btn-primary">Agendar</button>`;
+                document.getElementById('scheduleMaintForm').onsubmit = (e) => { e.preventDefault(); this.handleScheduleMaintenanceSubmit(equipmentId); };
+                this.maintenanceModal.show();
             },
-            handleScheduleMaintenanceSubmit(equipmentId, values) {
-                const [date, description, technician] = values;
+            handleScheduleMaintenanceSubmit(equipmentId) {
+                const date = document.getElementById('maint-date').value;
+                const description = document.getElementById('maint-desc').value;
+                const technician = document.getElementById('maint-tech').value;
+
                 if (!date || !description) { this.showToast('Error', 'La fecha y descripción son obligatorias.', 'error'); return; }
                 const item = this.state.data.gymData.equipment.find(e => e.id === equipmentId);
                 if (item) {
@@ -2642,6 +2700,7 @@
                     this.saveState();
                     this.showToast('Éxito', 'Mantenimiento agendado.');
                     this.renderScheduledMaintenance(equipmentId);
+                    this.maintenanceModal.hide();
                 }
             },
             confirmMaintenanceCompletion(equipmentId, scheduledId) {
@@ -2650,51 +2709,49 @@
                 const scheduledItem = item.scheduledMaintenance.find(rec => rec.id === scheduledId);
                 if (!scheduledItem) return;
 
-                Swal.fire({
-                    title: 'Confirmar Mantenimiento Realizado',
-                    html: `
-                        <p class="text-start"><strong>Fecha:</strong> ${new Date(scheduledItem.scheduledDate + 'T00:00:00').toLocaleDateString('es-CL')}</p>
-                        <p class="text-start"><strong>Trabajo:</strong> ${scheduledItem.description}</p>
-                        <input id="swal-cost" type="number" class="swal2-input" placeholder="Costo Final (CLP)">
-                        <textarea id="swal-notes" class="swal2-textarea" placeholder="Notas finales o detalles adicionales..."></textarea>`,
-                    confirmButtonText: 'Confirmar y Registrar',
-                    focusConfirm: false,
-                    preConfirm: () => [ document.getElementById('swal-cost').value, document.getElementById('swal-notes').value ]
-                }).then(result => {
-                    if (result.isConfirmed) {
-                        const [cost, notes] = result.value;
-                        item.maintenanceHistory.push({
-                            id: Date.now(),
-                            date: scheduledItem.scheduledDate,
-                            description: scheduledItem.description,
-                            cost: parseFloat(cost) || 0,
-                            technician: scheduledItem.technician,
-                            notes: notes
-                        });
-                        item.scheduledMaintenance = item.scheduledMaintenance.filter(rec => rec.id !== scheduledId);
-                        item.status = 'Operativo';
-                        this.showToast('Mantenimiento Registrado', 'El equipo ahora está operativo.');
-                        this.renderScheduledMaintenance(equipmentId);
-                        this.renderMaintenanceHistoryTable(equipmentId);
-                        this.updateFacilitiesGrid(); // Actualiza la tarjeta principal
-                        this.saveState();
-                        
-                        // Preguntar por la próxima fecha
-                        Swal.fire({
-                            title: 'Planificación Futura',
-                            text: '¿Cuándo debería ser el próximo mantenimiento preventivo para este equipo?',
-                            input: 'date',
-                            confirmButtonText: 'Establecer Fecha'
-                        }).then(dateResult => {
-                            if (dateResult.isConfirmed && dateResult.value) {
-                                item.nextMaintenanceDate = dateResult.value;
-                                this.saveState();
-                                this.updateFacilitiesGrid();
-                                this.showToast('Fecha guardada', 'Próximo mantenimiento planificado.');
-                            }
-                        });
-                    }
-                });
+                document.getElementById('maintenanceModalTitle').innerText = 'Confirmar Mantenimiento Realizado';
+                document.getElementById('maintenanceModalBody').innerHTML = `
+                    <div class="alert alert-info">
+                        <h5 class="alert-heading">Trabajo Agendado</h5>
+                        <p class="mb-1"><strong>Fecha:</strong> ${new Date(scheduledItem.scheduledDate + 'T00:00:00').toLocaleDateString('es-CL')}</p>
+                        <p class="mb-0"><strong>Descripción:</strong> ${scheduledItem.description}</p>
+                    </div>
+                    <form id="confirmMaintForm">
+                        <div class="mb-3 modal-form-group">
+                            <label for="maint-cost" class="form-label">Costo Final (CLP)</label>
+                            <div class="input-group"><span class="input-group-text"><i class="fas fa-dollar-sign"></i></span><input id="maint-cost" type="number" class="form-control" placeholder="0" required></div>
+                        </div>
+                        <div class="mb-3 modal-form-group">
+                            <label for="maint-notes" class="form-label">Notas Finales</label>
+                            <textarea id="maint-notes" class="form-control" rows="3" placeholder="Detalles adicionales, piezas cambiadas, etc."></textarea>
+                        </div>
+                    </form>`;
+                document.getElementById('maintenanceModalFooter').innerHTML = `<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button><button type="submit" form="confirmMaintForm" class="btn btn-success">Confirmar y Registrar</button>`;
+                
+                document.getElementById('confirmMaintForm').onsubmit = (e) => {
+                    e.preventDefault();
+                    const cost = document.getElementById('maint-cost').value;
+                    const notes = document.getElementById('maint-notes').value;
+
+                    item.maintenanceHistory.push({
+                        id: Date.now(),
+                        date: scheduledItem.scheduledDate,
+                        description: scheduledItem.description,
+                        cost: parseFloat(cost) || 0,
+                        technician: scheduledItem.technician,
+                        notes: notes
+                    });
+                    item.scheduledMaintenance = item.scheduledMaintenance.filter(rec => rec.id !== scheduledId);
+                    item.status = 'Operativo';
+                    
+                    this.showToast('Mantenimiento Registrado', 'El equipo ahora está operativo.');
+                    this.renderScheduledMaintenance(equipmentId);
+                    this.renderMaintenanceHistoryTable(equipmentId);
+                    this.updateFacilitiesGrid(); // Actualiza la tarjeta principal
+                    this.saveState();
+                    this.maintenanceModal.hide();
+                };
+                this.maintenanceModal.show();
             },
             cancelScheduledMaintenance(equipmentId, scheduledId) {
                 Swal.fire({title:'¿Cancelar este mantenimiento?', text:'Esta acción eliminará el agendamiento.', icon:'warning', showCancelButton:true, confirmButtonText:'Sí, cancelar'}).then(r => {
@@ -2727,14 +2784,16 @@
                 event.preventDefault();
                 const form = event.target;
                 const formData = {
-                    name: form.elements.name.value, type: form.elements.type.value, status: form.elements.status.value,
-                    nextMaintenanceDate: form.elements.nextMaintenanceDate.value, technician: form.elements.technician.value, notes: form.elements.notes.value,
+                    name: form.elements.name.value, 
+                    type: form.elements.type.value, 
+                    status: form.elements.status.value,
+                    nextMaintenanceDate: form.elements.nextMaintenanceDate.value, 
+                    notes: form.elements.notes.value,
                 };
 
                 if (equipmentId) {
                     const itemIndex = this.state.data.gymData.equipment.findIndex(e => e.id === equipmentId);
                     if (itemIndex > -1) {
-                        // Conserva los historiales existentes al actualizar
                         this.state.data.gymData.equipment[itemIndex] = { ...this.state.data.gymData.equipment[itemIndex], ...formData };
                         this.showToast('Éxito', 'Equipo actualizado.', 'success');
                     }
