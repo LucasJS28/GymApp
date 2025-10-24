@@ -10,7 +10,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <style>
+<style>
         /* =================================================================
            == 🎨 PALETA DE COLORES Y VARIABLES GLOBALES DE DISEÑO 🎨 ==
            ================================================================= */
@@ -49,14 +49,26 @@
             --bs-body-color: var(--dark-text-color); --bs-body-bg: var(--dark-bg);
             --bs-tertiary-bg: var(--dark-content-bg);
         }
-        .card, .modal-content, .list-group-item {
+        .card {
             background-color: var(--light-content-bg); border: 1px solid var(--light-border-color);
             border-radius: var(--border-radius); box-shadow: var(--light-shadow);
             transition: all var(--transition-speed);
         }
+        .modal-content, .list-group-item {
+            background-color: var(--light-content-bg); border: 1px solid var(--light-border-color);
+            transition: all var(--transition-speed);
+        }
+        .modal-content { border-radius: var(--border-radius); }
+
+
         .dark-mode .card, .dark-mode .modal-content, .dark-mode .list-group-item {
             background-color: var(--dark-content-bg); border-color: var(--dark-border-color);
             box-shadow: var(--dark-shadow);
+        }
+        /* [FIX] Se añade regla de hover para listas en modo oscuro (afecta al POS) */
+        .dark-mode .list-group-item-action:hover {
+            background-color: #252945;
+            color: var(--dark-text-color);
         }
         .text-muted { color: var(--light-text-muted) !important; }
         .dark-mode .text-muted { color: var(--dark-text-muted) !important; }
@@ -69,7 +81,11 @@
         }
         .dark-mode .btn-close { filter: invert(1) brightness(2); }
         .dark-mode .table { --bs-table-color: var(--dark-text-color); --bs-table-border-color: var(--dark-border-color); --bs-table-striped-bg: #252945; }
-        .dark-mode .table-hover>tbody>tr:hover>* { --bs-table-accent-bg: #2a2e4c; }
+        /* [FIX] Se añade color de texto al hover de la tabla para modo oscuro (afecta al CRM) */
+        .dark-mode .table-hover>tbody>tr:hover>* {
+            --bs-table-accent-bg: #2a2e4c;
+            --bs-table-hover-color: var(--dark-text-color);
+        }
         .dark-mode .dropdown-menu { --bs-dropdown-bg: var(--dark-content-bg); --bs-dropdown-border-color: var(--dark-border-color); --bs-dropdown-link-color: var(--dark-text-color); --bs-dropdown-link-hover-bg: #252945; }
         .main-container { display: flex; }
         .content {
@@ -82,6 +98,17 @@
         .page-header h2 { font-weight: 600; }
         
         @keyframes fadeIn { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* [MEJORA] Se añade un fondo sutil a los headers para dar más estructura */
+        .card-header {
+            background-color: #FDFDFE;
+            border-bottom: 1px solid var(--light-border-color);
+            padding: 1rem 1.5rem;
+        }
+        .dark-mode .card-header {
+            background-color: #252945;
+            border-bottom: 1px solid var(--dark-border-color);
+        }
 
         /* =================================================================
            == 🚪 ESTILOS PANTALLA DE LOGIN 🚪 ==
@@ -114,12 +141,20 @@
             transition: all 0.2s ease-in-out;
         }
         .login-container .btn:hover { transform: translateY(-3px); box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
+        
+        /* [MEJORA] Se añaden efectos de hover más notorios a los botones principales */
+        .btn { transition: all 0.2s ease-in-out; }
         .btn-primary { background-color: var(--primary-color); border-color: var(--primary-color); }
-        .btn-primary:hover { background-color: var(--primary-hover); border-color: var(--primary-hover); }
+        .btn-primary:hover {
+            background-color: var(--primary-hover);
+            border-color: var(--primary-hover);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(124, 93, 255, 0.3);
+        }
         .btn-info { background-color: var(--info-color); border-color: var(--info-color); }
-        .btn-info:hover { opacity: 0.9; }
+        .btn-info:hover { opacity: 0.9; transform: translateY(-2px); }
         .btn-success { background-color: var(--success-color); border-color: var(--success-color); }
-        .btn-success:hover { opacity: 0.9; }
+        .btn-success:hover { opacity: 0.9; transform: translateY(-2px); }
 
         /* =================================================================
            == 🧭 SIDEBAR Y NAVEGACIÓN 🧭 ==
@@ -135,7 +170,6 @@
         }
         .sidebar-header {
             padding: 1.5rem;
-            border-bottom: 1px solid var(--light-border-color);
             display: flex; align-items: center; justify-content: center;
             flex-shrink: 0; 
         }
@@ -186,10 +220,16 @@
             cursor: pointer;
         }
         .sidebar .nav-link .fa-fw { width: 1.5em; opacity: 0.8; }
-        .sidebar .nav-link.active, .sidebar .nav-link:hover {
-            color: #ffffff; background-color: var(--primary-color);
+        .sidebar .nav-link:hover {
+            color: var(--primary-color);
+            background-color: var(--primary-light);
+        }
+        .sidebar .nav-link.active {
+            color: #ffffff;
+            background-color: var(--primary-color);
             border-left: 4px solid var(--secondary-color);
         }
+
         .sidebar-footer { 
             padding: 1.5rem; 
             border-top: 1px solid var(--light-border-color); 
@@ -198,68 +238,86 @@
         .theme-switch-wrapper .form-check-label { color: var(--light-text-muted); }
 
         .dark-mode .sidebar {
-            background: linear-gradient(180deg, #373B53 0%, #1E2139 100%);
+            background: var(--dark-content-bg);
             color: white;
             border-right: 1px solid var(--dark-border-color);
         }
-        .dark-mode .sidebar-header { background-color: #1E2139; border-bottom: 1px solid #252945; }
+        .dark-mode .sidebar-header { border-bottom: 1px solid #252945; }
         .dark-mode .sidebar-header h4 { color: #fff; }
         .dark-mode .profile-avatar { border: 4px solid #252945; }
         .dark-mode #profile-name { color: #fff; }
         .dark-mode #profile-role { color: #DFE3FA; }
         .dark-mode .sidebar .nav-link { color: #DFE3FA; }
-        .dark-mode .sidebar .nav-link.active, .dark-mode .sidebar .nav-link:hover { color: #ffffff; background-color: var(--primary-color); border-left: 4px solid var(--secondary-color); }
-        .dark-mode .sidebar-footer { background-color: #1E2139; border-top: 1px solid #252945; }
+        .dark-mode .sidebar .nav-link:hover {
+            color: #ffffff;
+            background-color: rgba(124, 93, 255, 0.2);
+        }
+        .dark-mode .sidebar .nav-link.active {
+            color: #ffffff;
+            background-color: var(--primary-color);
+            border-left: 4px solid var(--secondary-color);
+        }
+        .dark-mode .sidebar-footer { border-top: 1px solid #252945; }
         .dark-mode .theme-switch-wrapper .form-check-label { color: #DFE3FA; }
         
         /* =================================================================
-           == 🌟 INDICADOR DE SCROLL SIDEBAR 🌟 ==
+           == 🌟 [CORREGIDO] INDICADOR DE SCROLL SIDEBAR 🌟 ==
            ================================================================= */
-        @keyframes bounce-arrow {
-            0%, 20%, 50%, 80%, 100% { transform: translate(-50%, 0); }
-            40% { transform: translate(-50%, 5px); }
-            60% { transform: translate(-50%, 3px); }
+         @keyframes bounce-arrow {
+            0%, 20%, 50%, 80%, 100% {
+                transform: translateX(-50%) translateY(0);
+            }
+            40% {
+                transform: translateX(-50%) translateY(8px);
+            }
+            60% {
+                transform: translateX(-50%) translateY(4px);
+            }
         }
 
         .sidebar-nav-container::after {
-            content: '\f078'; /* Font Awesome chevron-down icon */
+            content: '\f078'; /* Icono de chevron hacia abajo */
             font-family: 'Font Awesome 6 Free';
             font-weight: 900;
-            position: absolute;
-            bottom: 10px;
-            left: 50%;
-            transform: translateX(-50%);
-            color: var(--light-text-muted);
-            font-size: 1.2rem;
             
+            /* Estilos para el círculo */
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: var(--primary-light);
+            color: var(--primary-color);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+
+            /* Centrar el icono dentro del círculo */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1rem;
+
+            /* Posicionamiento */
+            position: absolute;
+            bottom: 15px;
+            left: 50%;
+            transform: translateX(-50%); /* Centrado horizontal inicial */
+
+            /* Transición y visibilidad */
             opacity: 0;
             visibility: hidden;
-            
-            background: linear-gradient(to top, 
-                var(--light-content-bg) 50%, 
-                rgba(255, 255, 255, 0) 100%
-            );
-            width: 100%;
-            text-align: center;
-            padding-top: 20px;
-            padding-bottom: 5px;
             pointer-events: none;
-            
-            transition: opacity 0.3s ease, visibility 0.3s ease;
+            transition: opacity 0.3s ease, visibility 0.3s ease, transform 0.3s ease;
         }
 
         .dark-mode .sidebar-nav-container::after {
-            color: var(--dark-text-muted);
-            background: linear-gradient(to top, 
-                #1E2139 50%, 
-                rgba(30, 33, 57, 0) 100%
-            );
+            background-color: rgba(124, 93, 255, 0.2);
+            color: var(--primary-color);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            border: 1px solid var(--dark-border-color);
         }
 
         .sidebar-nav-container.is-scrollable::after {
             opacity: var(--scroll-indicator-opacity, 1);
             visibility: visible;
-            animation: bounce-arrow 2s infinite;
+            animation: bounce-arrow 2.5s infinite ease-in-out;
         }
 
         /* =================================================================
@@ -623,13 +681,11 @@
         #chat-window.mobile-chat-view .chat-sidebar { transform: translateX(-100%); }
         #chat-window.mobile-chat-view .chat-area { transform: translateX(0); }
         .chat-header {
-            padding: 0.75rem 1.5rem; border-bottom: 1px solid var(--light-border-color);
+            padding: 0.75rem 1.5rem;
             display: flex; justify-content: space-between; align-items: center;
-            background-color: var(--light-bg);
         }
         .chat-header .chat-back-btn { display: none; background: none; border: none; font-size: 1.2rem; margin-right: 1rem; color: var(--light-text-color); }
         .dark-mode .chat-header .chat-back-btn { color: var(--dark-text-color); }
-        .dark-mode .chat-header { border-bottom-color: var(--dark-border-color); background-color: var(--dark-bg);}
         .chat-messages { flex-grow: 1; padding: 1rem; overflow-y: auto; }
         .chat-message { display: flex; margin-bottom: 1rem; max-width: 90%; }
         .chat-message p {
