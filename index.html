@@ -467,6 +467,24 @@
             grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
             gap: 1.5rem;
         }
+
+        @media (max-width: 992px) {
+    .sidebar {
+        overflow-y: auto; /* Nuevo: Permite scroll en todo el sidebar en móvil */
+        -webkit-overflow-scrolling: touch; /* Suaviza scroll en iOS */
+    }
+    .sidebar-footer {
+        position: sticky; /* Opcional: "Pega" el footer al fondo cuando scrollees */
+        bottom: 0;
+        background-color: var(--light-content-bg); /* O dark-bg en dark mode */
+        z-index: 1;
+        border-top: 1px solid var(--light-border-color);
+    }
+    .dark-mode .sidebar-footer {
+        background-color: var(--dark-content-bg);
+        border-top-color: var(--dark-border-color);
+    }
+}
         .equipment-card {
             transition: transform 0.2s, box-shadow 0.2s;
             position: relative;
