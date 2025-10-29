@@ -1139,7 +1139,7 @@
                         'user-4': { id: 4, role: 'student', name: 'Ana Torres', profile: { email: 'ana.t@email.com', phone: '944444444' }, password: '1234', planId: null, membershipStartDate: null, professorId: null, lastSeen: '2025-10-18T11:00:00', routine: {}, evaluations: [], goals: {} },
                     },
                     navigation: {
-                        admin: [{ id: 'dashboard', icon: 'fa-tachometer-alt', text: 'Dashboard' }, { id: 'crm', icon: 'fa-users', text: 'CRM Socios' }, { id: 'plans', icon: 'fa-id-card', text: 'Planes' }, { id: 'billing', icon: 'fa-file-invoice-dollar', text: 'Pagos y POS' }, { id: 'schedule', icon: 'fa-calendar-alt', text: 'Agenda' }, { id: 'facilities', icon: 'fa-wrench', text: 'Instalaciones'}, { id: 'attendance-log', icon: 'fa-clipboard-list', text: 'Asistencia' }, { id: 'inventory', icon: 'fa-boxes', text: 'Inventario' }, { id: 'profile', icon: 'fa-user-cog', text: 'Mi Perfil' }],
+                        admin: [{ id: 'dashboard', icon: 'fa-tachometer-alt', text: 'Dashboard' }, { id: 'crm', icon: 'fa-users', text: 'CRM Socios' }, { id: 'plans', icon: 'fa-id-card', text: 'Planes' }, { id: 'billing', icon: 'fa-file-invoice-dollar', text: 'Pagos y POS' }, { id: 'schedule', icon: 'fa-calendar-alt', text: 'Agenda' }, { id: 'facilities', icon: 'fa-wrench', text: 'Instalaciones'}, { id: 'inventory', icon: 'fa-boxes', text: 'Inventario' }, { id: 'profile', icon: 'fa-user-cog', text: 'Mi Perfil' }],
                         professor: [{ id: 'dashboard', icon: 'fa-tachometer-alt', text: 'Dashboard' }, { id: 'manage-students', icon: 'fa-users-cog', text: 'Gestionar Alumnos' }, { id: 'routine-builder', icon: 'fa-dumbbell', text: 'Rutinas' }, { id: 'evaluations', icon: 'fa-clipboard-list', text: 'Evaluaciones' }, { id: 'exercise-library', icon: 'fa-book', text: 'Biblioteca Ejercicios' }, { id: 'schedule', icon: 'fa-calendar-check', text: 'Mi Agenda' }, { id: 'profile', icon: 'fa-user-edit', text: 'Mi Perfil' }],
                         student: [ { id: 'dashboard', icon: 'fa-tachometer-alt', text: 'Dashboard' }, { id: 'billing', icon: 'fa-wallet', text: 'Mi Plan' }, { id: 'my-routine', icon: 'fa-dumbbell', text: 'Mi Rutina' }, { id: 'my-progress', icon: 'fa-chart-line', text: 'Mi Progreso' }, { id: 'exercise-library', icon: 'fa-book', text: 'Ver Ejercicios' }, { id: 'schedule', icon: 'fa-calendar-plus', text: 'Clases' }, { id: 'my-classes', icon: 'fa-history', text: 'Mis Clases'}, { id: 'profile', icon: 'fa-user', text: 'Mi Perfil' } ]
                     },
@@ -1165,7 +1165,6 @@
                             { id: 7, name: 'Press Militar', muscleGroup: 'Hombros', equipment: 'Barra', videoUrl: 'https://www.youtube.com/embed/2yjwXTZQDDI', instructions: ['Sentado o de pie, sujeta la barra a la altura de la clavícula con un agarre prono.', 'Empuja la barra verticalmente hacia arriba hasta extender los brazos por completo.', 'Baja de forma controlada a la posición inicial.'], tips: 'Mantén el abdomen contraído para proteger la zona lumbar, especialmente al hacerlo de pie.'}
                         ],
                         inventory: [ { id: 101, sku: 'AG-500', name: 'Agua Mineral 500ml', stock: 150, price: 1000 }, { id: 102, sku: 'PRO-BAR-CH', name: 'Barra Proteína Chocolate', stock: 75, price: 2500 } ],
-                        attendanceLog: [ { memberId: 1, timestamp: '2025-10-21T08:05:12' }, { memberId: 2, timestamp: '2025-10-21T09:15:30' }, { memberId: 3, timestamp: '2025-10-21T17:02:00' }, { memberId: 1, timestamp: '2025-10-21T18:30:15' }, { memberId: 2, timestamp: '2025-10-20T19:00:05' }, { memberId: 1, timestamp: '2025-10-19T08:00:21' } ],
                         transactions: [ {id: 1, date: '2025-10-21', description: 'Venta POS', amount: 3500, method: 'Efectivo'}, {id: 2, date: '2025-10-21', description: 'Membresía', amount: 49990, method: 'Tarjeta'}, {id: 3, date: '2025-10-21', description: 'Venta POS', amount: 2500, method: 'Tarjeta'} ],
                         equipment: [
                             { id: 1, name: 'Cinta de Correr #1', type: 'Cardio', status: 'Operativo', nextMaintenanceDate: '2025-12-15', notes: 'Funciona perfectamente.', scheduledMaintenance: [], maintenanceHistory: [ {id: 1, date: '2025-09-15', description: 'Mantenimiento preventivo general.', cost: 35000, technician: 'Juan Silva - TecnicoFit', notes: 'Se realizó limpieza y lubricación.' } ] },
@@ -1357,7 +1356,6 @@
                     if (sectionId === 'inventory') this.updateAdminInventoryTable();
                     if (sectionId === 'plans') this.updateAdminPlansUI();
                     if (sectionId === 'billing') { this.updateAdminPosItems(); this.updateCart(); }
-                    if (sectionId === 'attendance-log') this.updateAdminAttendanceTable();
                     if (sectionId === 'facilities') this.updateFacilitiesGrid();
                 }
                 if (role === 'professor') {
@@ -1737,7 +1735,7 @@
                         <div class="col-xl-3 col-md-6 mb-4"><div class="stat-card h-100 card" style="--stat-color: var(--primary-color); border-left-color: var(--stat-color);"><div class="card-body"><div><div class="text-xs fw-bold text-uppercase mb-1" style="color:var(--stat-color)">Socios Activos</div><div class="h5 mb-0 fw-bold">${totalMembers}</div></div><i class="fas fa-users"></i></div></div></div>
                         <div class="col-xl-3 col-md-6 mb-4"><div class="stat-card h-100 card" style="--stat-color: var(--info-color); border-left-color: var(--stat-color);"><div class="card-body"><div><div class="text-xs fw-bold text-uppercase mb-1" style="color:var(--stat-color)">Altas del Mes</div><div class="h5 mb-0 fw-bold">+${GymApp.state.data.gymData.stats.monthlyNewMembers}</div></div><i class="fas fa-user-plus"></i></div></div></div>
                         <div class="col-xl-3 col-md-6 mb-4"><div class="stat-card h-100 card" style="--stat-color: var(--success-color); border-left-color: var(--stat-color);"><div class="card-body"><div><div class="text-xs fw-bold text-uppercase mb-1" style="color:var(--stat-color)">Retención Mensual</div><div class="h5 mb-0 fw-bold">${retention.toFixed(1)}%</div></div><i class="fas fa-chart-pie"></i></div></div></div>
-                        <div class="col-xl-3 col-md-6 mb-4"><div class="stat-card h-100 card" style="--stat-color: var(--danger-color); border-left-color: var(--stat-color);"><div class="card-body"><div><div class="text-xs fw-bold text-uppercase mb-1" style="color:var(--stat-color)">Socios con Morosidad</div><div class="h5 mb-0 fw-bold">${delinquent}</div></div><i class="fas fa-file-invoice-dollar"></i></div></div></div>
+                        <div class="col-xl-3 col-md-6 mb-4"><div class="stat-card h-100 card" style="--stat-color: var(--danger-color); border-left-color: var(--stat-color); cursor: pointer;" onclick="GymApp.showDelinquentMembersModal()"><div class="card-body"><div><div class="text-xs fw-bold text-uppercase mb-1" style="color:var(--stat-color)">Socios con Morosidad</div><div class="h5 mb-0 fw-bold">${delinquent}</div></div><i class="fas fa-file-invoice-dollar"></i></div></div></div>
                     </div>
                     <div class="row">
                         <div class="col-lg-8 mb-4">
@@ -1927,7 +1925,6 @@
             },
             schedule: () => `<div class="page-header d-flex justify-content-between align-items-center flex-wrap gap-2"><div><h2 id="schedule-title">Agenda de Clases</h2><p class="text-muted mb-0">${GymApp.state.currentUser.role === 'student' ? 'Inscríbete en tus clases favoritas.' : 'Administra el horario de clases grupales.'}</p></div><button id="add-class-btn" class="btn btn-primary"><i class="fas fa-plus me-2"></i>Agendar Clase</button></div><div class="card"><div class="card-body p-lg-4 p-md-3 p-2"><div id="calendar"></div></div></div>`,
             facilities: () => `<div class="page-header"><h2><i class="fas fa-wrench me-2"></i>Gestión de Instalaciones</h2><p class="text-muted">Administra el estado y mantenimiento de los equipos del gimnasio.</p></div><div class="card"><div class="card-body"><div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2"><div class="search-input-group flex-grow-1" style="max-width: 400px;"><i class="fas fa-search"></i><input type="text" class="form-control" placeholder="Buscar equipo..." onkeyup="GymApp.filterTable(this.value, 'facilities-grid')"></div><button class="btn btn-primary" onclick="GymApp.showEquipmentDetailsModal()"><i class="fas fa-plus me-2"></i>Añadir Equipo</button></div></div></div><div id="facilities-grid" class="mt-4"></div>`,
-            'attendance-log': () => `<div class="page-header"><h2><i class="fas fa-clipboard-list me-2"></i>Registro de Asistencia</h2><p class="text-muted">Consulta el historial de ingresos de los socios al gimnasio.</p></div><div class="card"><div class="card-body"><div class="search-input-group flex-grow-1 mb-3" style="max-width: 400px;"><i class="fas fa-search"></i><input type="text" class="form-control" placeholder="Buscar socio..." onkeyup="GymApp.filterTable(this.value, 'attendance-table-body')"></div><div class="table-responsive"><table class="table table-hover align-middle"><thead><tr><th style="width: 50%;">Socio</th><th>Fecha</th><th>Hora de Entrada</th></tr></thead><tbody id="attendance-table-body"></tbody></table></div></div></div>`,
             inventory: () => `<div class="page-header"><h2><i class="fas fa-boxes me-2"></i>Gestión de Inventario</h2><p class="text-muted">Controla el stock y los precios de los productos en venta.</p></div><div class="card"><div class="card-body"><div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2"><div class="search-input-group flex-grow-1" style="max-width: 400px;"><i class="fas fa-search"></i><input type="text" class="form-control" placeholder="Buscar producto..." onkeyup="GymApp.filterTable(this.value, 'inventory-table-body')"></div><div class="btn-group"><button class="btn btn-primary" onclick="GymApp.showProductFormModal()"><i class="fas fa-plus me-2"></i>Añadir</button><button class="btn btn-outline-secondary" onclick="GymApp.exportInventory()"><i class="fas fa-download me-2"></i>Exportar CSV</button></div></div><div class="table-responsive"><table class="table table-hover align-middle"><thead><tr><th>SKU</th><th>Producto</th><th>Stock</th><th>Precio</th><th class="text-end">Acciones</th></tr></thead><tbody id="inventory-table-body"></tbody></table></div></div></div>`,
             profile: () => {
                 const user = GymApp.state.currentUser;
@@ -2071,6 +2068,48 @@
                             </tr>`;
                     }).join('');
                 }
+            },
+            showDelinquentMembersModal() {
+                const delinquentStudents = Object.values(this.state.data.users)
+                    .filter(u => u.role === 'student' && this.getUserPlanDetails(u).status === 'Vencido');
+
+                if (delinquentStudents.length === 0) {
+                    this.showToast('¡Todo en orden!', 'No hay socios con morosidad.', 'success');
+                    return;
+                }
+
+                const membersHTML = delinquentStudents.map(member => {
+                    const planDetails = this.getUserPlanDetails(member);
+                    const phone = member.profile.phone || '';
+                    const whatsappNumber = phone.startsWith('9') && phone.length === 9 ? `56${phone}` : phone.replace(/[^0-9]/g, '');
+
+                    const message = `Hola ${member.name}, te contactamos de GymApp Pro. Notamos que tu plan "${planDetails.name}" venció el ${planDetails.endDate}. ¡Te esperamos para que renueves y sigas entrenando con nosotros!`;
+                    const whatsappLink = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(message)}`;
+                    const emailLink = `mailto:${member.profile.email}?subject=Recordatorio de pago - GymApp Pro&body=${encodeURIComponent(message)}`;
+
+                    return `
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            <div>
+                                <strong>${member.name}</strong>
+                                <br>
+                                <small class="text-muted">Plan: ${planDetails.name} (Venció: ${planDetails.endDate})</small>
+                            </div>
+                            <div class="btn-group">
+                                <a href="${whatsappLink}" target="_blank" class="btn btn-sm btn-outline-success" title="Contactar por WhatsApp"><i class="fab fa-whatsapp"></i></a>
+                                <a href="${emailLink}" class="btn btn-sm btn-outline-secondary" title="Enviar Email"><i class="fas fa-envelope"></i></a>
+                            </div>
+                        </li>
+                    `;
+                }).join('');
+
+                Swal.fire({
+                    title: 'Socios con Planes Vencidos',
+                    html: `<ul class="list-group list-group-flush text-start">${membersHTML}</ul>`,
+                    width: '600px',
+                    showCloseButton: true,
+                    showConfirmButton: false,
+                    customClass: { popup: this.state.currentTheme === 'dark' ? 'dark-mode' : '' }
+                });
             },
             updateAdminPlansUI() {
                 const container = document.getElementById('plans-container');
@@ -2279,7 +2318,7 @@
                 document.getElementById('exerciseForm').onsubmit = (event) => this.handleExerciseFormSubmit(event, day, routineExerciseId, studentId);
                 this.mainModal.show();
             },
-            calculatePeakHours() { const hourlyCounts = Array(24).fill(0); this.state.data.gymData.attendanceLog.forEach(log => { const hour = new Date(log.timestamp).getHours(); hourlyCounts[hour]++; }); const labels = Array.from({length: 15}, (_, i) => i + 6).map(h => `${h}:00`); const data = hourlyCounts.slice(6, 21); return { labels, data }; },
+            calculatePeakHours() { const hourlyCounts = Array(24).fill(0); this.state.data.gymData.transactions.forEach(log => { const hour = new Date(log.date).getHours(); hourlyCounts[hour]++; }); const labels = Array.from({length: 15}, (_, i) => i + 6).map(h => `${h}:00`); const data = hourlyCounts.slice(6, 21); return { labels, data }; },
             renderAdminCharts() { Object.values(this.charts).forEach(c => c.destroy()); const isDark = this.state.currentTheme === 'dark'; const gridColor = isDark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)'; const textColor = isDark ? '#DFE3FA' : '#888EB0'; const peakHoursData = this.calculatePeakHours(); const peakHoursCtx = document.getElementById('peakHoursChart')?.getContext('2d'); if(peakHoursCtx) this.charts.peakHours = new Chart(peakHoursCtx, { type: 'bar', data: { labels: peakHoursData.labels, datasets: [{ label: 'Nº de Asistencias', data: peakHoursData.data, backgroundColor: 'rgba(124, 93, 255, 0.6)', borderColor: 'var(--primary-color)', borderWidth: 1 }] }, options: { responsive: true, maintainAspectRatio: false, scales: { y: { beginAtZero: true, ticks: { color: textColor, stepSize: 1 }, grid: { color: gridColor } }, x: { ticks: { color: textColor }, grid: { color: gridColor } } }, plugins: { legend: { display: false } } } }); },
             exportToCSV(data, filename = 'export.csv') { const headers = Object.keys(data[0]); const csvRows = [headers.join(',')]; for (const row of data) { const values = headers.map(header => { const escaped = (''+row[header]).replace(/"/g, '\\"'); return `"${escaped}"`; }); csvRows.push(values.join(',')); } const blob = new Blob([csvRows.join('\n')], { type: 'text/csv' }); const url = window.URL.createObjectURL(blob); const a = document.createElement('a'); a.setAttribute('hidden', ''); a.setAttribute('href', url); a.setAttribute('download', filename); document.body.appendChild(a); a.click(); document.body.removeChild(a); },
             exportCRM() { const members = Object.values(this.state.data.users).filter(u => u.role === 'student').map(user => { const planDetails = this.getUserPlanDetails(user); const professor = Object.values(this.state.data.users).find(u=> u.id === user.professorId); return { id: user.id, nombre: user.name, email: user.profile.email, telefono: user.profile.phone || 'N/A', plan: planDetails.name, estado_membresia: planDetails.status, fecha_fin: planDetails.endDate, profesor: professor ? professor.name : 'Sin Asignar' }; }); this.exportToCSV(members, 'socios_gymapp.csv'); },
@@ -2372,7 +2411,6 @@
             showClassFormModal(classId = null, prefill = {}) { const isEdit = classId !== null; const classData = isEdit ? this.state.data.gymData.classes.find(c => c.id === classId) : {}; const startDate = isEdit ? new Date(classData.start) : new Date(); startDate.setMinutes(startDate.getMinutes() - startDate.getTimezoneOffset()); const dateValue = startDate.toISOString().split('T')[0]; const timeValue = startDate.toTimeString().substring(0, 5); const isProfessorRole = this.state.currentUser.role === 'professor'; const currentUserName = this.state.currentUser.name; let teacherInputHTML = ''; if (isProfessorRole) { teacherInputHTML = `<input id="swal-teacher" class="swal2-input" value="${currentUserName}" disabled>`; } else { const professors = Object.values(this.state.data.users).filter(u => u.role === 'professor').map(p => `<option value="${p.name}" ${isEdit && p.name === classData.teacher ? 'selected' : ''}>${p.name}</option>`).join(''); teacherInputHTML = `<select id="swal-teacher" class="swal2-select">${professors}</select>`; } const formHTML = `<style>#swal2-html-container { overflow: visible !important; }.swal-form-group { text-align: left; margin-bottom: 1rem; }.swal-form-group label { display: block; margin-bottom: .35rem; font-weight: 500; color: #545454; font-size: 0.85em; }body.dark-mode .swal-form-group label { color: #ccc; }.swal-form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; }.swal2-input, .swal2-select { width: 100% !important; margin: 0 !important; font-size: 0.9em !important; }</style><div class="swal-form-group"><label for="swal-title">Título de la Clase</label><input id="swal-title" class="swal2-input" placeholder="Ej: Yoga Avanzado" value="${isEdit ? classData.title : (prefill.title || '')}"></div><div class="swal-form-grid"><div class="swal-form-group"><label for="swal-date">Fecha</label><input id="swal-date" type="date" class="swal2-input" value="${dateValue}"></div><div class="swal-form-group"><label for="swal-time">Hora</label><input id="swal-time" type="time" class="swal2-input" value="${timeValue}"></div></div><div class="swal-form-grid"><div class="swal-form-group"><label for="swal-spots">Cupos Disponibles</label><input id="swal-spots" type="number" class="swal2-input" placeholder="Ej: 15" value="${isEdit ? classData.spots : (prefill.spots || '')}"></div><div class="swal-form-group"><label for="swal-teacher">Profesor</label>${teacherInputHTML}</div></div>`; Swal.fire({ title: isEdit ? 'Editar Clase' : 'Agendar Nueva Clase', html: formHTML, focusConfirm: false, showCancelButton: true, showDenyButton: isEdit, confirmButtonText: 'Guardar', cancelButtonText: 'Cancelar', denyButtonText: 'Eliminar', preConfirm: () => [ document.getElementById('swal-title').value, document.getElementById('swal-date').value, document.getElementById('swal-time').value, document.getElementById('swal-spots').value, document.getElementById('swal-teacher').value, prefill.isAssessment || false ] }).then(result => { if (result.isConfirmed) { this.handleSaveClass(isEdit ? classData.id : null, result.value); if(prefill.requestId) { this.updateAssessmentRequestStatus(prefill.requestId, 'agendada'); this.renderPendingAssessmentRequests(); } } else if (result.isDenied) { this.handleDeleteClass(classData.id); } }); },
             handleSaveClass(classId, values) { const [title, date, time, spots, teacher, isAssessment] = values; if (!title || !date || !time || !spots || !teacher) { this.showToast('Error', 'Todos los campos son obligatorios.', 'error'); return; } if (classId) { const classIndex = this.state.data.gymData.classes.findIndex(c => c.id === classId); if (classIndex > -1) { Object.assign(this.state.data.gymData.classes[classIndex], { title, start: `${date}T${time}:00`, spots: parseInt(spots), teacher, isAssessment }); this.showToast('Clase Actualizada', `La clase "${title}" se actualizó.`); } } else { this.state.data.gymData.classes.push({ id: Date.now(), title, start: `${date}T${time}:00`, spots: parseInt(spots), teacher, reservedBy: [], isAssessment }); this.showToast('Clase Creada', `La clase "${title}" ha sido agendada.`); } this.initializeCalendar(); this.saveState(); },
             handleDeleteClass(classId) { Swal.fire({ title: '¿Confirmar eliminación?', text: "Esta acción no se puede deshacer.", icon: 'warning', showCancelButton: true, confirmButtonColor: '#d33', confirmButtonText: 'Sí, eliminar', cancelButtonText: 'No, mantener' }).then(r => { if (r.isConfirmed) { this.state.data.gymData.classes = this.state.data.gymData.classes.filter(c => c.id !== classId); this.initializeCalendar(); this.showToast('Clase Eliminada', 'La clase ha sido eliminada del calendario.', 'success'); this.saveState(); } }); },
-            updateAdminAttendanceTable() { const tbody = document.getElementById('attendance-table-body'); if (!tbody) return; const logs = [...this.state.data.gymData.attendanceLog].sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp)); const userMap = Object.values(this.state.data.users).reduce((acc, user) => { acc[user.id] = user; return acc; }, {}); tbody.innerHTML = logs.map(log => { const user = userMap[log.memberId]; const userName = user ? user.name : 'Socio Desconocido'; const initials = userName.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase(); const logDate = new Date(log.timestamp); const date = logDate.toLocaleDateString('es-CL'); const time = logDate.toLocaleTimeString('es-CL', { hour: '2-digit', minute: '2-digit' }); return `<tr data-name="${userName.toLowerCase()}"><td><div class="d-flex align-items-center gap-3"><div class="attendance-avatar">${initials}</div><strong>${userName}</strong></div></td><td>${date}</td><td>${time}</td></tr>`; }).join(''); },
             
             showGoalSettingModal() {
                 const user = this.state.currentUser;
@@ -2549,8 +2587,23 @@
                 grid.innerHTML = equipmentList.map(item => {
                     const status = statusInfo[item.status] || { class: '', textClass: '' };
                     const lastMaint = item.maintenanceHistory && item.maintenanceHistory.length > 0 ? new Date([...item.maintenanceHistory].sort((a,b) => new Date(a.date) - new Date(b.date)).pop().date).toLocaleDateString('es-CL') : 'N/A';
-                    const nextMaint = item.nextMaintenanceDate ? new Date(item.nextMaintenanceDate  + 'T00:00:00').toLocaleDateString('es-CL') : 'N/A';
                     
+                    let nextMaintText = '';
+                    const nextScheduled = item.scheduledMaintenance && item.scheduledMaintenance.length > 0
+                        ? [...item.scheduledMaintenance]
+                            .map(m => new Date(m.scheduledDate + 'T00:00:00'))
+                            .filter(d => d >= new Date())
+                            .sort((a, b) => a - b)[0]
+                        : null;
+
+                    if (nextScheduled) {
+                        nextMaintText = `<strong>${nextScheduled.toLocaleDateString('es-CL')}</strong> <span class="badge bg-primary-subtle text-primary-emphasis">Agendado</span>`;
+                    } else if (item.nextMaintenanceDate) {
+                        nextMaintText = `${new Date(item.nextMaintenanceDate + 'T00:00:00').toLocaleDateString('es-CL')} <span class="badge bg-light text-dark">Sugerido</span>`;
+                    } else {
+                        nextMaintText = '<span class="text-muted fst-italic">No definido</span>';
+                    }
+
                     return `
                     <div class="card equipment-card ${status.class}" data-name="${item.name.toLowerCase()}">
                         <div class="card-header">
@@ -2565,7 +2618,7 @@
                                     <span class="badge bg-${status.class.replace('status-', '')}-subtle ${status.textClass} rounded-pill">${item.status}</span>
                                 </li>
                                 <li><span class="icon"><i class="fas fa-calendar-alt"></i></span><strong>Último Mant.</strong><span>${lastMaint}</span></li>
-                                <li><span class="icon"><i class="fas fa-calendar-check"></i></span><strong>Próximo Mant.</strong><span>${nextMaint}</span></li>
+                                <li><span class="icon"><i class="fas fa-calendar-check"></i></span><strong>Próximo Mant.</strong><span>${nextMaintText}</span></li>
                             </ul>
                         </div>
                         <div class="card-footer d-grid">
@@ -2594,7 +2647,7 @@
                                 </div>
                                 <div class="row">
                                     <div class="col-md-6 mb-3"><label class="form-label">Estado</label><select name="status" class="form-select" required><option value="Operativo" ${item.status === 'Operativo' ? 'selected' : ''}>Operativo</option><option value="En Mantenimiento" ${item.status === 'En Mantenimiento' ? 'selected' : ''}>En Mantenimiento</option><option value="Averiado" ${item.status === 'Averiado' ? 'selected' : ''}>Averiado</option></select></div>
-                                    <div class="col-md-6 mb-3"><label class="form-label">Fecha Próximo Mantenimiento</label><input type="date" name="nextMaintenanceDate" class="form-control" value="${item.nextMaintenanceDate || ''}"></div>
+                                    <div class="col-md-6 mb-3"><label class="form-label">Fecha Próxima Revisión (Sugerida)</label><input type="date" name="nextMaintenanceDate" class="form-control" value="${item.nextMaintenanceDate || ''}"></div>
                                 </div>
                                 <div class="mb-3"><label class="form-label">Notas Adicionales</label><textarea name="notes" class="form-control" rows="2">${item.notes || ''}</textarea></div>
                             </form>
@@ -2700,6 +2753,7 @@
                     this.saveState();
                     this.showToast('Éxito', 'Mantenimiento agendado.');
                     this.renderScheduledMaintenance(equipmentId);
+                    this.updateFacilitiesGrid();
                     this.maintenanceModal.hide();
                 }
             },
@@ -2762,6 +2816,7 @@
                             this.saveState();
                             this.showToast('Cancelado', 'El agendamiento ha sido eliminado.');
                             this.renderScheduledMaintenance(equipmentId);
+                            this.updateFacilitiesGrid();
                         }
                     }
                 });
